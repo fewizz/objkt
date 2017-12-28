@@ -1,9 +1,9 @@
 package org.objkt.gl;
 
 import org.lwjgl.opengl.GL11;
-import org.objct.gl.enums.InternalFormat;
-import org.objct.gl.enums.PixelFormat;
-import org.objct.gl.enums.PixelType;
+import org.objkt.gl.enums.InternalFormat;
+import org.objkt.gl.enums.PixelFormat;
+import org.objkt.gl.enums.PixelType;
 
 public class GLTexture1D extends GLTexture {
 	

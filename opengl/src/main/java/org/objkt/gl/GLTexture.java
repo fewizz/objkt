@@ -3,8 +3,8 @@ package org.objkt.gl;
 import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.opengl.GL12;
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.enums.TextureTarget;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.TextureTarget;
 
 public abstract class GLTexture extends GLBindableObject<GLTexture> {
 	public final TextureTarget target;

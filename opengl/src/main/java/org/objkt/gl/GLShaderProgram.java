@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL20;
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.enums.ProgramPropertyARB;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.ProgramPropertyARB;
 import org.objkt.memory.MemBlock;
 import org.objkt.memory.Utils;
 

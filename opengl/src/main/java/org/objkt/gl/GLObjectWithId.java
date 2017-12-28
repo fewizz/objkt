@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.objct.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.ObjectIdentifier;
 
 public abstract class GLObjectWithId<SELF> {
 	public final ObjectIdentifier identifier;

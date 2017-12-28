@@ -1,6 +1,6 @@
 package org.objkt.gl;
 
-import org.objct.gl.enums.BufferTarget;
+import org.objkt.gl.enums.BufferTarget;
 
 public class GLElementArrayBuffer extends GLBuffer<GLElementArrayBuffer> {
 	

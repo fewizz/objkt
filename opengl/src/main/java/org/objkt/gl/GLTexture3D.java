@@ -1,9 +1,9 @@
 package org.objkt.gl;
 
-import org.objct.gl.enums.InternalFormat;
-import org.objct.gl.enums.PixelFormat;
-import org.objct.gl.enums.PixelType;
-import org.objct.gl.enums.TextureTarget;
+import org.objkt.gl.enums.InternalFormat;
+import org.objkt.gl.enums.PixelFormat;
+import org.objkt.gl.enums.PixelType;
+import org.objkt.gl.enums.TextureTarget;
 
 public class GLTexture3D extends GLTexture {
 	

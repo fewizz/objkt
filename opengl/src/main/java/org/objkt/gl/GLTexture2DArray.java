@@ -1,6 +1,6 @@
 package org.objkt.gl;
 
-import org.objct.gl.enums.TextureTarget;
+import org.objkt.gl.enums.TextureTarget;
 
 public class GLTexture2DArray extends GLTexture3D {
 	

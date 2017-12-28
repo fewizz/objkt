@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.objct.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.ObjectIdentifier;
 
 public abstract class GLBindableObject<SELF> extends GLObjectWithId<SELF> {
 	List<Consumer<SELF>> bindListeners;

@@ -3,9 +3,9 @@ package org.objkt.gl;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.enums.VertexAttribType;
-import org.objct.gl.wrapper.GLWrapper;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.VertexAttribType;
+import org.objkt.gl.wrapper.GLWrapper;
 import org.objkt.memory.MemBlock;
 
 public class GLVertexArray extends GLBindableObject<GLVertexArray> {

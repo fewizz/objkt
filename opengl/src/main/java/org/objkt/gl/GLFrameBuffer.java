@@ -1,8 +1,8 @@
 package org.objkt.gl;
 
-import org.objct.gl.enums.FramebufferAttachment;
-import org.objct.gl.enums.FramebufferTarget;
-import org.objct.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.FramebufferAttachment;
+import org.objkt.gl.enums.FramebufferTarget;
+import org.objkt.gl.enums.ObjectIdentifier;
 
 public class GLFrameBuffer extends GLBindableObject<GLFrameBuffer> {
 	public final FramebufferTarget target;

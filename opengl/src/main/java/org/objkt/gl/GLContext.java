@@ -11,11 +11,11 @@ import java.util.EnumMap;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.objct.gl.enums.Capability;
-import org.objct.gl.enums.ErrorCode;
-import org.objct.gl.wrapper.GLWrapper;
-import org.objct.gl.wrapper.LWJGLWrapper;
-import org.objct.gl.wrapper.Wrapper;
+import org.objkt.gl.enums.Capability;
+import org.objkt.gl.enums.ErrorCode;
+import org.objkt.gl.wrapper.GLWrapper;
+import org.objkt.gl.wrapper.LWJGLWrapper;
+import org.objkt.gl.wrapper.Wrapper;
 
 public final class GLContext {
 	static final ThreadLocal<GLContext> CONTEXTS = new ThreadLocal<>();

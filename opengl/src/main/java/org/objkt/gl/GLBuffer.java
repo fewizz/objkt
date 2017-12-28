@@ -1,10 +1,10 @@
 package org.objkt.gl;
 
-import org.objct.gl.enums.BufferAccessMask;
-import org.objct.gl.enums.BufferTarget;
-import org.objct.gl.enums.BufferUsage;
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.wrapper.GLWrapper;
+import org.objkt.gl.enums.BufferAccessMask;
+import org.objkt.gl.enums.BufferTarget;
+import org.objkt.gl.enums.BufferUsage;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.wrapper.GLWrapper;
 import org.objkt.memory.MemBlock;
 
 public class GLBuffer<SELF> extends GLBindableObject<SELF> {

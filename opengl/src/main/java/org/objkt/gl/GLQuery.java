@@ -3,8 +3,8 @@ package org.objkt.gl;
 import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL15;
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.enums.QueryTarget;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.QueryTarget;
 
 public class GLQuery extends GLObjectWithId<GLQuery> {
 	public final QueryTarget target;

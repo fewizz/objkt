@@ -2,8 +2,8 @@ package org.objkt.gl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-import org.objct.gl.enums.ObjectIdentifier;
-import org.objct.gl.enums.ShaderType;
+import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.ShaderType;
 
 public class GLShader extends GLObjectWithId<GLShader> {
 	final ShaderType type;
