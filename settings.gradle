@@ -1,0 +1,7 @@
+include 'memory'
+include 'opengl'
+
+project(':memory').name = 'objkt-memory'
+project(':opengl').name = 'objkt-opengl'
+
+rootProject.name = 'objkt'
