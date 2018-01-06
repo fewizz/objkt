@@ -15,12 +15,17 @@ import org.objkt.gl.enums.Capability;
 import org.objkt.gl.enums.ErrorCode;
 import org.objkt.gl.wrapper.GLWrapper;
 import org.objkt.gl.wrapper.LWJGLWrapper;
+import org.objkt.gl.wrapper.LWJGLWrp;
 import org.objkt.gl.wrapper.Wrapper;
+import org.objkt.gl.wrapper.Wrpv2;
+import org.objkt.memory.MemBlock;
 
 public final class GLContext {
 	static final ThreadLocal<GLContext> CONTEXTS = new ThreadLocal<>();
+	final MemBlock tempMemBlock = new MemBlock(64 * Float.BYTES);
 	final EnumMap<Capability, Boolean> capabilityMap = new EnumMap<>(Capability.class);
 	final Wrapper wrapper;
+	final Wrpv2 v2w;
 	final GLTexture[] activeTextures;
 	int activeTextureUnit = 0;
 	final API glAPI;
@@ -85,6 +90,7 @@ public final class GLContext {
 	private GLContext() {
 		GL.createCapabilities();
 		wrapper = new LWJGLWrapper();
+		v2w = new LWJGLWrp();
 		
 		versionMajor = getInteger(GL30.GL_MAJOR_VERSION);
 		versionMinor = getInteger(GL30.GL_MINOR_VERSION);
@@ -191,7 +197,7 @@ public final class GLContext {
 	}
 	
 	public ErrorCode getError() {
-		return wrapper.getError();
+		return ErrorCode.get(wrapper.glGetError());
 	}
 
 	public boolean supportsGL(int major, int minor) {
@@ -203,6 +209,6 @@ public final class GLContext {
 	}
 	
 	public void clearColor(float red, float green, float blue, float alpha) {
-		wrapper.clearColor(red, green, blue, alpha);
+		wrapper.glClearColor(red, green, blue, alpha);
 	}
 }

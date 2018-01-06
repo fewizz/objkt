@@ -212,22 +212,22 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glCompileShader(int shader) { org.lwjgl.opengl.GL20.glCompileShader(shader); }
 
 	@Override
-	public void glCompressedTexImage1D(int target, int level, int internalformat, int width, int border, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexImage1D(target, level, internalformat, width, border, imageSize, data); }
+	public void glCompressedTexImage1D(int target, int level, int internalformat, int width, int border, int imageSize, long data) { org.lwjgl.opengl.GL13.nglCompressedTexImage1D(target, level, internalformat, width, border, imageSize, data); }
 
 	@Override
-	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data); }
+	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border, int imageSize, long data) { org.lwjgl.opengl.GL13.nglCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data); }
 
 	@Override
 	public void glCompressedTexImage3D(int target, int level, int internalformat, int width, int height, int depth, int border, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexImage3D(target, level, internalformat, width, height, depth, border, imageSize, data); }
 
 	@Override
-	public void glCompressedTexSubImage1D(int target, int level, int xoffset, int width, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data); }
+	public void glCompressedTexSubImage1D(int target, int level, int xoffset, int width, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.nglCompressedTexSubImage1D(target, level, xoffset, width, format, imageSize, data); }
 
 	@Override
-	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.nglCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data); }
+	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data); }
 
 	@Override
-	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.nglCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data); }
+	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int format, int imageSize, long data) { org.lwjgl.opengl.GL13.glCompressedTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, imageSize, data); }
 
 	@Override
 	public void glCompressedTextureSubImage1D(int texture, int level, int xoffset, int width, int format, int imageSize, long data) { org.lwjgl.opengl.GL45.glCompressedTextureSubImage1D(texture, level, xoffset, width, format, imageSize, data); }
@@ -344,7 +344,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glDeleteShader(int shader) { org.lwjgl.opengl.GL20.glDeleteShader(shader); }
 
 	@Override
-	public void glDeleteSync(long sync) { org.lwjgl.opengl.GL32.nglDeleteSync(sync); }
+	public void glDeleteSync(long sync) { org.lwjgl.opengl.GL32.glDeleteSync(sync); }
 
 	@Override
 	public void glDeleteTextures(int n, long textures) { org.lwjgl.opengl.GL11.nglDeleteTextures(n, textures); }
@@ -413,16 +413,16 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glDrawBuffers(int n, long bufs) { org.lwjgl.opengl.GL20.nglDrawBuffers(n, bufs); }
 
 	@Override
-	public void glDrawElements(int mode, int count, int type, long indices) { org.lwjgl.opengl.GL11.nglDrawElements(mode, count, type, indices); }
+	public void glDrawElements(int mode, int count, int type, long indices) { org.lwjgl.opengl.GL11.glDrawElements(mode, count, type, indices); }
 
 	@Override
-	public void glDrawElementsBaseVertex(int mode, int count, int type, long indices, int basevertex) { org.lwjgl.opengl.GL32.nglDrawElementsBaseVertex(mode, count, type, indices, basevertex); }
+	public void glDrawElementsBaseVertex(int mode, int count, int type, long indices, int basevertex) { org.lwjgl.opengl.GL32.glDrawElementsBaseVertex(mode, count, type, indices, basevertex); }
 
 	@Override
-	public void glDrawElementsIndirect(int mode, int type, long indirect) { org.lwjgl.opengl.GL40.nglDrawElementsIndirect(mode, type, indirect); }
+	public void glDrawElementsIndirect(int mode, int type, long indirect) { org.lwjgl.opengl.GL40.glDrawElementsIndirect(mode, type, indirect); }
 
 	@Override
-	public void glDrawElementsInstanced(int mode, int count, int type, long indices, int instancecount) { org.lwjgl.opengl.GL31.glDrawElementsInstanced(mode, count, type, indices, instancecount); }
+	public void glDrawElementsInstanced(int mode, int count, int type, long indices, int instancecount) { org.lwjgl.opengl.GL31.nglDrawElementsInstanced(mode, count, type, indices, instancecount); }
 
 	@Override
 	public void glDrawElementsInstancedBaseInstance(int mode, int count, int type, long indices, int instancecount, int baseinstance) { org.lwjgl.opengl.GL42.nglDrawElementsInstancedBaseInstance(mode, count, type, indices, instancecount, baseinstance); }
@@ -431,7 +431,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glDrawElementsInstancedBaseVertex(int mode, int count, int type, long indices, int instancecount, int basevertex) { org.lwjgl.opengl.GL32.glDrawElementsInstancedBaseVertex(mode, count, type, indices, instancecount, basevertex); }
 
 	@Override
-	public void glDrawElementsInstancedBaseVertexBaseInstance(int mode, int count, int type, long indices, int instancecount, int basevertex, int baseinstance) { org.lwjgl.opengl.GL42.glDrawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance); }
+	public void glDrawElementsInstancedBaseVertexBaseInstance(int mode, int count, int type, long indices, int instancecount, int basevertex, int baseinstance) { org.lwjgl.opengl.GL42.nglDrawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, instancecount, basevertex, baseinstance); }
 
 	@Override
 	public void glDrawRangeElements(int mode, int start, int end, int count, int type, long indices) { org.lwjgl.opengl.GL12.glDrawRangeElements(mode, start, end, count, type, indices); }
@@ -605,10 +605,10 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glGetCompressedTexImage(int target, int level, long img) { org.lwjgl.opengl.GL13.glGetCompressedTexImage(target, level, img); }
 
 	@Override
-	public void glGetCompressedTextureImage(int texture, int level, int bufSize, long pixels) { org.lwjgl.opengl.GL45.glGetCompressedTextureImage(texture, level, bufSize, pixels); }
+	public void glGetCompressedTextureImage(int texture, int level, int bufSize, long pixels) { org.lwjgl.opengl.GL45.nglGetCompressedTextureImage(texture, level, bufSize, pixels); }
 
 	@Override
-	public void glGetCompressedTextureSubImage(int texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, long pixels) { org.lwjgl.opengl.GL45.nglGetCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels); }
+	public void glGetCompressedTextureSubImage(int texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int bufSize, long pixels) { org.lwjgl.opengl.GL45.glGetCompressedTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, bufSize, pixels); }
 
 	@Override
 	public int glGetDebugMessageLog(int count, int bufSize, long sources, long types, long ids, long severities, long lengths, long messageLog) { return org.lwjgl.opengl.GL43.nglGetDebugMessageLog(count, bufSize, sources, types, ids, severities, lengths, messageLog); }
@@ -1034,7 +1034,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glMultiDrawArrays(int mode, long first, long count, int drawcount) { org.lwjgl.opengl.GL14.nglMultiDrawArrays(mode, first, count, drawcount); }
 
 	@Override
-	public void glMultiDrawArraysIndirect(int mode, long indirect, int drawcount, int stride) { org.lwjgl.opengl.GL43.nglMultiDrawArraysIndirect(mode, indirect, drawcount, stride); }
+	public void glMultiDrawArraysIndirect(int mode, long indirect, int drawcount, int stride) { org.lwjgl.opengl.GL43.glMultiDrawArraysIndirect(mode, indirect, drawcount, stride); }
 
 	@Override
 	public void glMultiDrawArraysIndirectCount(int mode, long indirect, long drawcount, int maxdrawcount, int stride) { org.lwjgl.opengl.GL46.nglMultiDrawArraysIndirectCount(mode, indirect, drawcount, maxdrawcount, stride); }
@@ -1307,10 +1307,10 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glReadBuffer(int src) { org.lwjgl.opengl.GL11.glReadBuffer(src); }
 
 	@Override
-	public void glReadPixels(int x, int y, int width, int height, int format, int type, long pixels) { org.lwjgl.opengl.GL11.nglReadPixels(x, y, width, height, format, type, pixels); }
+	public void glReadPixels(int x, int y, int width, int height, int format, int type, long pixels) { org.lwjgl.opengl.GL11.glReadPixels(x, y, width, height, format, type, pixels); }
 
 	@Override
-	public void glReadnPixels(int x, int y, int width, int height, int format, int type, int bufSize, long data) { org.lwjgl.opengl.GL45.nglReadnPixels(x, y, width, height, format, type, bufSize, data); }
+	public void glReadnPixels(int x, int y, int width, int height, int format, int type, int bufSize, long data) { org.lwjgl.opengl.GL45.glReadnPixels(x, y, width, height, format, type, bufSize, data); }
 
 	@Override
 	public void glReleaseShaderCompiler() { org.lwjgl.opengl.GL41.glReleaseShaderCompiler(); }
@@ -1451,7 +1451,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels) { org.lwjgl.opengl.GL11.nglTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels); }
 
 	@Override
-	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int format, int type, long pixels) { org.lwjgl.opengl.GL12.nglTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels); }
+	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int format, int type, long pixels) { org.lwjgl.opengl.GL12.glTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels); }
 
 	@Override
 	public void glTextureBarrier() { org.lwjgl.opengl.GL45.glTextureBarrier(); }
@@ -1499,7 +1499,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glTextureSubImage1D(int texture, int level, int xoffset, int width, int format, int type, long pixels) { org.lwjgl.opengl.GL45.glTextureSubImage1D(texture, level, xoffset, width, format, type, pixels); }
 
 	@Override
-	public void glTextureSubImage2D(int texture, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels) { org.lwjgl.opengl.GL45.glTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels); }
+	public void glTextureSubImage2D(int texture, int level, int xoffset, int yoffset, int width, int height, int format, int type, long pixels) { org.lwjgl.opengl.GL45.nglTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels); }
 
 	@Override
 	public void glTextureSubImage3D(int texture, int level, int xoffset, int yoffset, int zoffset, int width, int height, int depth, int format, int type, long pixels) { org.lwjgl.opengl.GL45.nglTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels); }
@@ -1925,7 +1925,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glVertexAttribLFormat(int attribindex, int size, int type, int relativeoffset) { org.lwjgl.opengl.GL43.glVertexAttribLFormat(attribindex, size, type, relativeoffset); }
 
 	@Override
-	public void glVertexAttribLPointer(int index, int size, int type, int stride, long pointer) { org.lwjgl.opengl.GL41.nglVertexAttribLPointer(index, size, type, stride, pointer); }
+	public void glVertexAttribLPointer(int index, int size, int type, int stride, long pointer) { org.lwjgl.opengl.GL41.glVertexAttribLPointer(index, size, type, stride, pointer); }
 
 	@Override
 	public void glVertexAttribP1ui(int index, int type, boolean normalized, int value) { org.lwjgl.opengl.GL33.glVertexAttribP1ui(index, type, normalized, value); }
@@ -1952,7 +1952,7 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glVertexAttribP4uiv(int index, int type, boolean normalized, long value) { org.lwjgl.opengl.GL33.nglVertexAttribP4uiv(index, type, normalized, value); }
 
 	@Override
-	public void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long pointer) { org.lwjgl.opengl.GL20.nglVertexAttribPointer(index, size, type, normalized, stride, pointer); }
+	public void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long pointer) { org.lwjgl.opengl.GL20.glVertexAttribPointer(index, size, type, normalized, stride, pointer); }
 
 	@Override
 	public void glVertexBindingDivisor(int bindingindex, int divisor) { org.lwjgl.opengl.GL43.glVertexBindingDivisor(bindingindex, divisor); }
@@ -1970,6 +1970,6 @@ public class LWJGLWrapper extends GLWrapper {
 	public void glViewportIndexedfv(int index, long v) { org.lwjgl.opengl.GL41.nglViewportIndexedfv(index, v); }
 
 	@Override
-	public void glWaitSync(long sync, int flags, long timeout) { org.lwjgl.opengl.GL32.nglWaitSync(sync, flags, timeout); }
+	public void glWaitSync(long sync, int flags, long timeout) { org.lwjgl.opengl.GL32.glWaitSync(sync, flags, timeout); }
 
 }

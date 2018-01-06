@@ -15,6 +15,7 @@ public abstract class GLBindableObject<SELF> extends GLObjectWithId<SELF> {
 		super(idt);
 	}
 	
+	@Override
 	protected void createObject() {
 		name = gen();
 		bind();

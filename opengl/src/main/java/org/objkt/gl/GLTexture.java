@@ -18,12 +18,13 @@ public abstract class GLTexture extends GLBindableObject<GLTexture> {
 
 	@Override
 	protected int gen() {
-		return context.wrapper.genTexture();
+		context.wrapper.glGenTextures(1, context.tempMemBlock.address());
+		return context.tempMemBlock.getInt(0);
 	}
 	
 	@Override
 	public void bind0() {
-		context.wrapper.bindTexture(target, getName());
+		context.wrapper.glBindTexture(target.token, getName());
 	}
 	
 	public void bindTextureUnit(int index) {
@@ -33,11 +34,11 @@ public abstract class GLTexture extends GLBindableObject<GLTexture> {
 	
 	@Override
 	protected void deleteObject() {
-		context.wrapper.deleteTexture(getName());
+		context.tempMemBlock.putInt(0, getName());
+		context.wrapper.glDeleteTextures(1, getName());
 	}
 
 	public GLTexture setDefaultParams() {
-		check();
 		parameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
 		parameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
 		parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
