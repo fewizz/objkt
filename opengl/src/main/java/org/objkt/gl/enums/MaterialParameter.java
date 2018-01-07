@@ -25,5 +25,17 @@ public enum MaterialParameter {
 	}
 	private static final Map<Integer, MaterialParameter> MAP = Collections.unmodifiableMap(getMap());
 	public static MaterialParameter get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(MaterialParameter... enums) { int i = 0; for(MaterialParameter e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(MaterialParameter... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

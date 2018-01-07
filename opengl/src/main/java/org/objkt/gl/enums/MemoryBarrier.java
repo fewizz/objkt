@@ -3,7 +3,7 @@ package org.objkt.gl.enums;
 import java.util.*;
 import org.objkt.gl.GLConstants;
 
-public enum MemoryBarrierMask {
+public enum MemoryBarrier {
 	ALL_BARRIER_BITS(GLConstants.GL_ALL_BARRIER_BITS),
 	ATOMIC_COUNTER_BARRIER_BIT(GLConstants.GL_ATOMIC_COUNTER_BARRIER_BIT),
 	BUFFER_UPDATE_BARRIER_BIT(GLConstants.GL_BUFFER_UPDATE_BARRIER_BIT),
@@ -21,30 +21,31 @@ public enum MemoryBarrierMask {
 	UNIFORM_BARRIER_BIT(GLConstants.GL_UNIFORM_BARRIER_BIT),
 	VERTEX_ATTRIB_ARRAY_BARRIER_BIT(GLConstants.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 
-	MemoryBarrierMask(int token) {
+	MemoryBarrier(int token) {
 		this.token = token;
 	}
 
 	public final int token;
 
-	public static final MemoryBarrierMask[] VALUES = values();
-	private static Map<Integer, MemoryBarrierMask> getMap() {
-		Map<Integer, MemoryBarrierMask> map = new HashMap<>();
-		for(MemoryBarrierMask val : VALUES) map.put(val.token, val);
+	public static final MemoryBarrier[] VALUES = values();
+	private static Map<Integer, MemoryBarrier> getMap() {
+		Map<Integer, MemoryBarrier> map = new HashMap<>();
+		for(MemoryBarrier val : VALUES) map.put(val.token, val);
 		return map;
 	}
-	private static final Map<Integer, MemoryBarrierMask> MAP = Collections.unmodifiableMap(getMap());
-	public static MemoryBarrierMask get(int raw) { return MAP.get(raw); }
+	private static final Map<Integer, MemoryBarrier> MAP = Collections.unmodifiableMap(getMap());
+	public static MemoryBarrier get(int raw) { return MAP.get(raw); }
+
+	// Mask
+	public static int intMaskOf(MemoryBarrier... enums) { int i = 0; for(MemoryBarrier e : VALUES) i |= e.token; return i; }
 
 	public static class Mask {
 		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
 		int value;
 
-		public static Mask of(MemoryBarrierMask... values) {
+		public static Mask of(MemoryBarrier... enums) {
 			Mask m = MASKS.get();
-			m.value = 0;
-			for(MemoryBarrierMask enm : values)
-				m.value += enm.token;
+			m.value = intMaskOf(enums);
 			return m;
 		}
 		public int value() { return value; }

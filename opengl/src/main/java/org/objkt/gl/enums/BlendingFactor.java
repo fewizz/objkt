@@ -36,5 +36,17 @@ public enum BlendingFactor {
 	}
 	private static final Map<Integer, BlendingFactor> MAP = Collections.unmodifiableMap(getMap());
 	public static BlendingFactor get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(BlendingFactor... enums) { int i = 0; for(BlendingFactor e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(BlendingFactor... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

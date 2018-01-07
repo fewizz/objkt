@@ -29,5 +29,17 @@ public enum DrawBufferMode {
 	}
 	private static final Map<Integer, DrawBufferMode> MAP = Collections.unmodifiableMap(getMap());
 	public static DrawBufferMode get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(DrawBufferMode... enums) { int i = 0; for(DrawBufferMode e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(DrawBufferMode... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

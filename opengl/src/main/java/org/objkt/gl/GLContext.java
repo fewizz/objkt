@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 
 import org.objkt.gl.enums.Capability;
-import org.objkt.gl.enums.ClearBufferMask;
+import org.objkt.gl.enums.ClearBuffer;
 import org.objkt.gl.enums.ErrorCode;
 import org.objkt.gl.enums.GetPName;
 import org.objkt.gl.enums.PrimitiveType;
@@ -185,8 +185,8 @@ public final class GLContext {
 		wrap.core.clearColor(red, green, blue, alpha);
 	}
 	
-	public void clear(ClearBufferMask... mask) {
-		wrap.core.clear(ClearBufferMask.Mask.of(mask).value());
+	public void clear(ClearBuffer.Mask mask) {
+		wrap.core.clear(mask.value());
 	}
 	
 	public void drawArrays(PrimitiveType mode, int count) {

@@ -273,4 +273,30 @@ public class LWJGLWrapper extends Wrapper {
 		};
 	}
 
+	@Override
+	QueryWrap createQueryWrap() {
+		return new QueryWrap() {
+			
+			@Override
+			public void delete(int name) {
+				GL15.glDeleteQueries(name);
+			}
+			
+			@Override
+			public int create(int target) {
+				return GL15.glGenQueries();
+			}
+			
+			@Override
+			public void end(int target) {
+				GL15.glEndQuery(target);
+			}
+			
+			@Override
+			public void begin(int target, int name) {
+				GL15.glBeginQuery(target, name);
+			}
+		};
+	}
+
 }

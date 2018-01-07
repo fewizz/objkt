@@ -23,5 +23,17 @@ public enum TypeEnum {
 	}
 	private static final Map<Integer, TypeEnum> MAP = Collections.unmodifiableMap(getMap());
 	public static TypeEnum get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(TypeEnum... enums) { int i = 0; for(TypeEnum e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(TypeEnum... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

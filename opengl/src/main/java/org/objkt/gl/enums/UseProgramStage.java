@@ -3,7 +3,7 @@ package org.objkt.gl.enums;
 import java.util.*;
 import org.objkt.gl.GLConstants;
 
-public enum UseProgramStageMask {
+public enum UseProgramStage {
 	VERTEX_SHADER_BIT(GLConstants.GL_VERTEX_SHADER_BIT),
 	FRAGMENT_SHADER_BIT(GLConstants.GL_FRAGMENT_SHADER_BIT),
 	GEOMETRY_SHADER_BIT(GLConstants.GL_GEOMETRY_SHADER_BIT),
@@ -12,30 +12,31 @@ public enum UseProgramStageMask {
 	COMPUTE_SHADER_BIT(GLConstants.GL_COMPUTE_SHADER_BIT),
 	ALL_SHADER_BITS(GLConstants.GL_ALL_SHADER_BITS);
 
-	UseProgramStageMask(int token) {
+	UseProgramStage(int token) {
 		this.token = token;
 	}
 
 	public final int token;
 
-	public static final UseProgramStageMask[] VALUES = values();
-	private static Map<Integer, UseProgramStageMask> getMap() {
-		Map<Integer, UseProgramStageMask> map = new HashMap<>();
-		for(UseProgramStageMask val : VALUES) map.put(val.token, val);
+	public static final UseProgramStage[] VALUES = values();
+	private static Map<Integer, UseProgramStage> getMap() {
+		Map<Integer, UseProgramStage> map = new HashMap<>();
+		for(UseProgramStage val : VALUES) map.put(val.token, val);
 		return map;
 	}
-	private static final Map<Integer, UseProgramStageMask> MAP = Collections.unmodifiableMap(getMap());
-	public static UseProgramStageMask get(int raw) { return MAP.get(raw); }
+	private static final Map<Integer, UseProgramStage> MAP = Collections.unmodifiableMap(getMap());
+	public static UseProgramStage get(int raw) { return MAP.get(raw); }
+
+	// Mask
+	public static int intMaskOf(UseProgramStage... enums) { int i = 0; for(UseProgramStage e : VALUES) i |= e.token; return i; }
 
 	public static class Mask {
 		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
 		int value;
 
-		public static Mask of(UseProgramStageMask... values) {
+		public static Mask of(UseProgramStage... enums) {
 			Mask m = MASKS.get();
-			m.value = 0;
-			for(UseProgramStageMask enm : values)
-				m.value += enm.token;
+			m.value = intMaskOf(enums);
 			return m;
 		}
 		public int value() { return value; }

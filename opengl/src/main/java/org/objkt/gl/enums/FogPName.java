@@ -23,5 +23,17 @@ public enum FogPName {
 	}
 	private static final Map<Integer, FogPName> MAP = Collections.unmodifiableMap(getMap());
 	public static FogPName get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(FogPName... enums) { int i = 0; for(FogPName e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(FogPName... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

@@ -24,5 +24,17 @@ public enum FramebufferParameterName {
 	}
 	private static final Map<Integer, FramebufferParameterName> MAP = Collections.unmodifiableMap(getMap());
 	public static FramebufferParameterName get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(FramebufferParameterName... enums) { int i = 0; for(FramebufferParameterName e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(FramebufferParameterName... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

@@ -24,5 +24,17 @@ public enum TransformFeedbackPName {
 	}
 	private static final Map<Integer, TransformFeedbackPName> MAP = Collections.unmodifiableMap(getMap());
 	public static TransformFeedbackPName get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(TransformFeedbackPName... enums) { int i = 0; for(TransformFeedbackPName e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(TransformFeedbackPName... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

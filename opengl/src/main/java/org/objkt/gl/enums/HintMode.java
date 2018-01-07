@@ -22,5 +22,17 @@ public enum HintMode {
 	}
 	private static final Map<Integer, HintMode> MAP = Collections.unmodifiableMap(getMap());
 	public static HintMode get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(HintMode... enums) { int i = 0; for(HintMode e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(HintMode... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

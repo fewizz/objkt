@@ -31,7 +31,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	
 	@Override
 	public int create() {
-		return ctx.wrap.shaderProg.create(-1);//return context.wrapper.glCreateProgram();
+		return ctx.wrap.shaderProg.create(-1);
 	}
 	
 	public void use() {
@@ -39,7 +39,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		if(!isLinked()) {
 			throw new Error("ShaderProgram is not linked");
 		}
-		ctx.wrap.shaderProg.use(getName());//context.wrapper.glUseProgram(getName());
+		ctx.wrap.shaderProg.use(getName());
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	public void attachShader(GLShader shader) {
 		checkIfGenerated();
 		
-		ctx.wrap.shaderProg.attachShader(getName(), shader.getName());//context.wrapper.glAttachShader(getName(), shader.getName());
+		ctx.wrap.shaderProg.attachShader(getName(), shader.getName());
 		shaders.add(shader);
 	}
 
@@ -77,12 +77,10 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	}
 
 	public int attribLocation(String name) {
-		//check();
 		return ctx.wrap.shaderProg.attribLoc(getName(), name);
 	}
 
 	public int getUniformLocation(String name) {
-		//check();
 		return ctx.wrap.shaderProg.uniformLoc(getName(), name);
 	}
 

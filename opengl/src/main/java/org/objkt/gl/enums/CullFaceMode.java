@@ -22,5 +22,17 @@ public enum CullFaceMode {
 	}
 	private static final Map<Integer, CullFaceMode> MAP = Collections.unmodifiableMap(getMap());
 	public static CullFaceMode get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(CullFaceMode... enums) { int i = 0; for(CullFaceMode e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(CullFaceMode... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

@@ -43,7 +43,7 @@ import org.objkt.gl.GLVertexArray;
 import org.objkt.gl.GLVertexArray.VertexAttribInfo;
 import org.objkt.gl.GLVertexBuffer;
 import org.objkt.gl.enums.BufferUsage;
-import org.objkt.gl.enums.ClearBufferMask;
+import org.objkt.gl.enums.ClearBuffer;
 import org.objkt.gl.enums.PrimitiveType;
 import org.objkt.gl.enums.ShaderType;
 import org.objkt.gl.wrapper.LWJGLGLFWContextProvider;
@@ -152,7 +152,7 @@ public class Lab {
 		vao.vertexAttribPointer(p.attribLocation("pos"), VertexAttribInfo.POS2f, vbo).enable();
 
 		while ( !glfwWindowShouldClose(window) ) {
-			gl.clear(ClearBufferMask.COLOR_BUFFER_BIT);
+			gl.clear(ClearBuffer.Mask.of(ClearBuffer.COLOR_BUFFER_BIT));
 			
 			p.use();
 			gl.drawArrays(vao, PrimitiveType.TRIANGLES, 3);

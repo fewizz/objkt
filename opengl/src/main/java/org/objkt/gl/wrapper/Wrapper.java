@@ -10,6 +10,7 @@ public abstract class Wrapper {
 	public final VertexArrayWrap vertexArray;
 	public final CoreWrap core;
 	public final FrameBuffWrap frameBuff;
+	public final QueryWrap query;
 	
 	public Wrapper() {
 		core = createCoreWrap();
@@ -19,6 +20,7 @@ public abstract class Wrapper {
 		shaderProg = createShaderProgramWrap();
 		vertexArray = createVertexArrayWrap();
 		frameBuff = createFrameBuffWrap();
+		query = createQueryWrap();
 	}
 	
 	public void preContextObjectCreatrion(){};
@@ -30,6 +32,7 @@ public abstract class Wrapper {
 	abstract ShaderProgramWrap createShaderProgramWrap();
 	abstract VertexArrayWrap createVertexArrayWrap();
 	abstract FrameBuffWrap createFrameBuffWrap();
+	abstract QueryWrap createQueryWrap();
 	public abstract API getApi();
 	
 	public static interface CoreWrap {
@@ -90,5 +93,10 @@ public abstract class Wrapper {
 	}
 	
 	public static interface FrameBuffWrap extends BindableObjWrap {
+	}
+	
+	public static interface QueryWrap extends CreatableObjWrap {
+		void begin(int target, int name);
+		void end(int target);
 	}
 }

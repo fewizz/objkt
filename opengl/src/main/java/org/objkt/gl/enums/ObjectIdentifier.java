@@ -30,5 +30,17 @@ public enum ObjectIdentifier {
 	}
 	private static final Map<Integer, ObjectIdentifier> MAP = Collections.unmodifiableMap(getMap());
 	public static ObjectIdentifier get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(ObjectIdentifier... enums) { int i = 0; for(ObjectIdentifier e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(ObjectIdentifier... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

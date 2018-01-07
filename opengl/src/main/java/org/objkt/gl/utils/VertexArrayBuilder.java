@@ -11,7 +11,6 @@ public class VertexArrayBuilder {
 	final int vertexNumber;
 	int vertex;
 	final BufferUsage usage;
-	//final Map<Integer, VertexAttribArrayBuffer> attribArrays = new HashMap<>();
 	final VertexAttribArrayBuffer[] attribs;
 
 	public VertexArrayBuilder(BufferUsage u, int p_vertexNumber, VertexAttribInfo... attribsArray) {

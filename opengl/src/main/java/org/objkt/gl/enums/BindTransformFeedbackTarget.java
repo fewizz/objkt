@@ -20,5 +20,17 @@ public enum BindTransformFeedbackTarget {
 	}
 	private static final Map<Integer, BindTransformFeedbackTarget> MAP = Collections.unmodifiableMap(getMap());
 	public static BindTransformFeedbackTarget get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(BindTransformFeedbackTarget... enums) { int i = 0; for(BindTransformFeedbackTarget e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(BindTransformFeedbackTarget... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

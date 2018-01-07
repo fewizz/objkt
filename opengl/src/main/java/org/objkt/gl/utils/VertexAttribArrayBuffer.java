@@ -1,13 +1,12 @@
 package org.objkt.gl.utils;
 
 import org.objkt.gl.GLVertexArray.VertexAttribArray;
-import org.objkt.gl.enums.BufferAccessMask;
+import org.objkt.gl.enums.BufferAccess;
 import org.objkt.memory.MemBlock;
 
 class VertexAttribArrayBuffer extends MemBlock {
 	final VertexAttribArray vaa;
 	public final MemBlock nextVertexMemoryBlock = new MemBlock();
-	int clientVertexNumber = 0;
 	
 	private VertexAttribArrayBuffer(VertexAttribArray vaa) {
 		this.vaa = vaa;
@@ -15,15 +14,13 @@ class VertexAttribArrayBuffer extends MemBlock {
 	}
 	
 	public static VertexAttribArrayBuffer map(VertexAttribArray vaa, int size) {
-		VertexAttribArrayBuffer b = new VertexAttribArrayBuffer(vaa);
-		vaa.vbo.mapRange(0, size * vaa.info.componentsBytes(), BufferAccessMask.MAP_WRITE_BIT, b);
+		VertexAttribArrayBuffer vaab = new VertexAttribArrayBuffer(vaa);
+		vaa.vbo.mapRange(0, size * vaa.info.componentsBytes(), vaab, BufferAccess.MAP_WRITE_BIT);
 		
-		return b;
+		return vaab;
 	}
 	
 	public void freeClientData() {
-		clientVertexNumber = 0;
-		
 		nextVertexMemoryBlock.free();
 		
 		if(isAllocated()) {

@@ -1,6 +1,6 @@
 package org.objkt.gl;
 
-import org.objkt.gl.enums.BufferAccessMask;
+import org.objkt.gl.enums.BufferAccess;
 import org.objkt.gl.enums.BufferTarget;
 import org.objkt.gl.enums.BufferUsage;
 import org.objkt.gl.enums.ObjectIdentifier;
@@ -73,12 +73,12 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void mapRange(long offset, long size, BufferAccessMask access, MemBlock mb) {
-		if(mappedMemBlock != null) { 
+	public void mapRange(long offset, long size, MemBlock mb, BufferAccess... access) {
+		if(mappedMemBlock != null) {
 			throw new Error("Is already mapped");
 		}
 		bind();
-		long address = ctx.wrap.buff.mapBufferRange(target.token, offset, size, access.token);//context.wrapper.glMapBufferRange(target.token, offset, size, access.token);
+		long address = ctx.wrap.buff.mapBufferRange(target.token, offset, size, BufferAccess.intMaskOf(access));//context.wrapper.glMapBufferRange(target.token, offset, size, access.token);
 		
 		if(mb.address() != address && mb.address() != MemBlock.NULL_ADDRESS)
 			mb.free();

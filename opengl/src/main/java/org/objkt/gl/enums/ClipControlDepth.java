@@ -21,5 +21,17 @@ public enum ClipControlDepth {
 	}
 	private static final Map<Integer, ClipControlDepth> MAP = Collections.unmodifiableMap(getMap());
 	public static ClipControlDepth get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(ClipControlDepth... enums) { int i = 0; for(ClipControlDepth e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(ClipControlDepth... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

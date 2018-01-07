@@ -21,5 +21,17 @@ public enum ProgramParameterPName {
 	}
 	private static final Map<Integer, ProgramParameterPName> MAP = Collections.unmodifiableMap(getMap());
 	public static ProgramParameterPName get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(ProgramParameterPName... enums) { int i = 0; for(ProgramParameterPName e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(ProgramParameterPName... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

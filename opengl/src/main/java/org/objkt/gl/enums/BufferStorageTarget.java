@@ -33,5 +33,17 @@ public enum BufferStorageTarget {
 	}
 	private static final Map<Integer, BufferStorageTarget> MAP = Collections.unmodifiableMap(getMap());
 	public static BufferStorageTarget get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(BufferStorageTarget... enums) { int i = 0; for(BufferStorageTarget e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(BufferStorageTarget... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }

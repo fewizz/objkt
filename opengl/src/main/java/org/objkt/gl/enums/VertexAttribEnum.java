@@ -28,5 +28,17 @@ public enum VertexAttribEnum {
 	}
 	private static final Map<Integer, VertexAttribEnum> MAP = Collections.unmodifiableMap(getMap());
 	public static VertexAttribEnum get(int raw) { return MAP.get(raw); }
+	public static int intMaskOf(VertexAttribEnum... enums) { int i = 0; for(VertexAttribEnum e : VALUES) i |= e.token; return i; }
 
+	public static class Mask {
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		int value;
+
+		public static Mask of(VertexAttribEnum... enums) {
+			Mask m = MASKS.get();
+			m.value = intMaskOf(enums);
+			return m;
+		}
+		public int value() { return value; }
+	}
 }
