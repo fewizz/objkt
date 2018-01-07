@@ -11,13 +11,13 @@ public abstract class GLBindableObject<SELF> extends GLObjectWithId<SELF> {
 	List<Consumer<SELF>> bindListeners;
 	Predicate<SELF> contextBindPredicate;
 	
-	public GLBindableObject(ObjectIdentifier idt) {
-		super(idt);
+	public GLBindableObject(GLContext c, ObjectIdentifier idt) {
+		super(c, idt);
 	}
 	
 	@Override
 	protected void createObject() {
-		name = gen();
+		setName(gen());
 		bind();
 	}
 	
@@ -28,8 +28,8 @@ public abstract class GLBindableObject<SELF> extends GLObjectWithId<SELF> {
 	
 	protected abstract int gen();
 	
-	public final boolean bind() {
-		check();
+	public boolean bind() {
+		//check();
 		
 		if(contextBindPredicate == null || contextBindPredicate.test(getThis())) {
 			bind0();

@@ -12,40 +12,39 @@ public abstract class GLObjectWithId<SELF> {
 	public static final int UNUSED = 0;
 	
 	final List<Consumer<SELF>> deletionListeners = new ArrayList<>();
-	GLContext context;
-	protected int name = NOT_GENERATED;
+	final GLContext context;
+	private int name = NOT_GENERATED;
 	
-	public GLObjectWithId(ObjectIdentifier idt) {
+	protected GLObjectWithId(GLContext c, ObjectIdentifier idt) {
 		this.identifier = idt;
-		preInit();
-	}
-	
-	protected void preInit() {
-		context = GLContext.current();
+		
+		context = c;
 		
 		if(context == null)
 			throw new Error("There is no GL context on this thread");
 		context.onGLObjectCreated(this);
 	}
 	
+	//public GLObjectWithId(ObjectIdentifier idt) {
+	//	this(GLContext.current(), idt);
+	//}
+	
 	protected void createObject() {
 		name = create();
 	}
 	
-	protected final void check() {
+	protected final void checkIfGenerated() {
 		if(name == UNUSED) {
 			throw new Error("Object is unused or deleted");
 		}
-		
 	}
 
 	public void delete() {
-		check();
-		deleteObject();
+		checkIfGenerated();
+		delete0();
 		
 		deletionListeners.forEach(l -> l.accept(getThis()));
 		deletionListeners.clear();
-		context = null;
 		name = UNUSED;
 	}
 
@@ -63,10 +62,10 @@ public abstract class GLObjectWithId<SELF> {
 	}
 
 	protected boolean isGenerated() {
-		return name != NOT_GENERATED;
+		return getName() != NOT_GENERATED;
 	}
 
-	protected abstract void deleteObject();
+	protected abstract void delete0();
 	
 	public void doAlwaysAfterDeletion(Consumer<SELF> action) {;
 		deletionListeners.add(action);

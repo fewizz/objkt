@@ -5,30 +5,41 @@ import java.util.function.BiConsumer;
 
 import org.objkt.gl.enums.ObjectIdentifier;
 import org.objkt.gl.enums.VertexAttribType;
-import org.objkt.gl.wrapper.GLWrapper;
+import org.objkt.gl.wrapper.Wrpv2.VertexArrayWrap;
 import org.objkt.memory.MemBlock;
 
 public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 	final HashMap<Integer, VertexAttribArray> vbos = new HashMap<>();
+	VertexArrayWrap wrap;
 	
 	public GLVertexArray() {
-		super(ObjectIdentifier.VERTEX_ARRAY);
+		this(GLContext.current());
+	}
+	
+	GLVertexArray(GLContext c) {
+		super(c, ObjectIdentifier.VERTEX_ARRAY);
 		createObject();
 	}
 	
 	@Override
+	protected void createObject() {
+		super.createObject();
+		wrap = context.v2w.vertexArray;
+	}
+	
+	@Override
 	public int gen() {
-		return context.wrapper.genVertexArray();
+		return wrap.gen();
 	}
 	
 	@Override
 	public void bind0() {
-		context.wrapper.bindVertexArray(getName());
+		wrap.bind(-1, getName());
 	}
 	
 	@Override
-	protected void deleteObject() {
-		context.wrapper.deleteVertexArray(getName());
+	protected void delete0() {
+		wrap.delete(getName());
 	}
 	
 	public void forEachAttribArray(BiConsumer<Integer, VertexAttribArray> action) {
@@ -44,9 +55,9 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 		vbo.bind();
 		
 		if(attrib.serverDataType.isIntegral)
-			context.wrapper.vertexAttribIPointer(index, attrib.components, attrib.clientDataType, 0, MemBlock.NULL_ADDRESS);
+			wrap.vertexAttribIPointer(index, attrib.components, attrib.clientDataType.token, 0, MemBlock.NULL_ADDRESS);
 		else
-			context.wrapper.vertexAttribPointer(index, attrib.components, attrib.clientDataType, attrib.normalized, 0, MemBlock.NULL_ADDRESS);
+			wrap.vertexAttribPointer(index, attrib.components, attrib.clientDataType.token, attrib.normalized, 0, MemBlock.NULL_ADDRESS);
 		
 		VertexAttribArray arr = new VertexAttribArray(index, attrib, vbo);
 		vbos.put(index, arr);
@@ -54,21 +65,17 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 	}
 	
 	public void enableVertexAttribArray(int index) {
-		if(context.supportsGL(4, 5)) {
+		/*if(context.supportsGL(4, 5)) {
 			((GLWrapper)context.wrapper).enableVertexArrayAttrib(getName(), index);
 			return;
-		}
+		}*/
 		bind();
-		context.wrapper.enableVertexAttribArray(index);
+		wrap.enableAttrib(index);
 	}
 	
 	public void disableVertexAttribArray(int index) {
-		if(context.supportsGL(4, 5)) {
-			((GLWrapper)context.wrapper).disableVertexArrayAttrib(getName(), index);
-			return;
-		}
 		bind();
-		context.wrapper.disableVertexAttribArray(index);
+		wrap.disableAttrib(index);
 	}
 	
 	@Override

@@ -1,7 +1,9 @@
 include 'memory'
 include 'opengl'
+include 'lab'
 
 project(':memory').name = 'objkt-memory'
 project(':opengl').name = 'objkt-opengl'
+project(':lab').name = 'objkt-lab'
 
 rootProject.name = 'objkt'

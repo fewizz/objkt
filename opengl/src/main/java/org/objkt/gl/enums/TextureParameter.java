@@ -3,7 +3,7 @@ package org.objkt.gl.enums;
 import java.util.*;
 import org.objkt.gl.GLConstants;
 
-public enum TextureParameterName {
+public enum TextureParameter {
 	GENERATE_MIPMAP(GLConstants.GL_GENERATE_MIPMAP),
 	TEXTURE_BORDER_COLOR(GLConstants.GL_TEXTURE_BORDER_COLOR),
 	TEXTURE_MAG_FILTER(GLConstants.GL_TEXTURE_MAG_FILTER),
@@ -32,19 +32,19 @@ public enum TextureParameterName {
 	TEXTURE_RED_SIZE(GLConstants.GL_TEXTURE_RED_SIZE),
 	TEXTURE_WIDTH(GLConstants.GL_TEXTURE_WIDTH);
 
-	TextureParameterName(int token) {
+	TextureParameter(int token) {
 		this.token = token;
 	}
 
 	public final int token;
 
-	public static final TextureParameterName[] VALUES = values();
-	private static Map<Integer, TextureParameterName> getMap() {
-		Map<Integer, TextureParameterName> map = new HashMap<>();
-		for(TextureParameterName val : VALUES) map.put(val.token, val);
+	public static final TextureParameter[] VALUES = values();
+	private static Map<Integer, TextureParameter> getMap() {
+		Map<Integer, TextureParameter> map = new HashMap<>();
+		for(TextureParameter val : VALUES) map.put(val.token, val);
 		return map;
 	}
-	private static final Map<Integer, TextureParameterName> MAP = Collections.unmodifiableMap(getMap());
-	public static TextureParameterName get(int raw) { return MAP.get(raw); }
+	private static final Map<Integer, TextureParameter> MAP = Collections.unmodifiableMap(getMap());
+	public static TextureParameter get(int raw) { return MAP.get(raw); }
 
 }

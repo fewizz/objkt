@@ -12,61 +12,50 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.objkt.gl.enums.Capability;
+import org.objkt.gl.enums.ClearBufferMask;
 import org.objkt.gl.enums.ErrorCode;
-import org.objkt.gl.wrapper.GLWrapper;
-import org.objkt.gl.wrapper.LWJGLWrapper;
 import org.objkt.gl.wrapper.LWJGLWrp;
-import org.objkt.gl.wrapper.Wrapper;
 import org.objkt.gl.wrapper.Wrpv2;
 import org.objkt.memory.MemBlock;
 
 public final class GLContext {
 	static final ThreadLocal<GLContext> CONTEXTS = new ThreadLocal<>();
+	final Thread thread;
 	final MemBlock tempMemBlock = new MemBlock(64 * Float.BYTES);
 	final EnumMap<Capability, Boolean> capabilityMap = new EnumMap<>(Capability.class);
-	final Wrapper wrapper;
 	final Wrpv2 v2w;
 	final GLTexture[] activeTextures;
 	int activeTextureUnit = 0;
-	final API glAPI;
+	final API api;
 	final int versionMajor;
 	final int versionMinor;
 	
-	enum API {
-		GL, GLES;
-	}
-	
-	public final GLTexture defaultTexture = new GLTexture(null) {
-		public GLTexture setDefaultParams() {return null;};
-		protected void createObject() {};
-		protected void preInit() {};
-		protected int getName() {return 0;}
-		protected void setName(int id) {/* nope */};
-		public void bind0() {throw new Error();};
-		public void delete() {throw new Error();};
-	};
-	
-	public final GLVertexArray defaultVertexArray = new GLVertexArray() {
-		protected void preInit() {};
+	public final GLTexture defaultTexture = new GLTexture(this, null) {
 		protected void createObject() {};
 		protected int getName() {return 0;}
 		protected void setName(int id) {/* nope */};
-		public void bind0() {throw new Error();};
+		//public void bind0() {throw new Error();};
 		public void delete() {throw new Error();};
 	};
 	
-	public final GLBuffer<?> defaultBuffer = new GLBuffer<GLBuffer<?>>(null) {
-		protected void preInit() {};
+	public final GLVertexArray defaultVertexArray = new GLVertexArray(this) {
 		protected void createObject() {};
 		protected int getName() {return 0;}
 		protected void setName(int id) {/* nope */};
-		public void bind0() {throw new Error();};
+		//public void bind0() {throw new Error();};
 		public void delete() {throw new Error();};
 	};
 	
-	public final GLShaderProgram defaultProgram = new GLShaderProgram() {
+	public final GLBuffer<?> defaultBuffer = new GLBuffer<GLBuffer<?>>(this, null) {
 		protected void createObject() {};
-		protected void preInit() {};
+		protected int getName() {return 0;}
+		protected void setName(int id) {/* nope */};
+		//public void bind0() {throw new Error();};
+		public void delete() {throw new Error();};
+	};
+	
+	public final GLShaderProgram defaultProgram = new GLShaderProgram(this) {
+		protected void createObject() {};
 		protected int getName() {return 0;}
 		protected void setName(int id) {/* nope */};
 		public void delete() {throw new Error();};
@@ -76,25 +65,33 @@ public final class GLContext {
 	GLVertexArray boundVertexArray = defaultVertexArray;
 	GLShaderProgram usingProgram = defaultProgram;
 	
-	public static void createForThisThread() {
+	public static GLContext createForThisThread() {
 		if (CONTEXTS.get() != null)
 			throw new Error("Already created");
 		
-		CONTEXTS.set(new GLContext());
+		GL.createCapabilities();
+		GLContext c = new GLContext();
+		CONTEXTS.set(c);
+		return c;
 	}
 
 	public static GLContext current() {
 		return CONTEXTS.get();
 	}
+	
+	public static boolean isThatThreadHaveSameGLContext() {
+		return false;
+	}
 
 	private GLContext() {
-		GL.createCapabilities();
-		wrapper = new LWJGLWrapper();
+		//wrapper = new LWJGLWrapper();
+		thread = Thread.currentThread();
 		v2w = new LWJGLWrp();
+		api = v2w.getApi();
 		
 		versionMajor = getInteger(GL30.GL_MAJOR_VERSION);
 		versionMinor = getInteger(GL30.GL_MINOR_VERSION);
-		glAPI = wrapper instanceof GLWrapper ? API.GL : API.GLES;
+		//glAPI = wrapper instanceof GLWrapper ? API.GL : API.GLES;
 		
 		int maxTextureUnitsAmount = getInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		activeTextures = new GLTexture[maxTextureUnitsAmount];
@@ -189,7 +186,7 @@ public final class GLContext {
 
 	void setActiveTextureUnitIndex(int index) {
 		activeTextureUnit = index;
-		wrapper.glActiveTexture(GLConstants.GL_TEXTURE0 + activeTextureUnit);
+		v2w.core.activeTexture(GLConstants.GL_TEXTURE0 + activeTextureUnit);
 	}
 
 	public static int getInteger(int pname) {
@@ -197,18 +194,22 @@ public final class GLContext {
 	}
 	
 	public ErrorCode getError() {
-		return ErrorCode.get(wrapper.glGetError());
+		return ErrorCode.get(v2w.core.getError());
 	}
 
 	public boolean supportsGL(int major, int minor) {
-		return glAPI == API.GL && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
+		return api == API.GL && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
 	}
 	
 	public boolean supportsGLES(int major, int minor) {
-		return glAPI == API.GLES && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
+		return api == API.GLES && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
 	}
 	
 	public void clearColor(float red, float green, float blue, float alpha) {
-		wrapper.glClearColor(red, green, blue, alpha);
+		v2w.core.clearColor(red, green, blue, alpha);
+	}
+	
+	public void clear(ClearBufferMask.Mask mask) {
+		v2w.core.clear(mask.value());
 	}
 }

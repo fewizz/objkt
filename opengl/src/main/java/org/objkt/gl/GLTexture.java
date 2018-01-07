@@ -1,76 +1,92 @@
 package org.objkt.gl;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_DEPTH;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_MAG_FILTER;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_MIN_FILTER;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_WIDTH;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_WRAP_S;
+import static org.objkt.gl.GLConstants.GL_TEXTURE_WRAP_T;
 
-import org.lwjgl.opengl.GL12;
 import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.TextureMagFilter;
 import org.objkt.gl.enums.TextureTarget;
+import org.objkt.gl.enums.TextureWrapMode;
 
 public abstract class GLTexture extends GLBindableObject<GLTexture> {
 	public final TextureTarget target;
 	
-	public GLTexture(TextureTarget tar) {
-		super(ObjectIdentifier.TEXTURE);
+	GLTexture(GLContext c, TextureTarget tar) {
+		super(c, ObjectIdentifier.TEXTURE);
 		this.target = tar;
 		createObject();
-		setDefaultParams();
+	}
+	
+	public GLTexture(TextureTarget tar) {
+		this(GLContext.current(), tar);
+	}
+	
+	@Override
+	protected void createObject() {
+		super.createObject();
+		wrapMode(TextureWrapMode.REPEAT);
+		filter(TextureMagFilter.NEAREST);
 	}
 
 	@Override
 	protected int gen() {
-		context.wrapper.glGenTextures(1, context.tempMemBlock.address());
-		return context.tempMemBlock.getInt(0);
+		return context.v2w.tex.gen();
 	}
 	
 	@Override
 	public void bind0() {
-		context.wrapper.glBindTexture(target.token, getName());
+		context.v2w.tex.bind(target.token, getName());
 	}
 	
 	public void bindTextureUnit(int index) {
-		check();
 		context.bindTextureUnit(this, index);
 	}
 	
 	@Override
-	protected void deleteObject() {
-		context.tempMemBlock.putInt(0, getName());
-		context.wrapper.glDeleteTextures(1, getName());
+	protected void delete0() {
+		context.v2w.tex.delete(getName());
+	}
+	
+	public void wrapMode(TextureWrapMode mode) {
+		bind();
+		parameter(GL_TEXTURE_WRAP_S, mode.token);
+		parameter(GL_TEXTURE_WRAP_T, mode.token);
+	}
+	
+	public void filter(TextureMagFilter filter) {
+		bind();
+		parameter(GL_TEXTURE_MAG_FILTER, filter.token);
+		parameter(GL_TEXTURE_MIN_FILTER, filter.token);
 	}
 
-	public GLTexture setDefaultParams() {
-		parameter(GL_TEXTURE_WRAP_S, GL_REPEAT);
-		parameter(GL_TEXTURE_WRAP_T, GL_REPEAT);
-		parameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		parameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
+	protected GLTexture parameter(int pname, int param) {
+		bind();
+		context.v2w.tex.parameteri(target.token, pname, param);
 		return getThis();
 	}
 
-	public GLTexture parameter(int pname, int param) {
+	protected GLTexture parameter(int pname, float param) {
 		bind();
-		glTexParameteri(target.token, pname, param);
-		return getThis();
-	}
-
-	public GLTexture parameter(int pname, float param) {
-		bind();
-		glTexParameterf(target.token, pname, param);
+		context.v2w.tex.parameterf(target.token, pname, param);
 		return getThis();
 	}
 	
 	public int width() {
 		bind();
-		return glGetTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
+		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
 	}
 	
 	public int height() {
 		bind();
-		return glGetTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
+		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
 	}
 	
 	public int depth() {
 		bind();
-		return glGetTexLevelParameteri(target.token, 0, GL12.GL_TEXTURE_DEPTH);
+		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_DEPTH);
 	}
 }

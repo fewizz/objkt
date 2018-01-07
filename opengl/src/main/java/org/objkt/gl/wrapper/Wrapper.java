@@ -1,7 +1,5 @@
 package org.objkt.gl.wrapper;
 
-import org.objkt.gl.enums.*;
-
 public abstract class Wrapper  {
 
 	public abstract void glActiveShaderProgram(int pipeline, int program);

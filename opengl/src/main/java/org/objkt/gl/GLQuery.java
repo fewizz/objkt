@@ -42,7 +42,7 @@ public class GLQuery extends GLObjectWithId<GLQuery> {
 	}
 
 	@Override
-	public void deleteObject() {
+	public void delete0() {
 		//GL15.glDeleteQueries(getName());
 		context.tempMemBlock.putInt(0, name);
 		context.wrapper.glDeleteQueries(1, context.tempMemBlock.address());
