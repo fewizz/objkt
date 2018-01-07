@@ -19,6 +19,10 @@ public class MemBlock {
 		allocate(bytes);
 	}
 	
+	public static MemBlock ofFloats(float... floats) {
+		return new MemBlock().allocateFloats(floats.length).putFloats(floats);
+	}
+	
 	public static long getAllocatedTotal() {
 		return allocatedTotal;
 	}
@@ -76,6 +80,10 @@ public class MemBlock {
 		return allocate(ints * Integer.BYTES);
 	}
 	
+	public MemBlock allocateFloats(int floats) {
+		return allocate(floats * Float.BYTES);
+	}
+	
 	public boolean isAllocated() {
 		return address != NULL_ADDRESS;
 	}
@@ -131,6 +139,16 @@ public class MemBlock {
 		pos *= Float.BYTES;
 		onPut(pos);
 		unsafe.putFloat(address + pos, value);
+		return this;
+	}
+	
+	public MemBlock putFloats(float... values) {
+		if(values.length > floats())
+			throw new IndexOutOfBoundsException();
+		for(int i = 0; i < values.length; i++) {
+			putFloat(i, values[i]);
+		}
+		
 		return this;
 	}
 	
@@ -226,6 +244,10 @@ public class MemBlock {
 
 	public long bytes() {
 		return bytes;
+	}
+	
+	public long floats() {
+		return bytes / Float.BYTES;
 	}
 	
 	void onPut(int pos) {

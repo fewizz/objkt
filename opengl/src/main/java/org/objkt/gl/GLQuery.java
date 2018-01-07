@@ -17,20 +17,16 @@ public class GLQuery extends GLObjectWithId<GLQuery> {
 
 	@Override
 	public int create() {
-		//return GL15.glGenQueries();
-		context.wrapper.glGenQueries(1, context.tempMemBlock.address());
-		return context.tempMemBlock.getInt(0);
+		ctx.wrapper.glGenQueries(1, ctx.tempMemBlock.address());
+		return ctx.tempMemBlock.getInt(0);
 	}
 
 	public void begin() {
-		//GL15.glBeginQuery(target, getName());
-		//context.wrapper.beginQuery(target, getName());
-		context.wrapper.glBeginQuery(target.token, name);
+		ctx.wrapper.glBeginQuery(target.token, name);
 	}
 	
 	public void end() {
-		//GL15.glEndQuery(target);
-		context.wrapper.glEndQuery(target.token);
+		ctx.wrapper.glEndQuery(target.token);
 	}
 	
 	public void getResult(int type, IntBuffer buffer) {
@@ -43,9 +39,8 @@ public class GLQuery extends GLObjectWithId<GLQuery> {
 
 	@Override
 	public void delete0() {
-		//GL15.glDeleteQueries(getName());
-		context.tempMemBlock.putInt(0, name);
-		context.wrapper.glDeleteQueries(1, context.tempMemBlock.address());
+		ctx.tempMemBlock.putInt(0, name);
+		ctx.wrapper.glDeleteQueries(1, ctx.tempMemBlock.address());
 	}
 
 }

@@ -14,6 +14,11 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		this(GLContext.current(), target);
 	}
 	
+	public GLBuffer(BufferTarget target, BufferUsage usage, MemBlock b) {
+		this(target);
+		data(b, usage);
+	}
+	
 	GLBuffer(GLContext c, BufferTarget target) {
 		super(c, ObjectIdentifier.BUFFER);
 		this.target = target;
@@ -22,12 +27,12 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 
 	@Override
 	public int gen() {
-		return context.v2w.buff.gen();
+		return ctx.wrap.buff.gen();
 	}
 
 	@Override
 	public void bind0() {
-		context.v2w.buff.bind(target.token, getName());
+		ctx.wrap.buff.bind(target.token, getName());
 	}
 
 	public SELF allocate(long bytes, BufferUsage usage) {
@@ -35,6 +40,10 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		return getThis();
 	}
 
+	public void data(MemBlock mem, BufferUsage usage) {
+		data(mem.bytes(), mem.address(), usage);
+	}
+	
 	public void data(long size, long address, BufferUsage usage) {
 		/*check();
 
@@ -46,7 +55,8 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 
 		bind();*/
 		//context.wrapper.glBufferData(target.token, size, address, usage.token);
-		context.v2w.buff.data(target.token, size, address, usage.token);
+		bind();
+		ctx.wrap.buff.data(target.token, size, address, usage.token);
 	}
 
 	public void subData(long offset, long size, long address) {
@@ -58,7 +68,8 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		 
 		bind();
 		context.wrapper.glBufferSubData(target.token, offset, size, address);*/
-		context.v2w.buff.subData(target.token, offset, size, address);
+		bind();
+		ctx.wrap.buff.subData(target.token, offset, size, address);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -67,7 +78,7 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 			throw new Error("Is already mapped");
 		}
 		bind();
-		long address = context.v2w.buff.mapBufferRange(target.token, offset, size, access.token);//context.wrapper.glMapBufferRange(target.token, offset, size, access.token);
+		long address = ctx.wrap.buff.mapBufferRange(target.token, offset, size, access.token);//context.wrapper.glMapBufferRange(target.token, offset, size, access.token);
 		
 		if(mb.address() != address && mb.address() != MemBlock.NULL_ADDRESS)
 			mb.free();
@@ -80,13 +91,13 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		mappedMemBlock.capture(MemBlock.NULL_ADDRESS, 0);
 		mappedMemBlock = null;
 		bind();
-		context.v2w.buff.unmap(target.token);//context.wrapper.glUnmapBuffer(target.token);
+		ctx.wrap.buff.unmap(target.token);//context.wrapper.glUnmapBuffer(target.token);
 	}
 
 	@Override
 	public void delete0() {
 		/*context.tempMemBlock.putInt(0, getName());
 		context.wrapper.glDeleteBuffers(1, context.tempMemBlock.address());*/
-		context.v2w.buff.delete(getName());
+		ctx.wrap.buff.delete(getName());
 	}
 }

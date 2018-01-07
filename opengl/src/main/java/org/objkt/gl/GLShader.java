@@ -19,9 +19,15 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		createObject();
 	}
 	
+	public GLShader(ShaderType type, String src) {
+		this(type);
+		source(src);
+		compile();
+	}
+	
 	@Override
 	public void delete0() {
-		context.v2w.shader.delete(getName());//context.wrapper.deleteShader(getName());
+		ctx.wrap.shader.delete(getName());//context.wrapper.deleteShader(getName());
 	}
 
 	public GLShader source(String source) {
@@ -30,13 +36,13 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		this.source = source;
 		//GL20.glShaderSource(getName(), source);
 		//context.wrapper.shaderSource(getName(), source);
-		context.v2w.shader.source(getName(), source);
+		ctx.wrap.shader.source(getName(), source);
 		return this;
 	}
 
 	@Override
 	public int create() {
-		return context.v2w.shader.create(type.token);//return context.wrapper.createShader(type);
+		return ctx.wrap.shader.create(type.token);//return context.wrapper.createShader(type);
 	}
 
 	public GLShader compile() {

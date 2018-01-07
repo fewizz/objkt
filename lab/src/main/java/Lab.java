@@ -1,6 +1,11 @@
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
@@ -33,7 +38,17 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.objkt.gl.GLContext;
+import org.objkt.gl.GLShaderProgram;
+import org.objkt.gl.GLVertexArray;
+import org.objkt.gl.GLVertexArray.VertexAttribInfo;
+import org.objkt.gl.GLVertexBuffer;
+import org.objkt.gl.enums.BufferUsage;
 import org.objkt.gl.enums.ClearBufferMask;
+import org.objkt.gl.enums.PrimitiveType;
+import org.objkt.gl.enums.ShaderType;
+import org.objkt.gl.wrapper.LWJGLGLFWContextProvider;
+import org.objkt.gl.wrapper.LWJGLWrapper;
+import org.objkt.memory.MemBlock;
 
 public class Lab {
 
@@ -66,6 +81,10 @@ public class Lab {
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Create the window
 		window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
@@ -107,25 +126,38 @@ public class Lab {
 	}
 
 	private void loop() {
-		// This line is critical for LWJGL's interoperation with GLFW's
-		// OpenGL context, or any context that is managed externally.
-		// LWJGL detects the context that is current in the current thread,
-		// creates the GLCapabilities instance and makes the OpenGL
-		// bindings available for use.
-		GLContext gl = GLContext.createForThisThread();
+		GLContext gl = GLContext.createForThisThread(new LWJGLGLFWContextProvider(window), new LWJGLWrapper());
 
-		// Set the clear color
-		gl.clearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		gl.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		
+		GLShaderProgram p = new GLShaderProgram(		
+				ShaderType.VERTEX_SHADER,
+				  "attribute vec2 pos;"
+				+ "void main() {"
+				+ "	gl_Position = vec4(pos, 0., 1.);"
+				+ "}",
+				
+				ShaderType.FRAGMENT_SHADER,
+				"void main() {"
+				+ "	gl_FragColor = vec4(0., 1., 0., 1.);"
+				+ "}");
+		
+		GLVertexBuffer vbo = new GLVertexBuffer(MemBlock.ofFloats(
+				-1, -1,
+				1, 1,
+				-1, 1),
+				BufferUsage.STATIC_DRAW);
+		
+		GLVertexArray vao = new GLVertexArray();
+		vao.vertexAttribPointer(p.attribLocation("pos"), VertexAttribInfo.POS2f, vbo).enable();
 
-		// Run the rendering loop until the user has attempted to close
-		// the window or has pressed the ESCAPE key.
 		while ( !glfwWindowShouldClose(window) ) {
-			gl.clear(ClearBufferMask.Mask.of(ClearBufferMask.COLOR_BUFFER_BIT)); // clear the framebuffer
-
-			glfwSwapBuffers(window); // swap the color buffers
-
-			// Poll for window events. The key callback above will only be
-			// invoked during this call.
+			gl.clear(ClearBufferMask.COLOR_BUFFER_BIT);
+			
+			p.use();
+			gl.drawArrays(vao, PrimitiveType.TRIANGLES, 3);
+			
+			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 	}

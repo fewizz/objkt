@@ -8,21 +8,22 @@ import org.objkt.gl.enums.ObjectIdentifier;
 
 public abstract class GLObjectWithId<SELF> {
 	public final ObjectIdentifier identifier;
+	String label;
 	public static final int NOT_GENERATED = -1;
 	public static final int UNUSED = 0;
 	
 	final List<Consumer<SELF>> deletionListeners = new ArrayList<>();
-	final GLContext context;
+	final GLContext ctx;
 	private int name = NOT_GENERATED;
 	
 	protected GLObjectWithId(GLContext c, ObjectIdentifier idt) {
 		this.identifier = idt;
 		
-		context = c;
+		ctx = c;
 		
-		if(context == null)
+		if(ctx == null)
 			throw new Error("There is no GL context on this thread");
-		context.onGLObjectCreated(this);
+		ctx.onGLObjectCreated(this);
 	}
 	
 	//public GLObjectWithId(ObjectIdentifier idt) {
@@ -54,6 +55,14 @@ public abstract class GLObjectWithId<SELF> {
 	
 	protected void setName(int name) {
 		this.name = name;
+	}
+	
+	public void setLabel(String label) {
+		
+	}
+	
+	public String getLabel() {
+		return label;
 	}
 
 	@SuppressWarnings("unchecked")

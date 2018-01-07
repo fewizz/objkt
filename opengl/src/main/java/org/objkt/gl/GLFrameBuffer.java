@@ -6,25 +6,26 @@ import org.objkt.gl.enums.ObjectIdentifier;
 public class GLFrameBuffer extends GLBindableObject<GLFrameBuffer> {
 	public final FramebufferTarget target;
 	
-	public GLFrameBuffer(FramebufferTarget target) {
-		super(ObjectIdentifier.FRAMEBUFFER);
+	
+	GLFrameBuffer(GLContext c, FramebufferTarget target) {
+		super(c, ObjectIdentifier.FRAMEBUFFER);
 		this.target = target;
 		createObject();
 	}
 
 	@Override
 	public void bind0() {
-		context.v2w.frameBuff.bind(target.token, getName());
+		ctx.wrap.frameBuff.bind(target.token, getName());
 	}
 
 	@Override
 	protected int gen() {
-		return context.v2w.frameBuff.gen();
+		return ctx.wrap.frameBuff.gen();
 	}
 
 	@Override
 	protected void delete0() {
-		context.v2w.frameBuff.delete(getName());
+		ctx.wrap.frameBuff.delete(getName());
 	}
 	
 	/*public void texture(FramebufferAttachment attachment, GLTexture tex, int level) {

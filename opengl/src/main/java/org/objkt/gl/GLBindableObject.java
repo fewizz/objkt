@@ -28,7 +28,7 @@ public abstract class GLBindableObject<SELF> extends GLObjectWithId<SELF> {
 	
 	protected abstract int gen();
 	
-	public boolean bind() {
+	protected boolean bind() {
 		//check();
 		
 		if(contextBindPredicate == null || contextBindPredicate.test(getThis())) {

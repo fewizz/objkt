@@ -34,21 +34,21 @@ public abstract class GLTexture extends GLBindableObject<GLTexture> {
 
 	@Override
 	protected int gen() {
-		return context.v2w.tex.gen();
+		return ctx.wrap.tex.gen();
 	}
 	
 	@Override
 	public void bind0() {
-		context.v2w.tex.bind(target.token, getName());
+		ctx.wrap.tex.bind(target.token, getName());
 	}
 	
 	public void bindTextureUnit(int index) {
-		context.bindTextureUnit(this, index);
+		ctx.bindTextureUnit(this, index);
 	}
 	
 	@Override
 	protected void delete0() {
-		context.v2w.tex.delete(getName());
+		ctx.wrap.tex.delete(getName());
 	}
 	
 	public void wrapMode(TextureWrapMode mode) {
@@ -65,28 +65,28 @@ public abstract class GLTexture extends GLBindableObject<GLTexture> {
 
 	protected GLTexture parameter(int pname, int param) {
 		bind();
-		context.v2w.tex.parameteri(target.token, pname, param);
+		ctx.wrap.tex.parameteri(target.token, pname, param);
 		return getThis();
 	}
 
 	protected GLTexture parameter(int pname, float param) {
 		bind();
-		context.v2w.tex.parameterf(target.token, pname, param);
+		ctx.wrap.tex.parameterf(target.token, pname, param);
 		return getThis();
 	}
 	
 	public int width() {
 		bind();
-		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
+		return ctx.wrap.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
 	}
 	
 	public int height() {
 		bind();
-		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
+		return ctx.wrap.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_WIDTH);
 	}
 	
 	public int depth() {
 		bind();
-		return context.v2w.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_DEPTH);
+		return ctx.wrap.tex.getTexLevelParameteri(target.token, 0, GL_TEXTURE_DEPTH);
 	}
 }

@@ -2,20 +2,20 @@ package org.objkt.gl;
 
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glGetInteger;
 import static org.lwjgl.opengl.GL11.glIsEnabled;
 
 import java.util.Arrays;
 import java.util.EnumMap;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import org.objkt.gl.enums.Capability;
 import org.objkt.gl.enums.ClearBufferMask;
 import org.objkt.gl.enums.ErrorCode;
-import org.objkt.gl.wrapper.LWJGLWrp;
-import org.objkt.gl.wrapper.Wrpv2;
+import org.objkt.gl.enums.GetPName;
+import org.objkt.gl.enums.PrimitiveType;
+import org.objkt.gl.enums.StringName;
+import org.objkt.gl.wrapper.ContextProvider;
+import org.objkt.gl.wrapper.LWJGLWrapper;
+import org.objkt.gl.wrapper.Wrapper;
 import org.objkt.memory.MemBlock;
 
 public final class GLContext {
@@ -23,7 +23,7 @@ public final class GLContext {
 	final Thread thread;
 	final MemBlock tempMemBlock = new MemBlock(64 * Float.BYTES);
 	final EnumMap<Capability, Boolean> capabilityMap = new EnumMap<>(Capability.class);
-	final Wrpv2 v2w;
+	final Wrapper wrap;
 	final GLTexture[] activeTextures;
 	int activeTextureUnit = 0;
 	final API api;
@@ -65,11 +65,11 @@ public final class GLContext {
 	GLVertexArray boundVertexArray = defaultVertexArray;
 	GLShaderProgram usingProgram = defaultProgram;
 	
-	public static GLContext createForThisThread() {
+	public static GLContext createForThisThread(ContextProvider cp, Wrapper wrapper) {
 		if (CONTEXTS.get() != null)
 			throw new Error("Already created");
 		
-		GL.createCapabilities();
+		wrapper.preContextObjectCreatrion();
 		GLContext c = new GLContext();
 		CONTEXTS.set(c);
 		return c;
@@ -84,16 +84,14 @@ public final class GLContext {
 	}
 
 	private GLContext() {
-		//wrapper = new LWJGLWrapper();
 		thread = Thread.currentThread();
-		v2w = new LWJGLWrp();
-		api = v2w.getApi();
+		wrap = new LWJGLWrapper();
+		api = wrap.getApi();
 		
-		versionMajor = getInteger(GL30.GL_MAJOR_VERSION);
-		versionMinor = getInteger(GL30.GL_MINOR_VERSION);
-		//glAPI = wrapper instanceof GLWrapper ? API.GL : API.GLES;
+		versionMajor = getInteger(GLConstants.GL_MAJOR_VERSION);
+		versionMinor = getInteger(GLConstants.GL_MINOR_VERSION);
 		
-		int maxTextureUnitsAmount = getInteger(GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		int maxTextureUnitsAmount = getInteger(GLConstants.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		activeTextures = new GLTexture[maxTextureUnitsAmount];
 		Arrays.fill(activeTextures, defaultTexture);
 		
@@ -123,28 +121,6 @@ public final class GLContext {
 				boundTexture = t;
 			});
 		}
-		
-		//if(bindable instanceof GLVertexArray) {
-		//	bindable.bindOnlyIf(vao -> boundVertexArray != vao);
-		//	((GLVertexArray)bindable).doAlwaysAfterBind(vao -> boundVertexArray = vao);
-		//}
-	}
-	
-	//void onObjectBound() {
-	//	
-	//}
-	
-	boolean bindRequest(GLObjectWithId<?> o) {
-		switch (o.identifier) {
-			case PROGRAM :
-				return usingProgram != o;
-			case VERTEX_ARRAY :
-				return boundVertexArray != o;
-		default:
-			break;
-		}
-		
-		return true;
 	}
 	
 	public void set(Capability cap, boolean bool) {
@@ -186,30 +162,47 @@ public final class GLContext {
 
 	void setActiveTextureUnitIndex(int index) {
 		activeTextureUnit = index;
-		v2w.core.activeTexture(GLConstants.GL_TEXTURE0 + activeTextureUnit);
+		wrap.core.activeTexture(GLConstants.GL_TEXTURE0 + activeTextureUnit);
 	}
 
-	public static int getInteger(int pname) {
-		return glGetInteger(pname);
+	public int getInteger(GetPName pname) {
+		return getInteger(pname.token);
+	}
+	
+	public int getInteger(int pname) {
+		return wrap.core.getInteger(pname);
+	}
+	
+	public String getString(StringName pname) {
+		return wrap.core.getString(pname.token);
 	}
 	
 	public ErrorCode getError() {
-		return ErrorCode.get(v2w.core.getError());
-	}
-
-	public boolean supportsGL(int major, int minor) {
-		return api == API.GL && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
-	}
-	
-	public boolean supportsGLES(int major, int minor) {
-		return api == API.GLES && this.versionMajor > major ? true : (this.versionMajor == major && this.versionMinor >= minor);
+		return ErrorCode.get(wrap.core.getError());
 	}
 	
 	public void clearColor(float red, float green, float blue, float alpha) {
-		v2w.core.clearColor(red, green, blue, alpha);
+		wrap.core.clearColor(red, green, blue, alpha);
 	}
 	
-	public void clear(ClearBufferMask.Mask mask) {
-		v2w.core.clear(mask.value());
+	public void clear(ClearBufferMask... mask) {
+		wrap.core.clear(ClearBufferMask.Mask.of(mask).value());
+	}
+	
+	public void drawArrays(PrimitiveType mode, int count) {
+		drawArrays(mode, 0, count);
+	}
+	
+	public void drawArrays(GLVertexArray vao, PrimitiveType mode, int count) {
+		vao.bind();
+		drawArrays(mode, 0, count);
+	}
+	
+	public void drawArrays(PrimitiveType mode, int first, int count) {
+		wrap.core.drawArrays(mode.token, first, count);
+	}
+	
+	public void viewPort(int x, int y, int w, int h) {
+		
 	}
 }

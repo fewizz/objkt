@@ -5,12 +5,10 @@ import java.util.function.BiConsumer;
 
 import org.objkt.gl.enums.ObjectIdentifier;
 import org.objkt.gl.enums.VertexAttribType;
-import org.objkt.gl.wrapper.Wrpv2.VertexArrayWrap;
 import org.objkt.memory.MemBlock;
 
 public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 	final HashMap<Integer, VertexAttribArray> vbos = new HashMap<>();
-	VertexArrayWrap wrap;
 	
 	public GLVertexArray() {
 		this(GLContext.current());
@@ -22,24 +20,18 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 	}
 	
 	@Override
-	protected void createObject() {
-		super.createObject();
-		wrap = context.v2w.vertexArray;
-	}
-	
-	@Override
 	public int gen() {
-		return wrap.gen();
+		return ctx.wrap.vertexArray.gen();
 	}
 	
 	@Override
 	public void bind0() {
-		wrap.bind(-1, getName());
+		ctx.wrap.vertexArray.bind(-1, getName());
 	}
 	
 	@Override
 	protected void delete0() {
-		wrap.delete(getName());
+		ctx.wrap.vertexArray.delete(getName());
 	}
 	
 	public void forEachAttribArray(BiConsumer<Integer, VertexAttribArray> action) {
@@ -55,9 +47,9 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 		vbo.bind();
 		
 		if(attrib.serverDataType.isIntegral)
-			wrap.vertexAttribIPointer(index, attrib.components, attrib.clientDataType.token, 0, MemBlock.NULL_ADDRESS);
+			ctx.wrap.vertexArray.vertexAttribIPointer(index, attrib.components, attrib.clientDataType.token, 0, MemBlock.NULL_ADDRESS);
 		else
-			wrap.vertexAttribPointer(index, attrib.components, attrib.clientDataType.token, attrib.normalized, 0, MemBlock.NULL_ADDRESS);
+			ctx.wrap.vertexArray.vertexAttribPointer(index, attrib.components, attrib.clientDataType.token, attrib.normalized, 0, MemBlock.NULL_ADDRESS);
 		
 		VertexAttribArray arr = new VertexAttribArray(index, attrib, vbo);
 		vbos.put(index, arr);
@@ -70,12 +62,12 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 			return;
 		}*/
 		bind();
-		wrap.enableAttrib(index);
+		ctx.wrap.vertexArray.enableAttrib(index);
 	}
 	
 	public void disableVertexAttribArray(int index) {
 		bind();
-		wrap.disableAttrib(index);
+		ctx.wrap.vertexArray.disableAttrib(index);
 	}
 	
 	@Override
@@ -133,6 +125,7 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 		
 		public static final VertexAttribInfo
 			POS3f = floatType(VertexAttribType.FLOAT, 3, false),
+			POS2f = floatType(VertexAttribType.FLOAT, 2, false),
 			NORMAL3f = floatType(VertexAttribType.FLOAT, 3, false),
 			COLOR4ub = floatType(VertexAttribType.UNSIGNED_BYTE, 4, true),
 			UV2f = floatType(VertexAttribType.FLOAT, 2, false);

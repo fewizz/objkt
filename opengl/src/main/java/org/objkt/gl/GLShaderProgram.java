@@ -7,6 +7,7 @@ import java.util.Set;
 import org.lwjgl.opengl.GL20;
 import org.objkt.gl.enums.ObjectIdentifier;
 import org.objkt.gl.enums.ProgramPropertyARB;
+import org.objkt.gl.enums.ShaderType;
 import org.objkt.memory.MemBlock;
 
 public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
@@ -22,9 +23,15 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		createObject();
 	}
 	
+	public GLShaderProgram(ShaderType t1, String src1, ShaderType t2, String src2) {
+		this();
+		attachShaders(new GLShader(t1, src1), new GLShader(t2, src2));
+		link();
+	}
+	
 	@Override
 	public int create() {
-		return context.v2w.shaderProg.create(-1);//return context.wrapper.glCreateProgram();
+		return ctx.wrap.shaderProg.create(-1);//return context.wrapper.glCreateProgram();
 	}
 	
 	public void use() {
@@ -32,18 +39,18 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		if(!isLinked()) {
 			throw new Error("ShaderProgram is not linked");
 		}
-		context.v2w.shaderProg.use(getName());//context.wrapper.glUseProgram(getName());
+		ctx.wrap.shaderProg.use(getName());//context.wrapper.glUseProgram(getName());
 	}
 	
 	@Override
 	public void delete0() {
-		context.v2w.shaderProg.delete(getName());
+		ctx.wrap.shaderProg.delete(getName());
 	}
 
 	public void attachShader(GLShader shader) {
 		checkIfGenerated();
 		
-		context.v2w.shaderProg.attachShader(getName(), shader.getName());//context.wrapper.glAttachShader(getName(), shader.getName());
+		ctx.wrap.shaderProg.attachShader(getName(), shader.getName());//context.wrapper.glAttachShader(getName(), shader.getName());
 		shaders.add(shader);
 	}
 
@@ -55,9 +62,9 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	public void link() {
 		checkIfGenerated();
 		
-		context.v2w.shaderProg.link(getName());
+		ctx.wrap.shaderProg.link(getName());
 
-		if (context.v2w.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
+		if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
 			System.err.println("Program is not compiled! Error message:");
 			System.err.println(GL20.glGetProgramInfoLog(getName()));
 		}
@@ -69,19 +76,19 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		return linked;
 	}
 
-	public int getAttributeLocation(String name) {
+	public int attribLocation(String name) {
 		//check();
-		return context.v2w.shaderProg.attribLoc(getName(), name);
+		return ctx.wrap.shaderProg.attribLoc(getName(), name);
 	}
 
 	public int getUniformLocation(String name) {
 		//check();
-		return context.v2w.shaderProg.uniformLoc(getName(), name);
+		return ctx.wrap.shaderProg.uniformLoc(getName(), name);
 	}
 
 	public void setUniformInt(int location, int value) {
 		use();
-		GL20.glUniform1i(getName(), value);
+		GL20.glUniform1i(location, value);
 	}
 
 	/*public void setUniformMatrix4f(int location, Matrix4f mat) {
