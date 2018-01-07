@@ -33,17 +33,4 @@ public enum ClipPlaneName {
 	}
 	private static final Map<Integer, ClipPlaneName> MAP = Collections.unmodifiableMap(getMap());
 	public static ClipPlaneName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(ClipPlaneName... enums) { int i = 0; for(ClipPlaneName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(ClipPlaneName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

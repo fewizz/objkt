@@ -22,17 +22,4 @@ public enum TextureWrapMode {
 	}
 	private static final Map<Integer, TextureWrapMode> MAP = Collections.unmodifiableMap(getMap());
 	public static TextureWrapMode get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(TextureWrapMode... enums) { int i = 0; for(TextureWrapMode e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(TextureWrapMode... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

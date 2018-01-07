@@ -23,17 +23,4 @@ public enum DebugSeverity {
 	}
 	private static final Map<Integer, DebugSeverity> MAP = Collections.unmodifiableMap(getMap());
 	public static DebugSeverity get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(DebugSeverity... enums) { int i = 0; for(DebugSeverity e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(DebugSeverity... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

@@ -29,17 +29,4 @@ public enum DebugType {
 	}
 	private static final Map<Integer, DebugType> MAP = Collections.unmodifiableMap(getMap());
 	public static DebugType get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(DebugType... enums) { int i = 0; for(DebugType e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(DebugType... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

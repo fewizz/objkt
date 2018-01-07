@@ -23,17 +23,4 @@ public enum SubroutineParameterName {
 	}
 	private static final Map<Integer, SubroutineParameterName> MAP = Collections.unmodifiableMap(getMap());
 	public static SubroutineParameterName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(SubroutineParameterName... enums) { int i = 0; for(SubroutineParameterName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(SubroutineParameterName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

@@ -21,17 +21,4 @@ public enum TextureMagFilter {
 	}
 	private static final Map<Integer, TextureMagFilter> MAP = Collections.unmodifiableMap(getMap());
 	public static TextureMagFilter get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(TextureMagFilter... enums) { int i = 0; for(TextureMagFilter e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(TextureMagFilter... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

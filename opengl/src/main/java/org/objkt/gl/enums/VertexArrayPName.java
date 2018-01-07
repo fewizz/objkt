@@ -28,17 +28,4 @@ public enum VertexArrayPName {
 	}
 	private static final Map<Integer, VertexArrayPName> MAP = Collections.unmodifiableMap(getMap());
 	public static VertexArrayPName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(VertexArrayPName... enums) { int i = 0; for(VertexArrayPName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(VertexArrayPName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

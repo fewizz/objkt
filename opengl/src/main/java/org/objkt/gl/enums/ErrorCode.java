@@ -27,17 +27,4 @@ public enum ErrorCode {
 	}
 	private static final Map<Integer, ErrorCode> MAP = Collections.unmodifiableMap(getMap());
 	public static ErrorCode get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(ErrorCode... enums) { int i = 0; for(ErrorCode e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(ErrorCode... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

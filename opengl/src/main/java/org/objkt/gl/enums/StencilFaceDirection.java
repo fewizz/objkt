@@ -22,17 +22,4 @@ public enum StencilFaceDirection {
 	}
 	private static final Map<Integer, StencilFaceDirection> MAP = Collections.unmodifiableMap(getMap());
 	public static StencilFaceDirection get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(StencilFaceDirection... enums) { int i = 0; for(StencilFaceDirection e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(StencilFaceDirection... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

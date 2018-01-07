@@ -185,8 +185,8 @@ public final class GLContext {
 		wrap.core.clearColor(red, green, blue, alpha);
 	}
 	
-	public void clear(ClearBuffer.Mask mask) {
-		wrap.core.clear(mask.value());
+	public void clear(ClearBuffer... mask) {
+		wrap.core.clear(ClearBuffer.intMaskOf(mask));
 	}
 	
 	public void drawArrays(PrimitiveType mode, int count) {

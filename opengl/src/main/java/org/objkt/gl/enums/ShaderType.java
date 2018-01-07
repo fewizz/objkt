@@ -25,17 +25,4 @@ public enum ShaderType {
 	}
 	private static final Map<Integer, ShaderType> MAP = Collections.unmodifiableMap(getMap());
 	public static ShaderType get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(ShaderType... enums) { int i = 0; for(ShaderType e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(ShaderType... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

@@ -31,17 +31,4 @@ public enum GetTextureParameter {
 	}
 	private static final Map<Integer, GetTextureParameter> MAP = Collections.unmodifiableMap(getMap());
 	public static GetTextureParameter get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(GetTextureParameter... enums) { int i = 0; for(GetTextureParameter e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(GetTextureParameter... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

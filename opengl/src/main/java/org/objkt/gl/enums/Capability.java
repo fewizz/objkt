@@ -57,17 +57,4 @@ public enum Capability {
 	}
 	private static final Map<Integer, Capability> MAP = Collections.unmodifiableMap(getMap());
 	public static Capability get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(Capability... enums) { int i = 0; for(Capability e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(Capability... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

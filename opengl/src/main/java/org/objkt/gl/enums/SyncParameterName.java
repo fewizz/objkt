@@ -23,17 +23,4 @@ public enum SyncParameterName {
 	}
 	private static final Map<Integer, SyncParameterName> MAP = Collections.unmodifiableMap(getMap());
 	public static SyncParameterName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(SyncParameterName... enums) { int i = 0; for(SyncParameterName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(SyncParameterName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

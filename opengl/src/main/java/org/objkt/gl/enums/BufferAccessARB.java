@@ -22,17 +22,4 @@ public enum BufferAccessARB {
 	}
 	private static final Map<Integer, BufferAccessARB> MAP = Collections.unmodifiableMap(getMap());
 	public static BufferAccessARB get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(BufferAccessARB... enums) { int i = 0; for(BufferAccessARB e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(BufferAccessARB... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

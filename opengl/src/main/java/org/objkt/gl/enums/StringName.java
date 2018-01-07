@@ -24,17 +24,4 @@ public enum StringName {
 	}
 	private static final Map<Integer, StringName> MAP = Collections.unmodifiableMap(getMap());
 	public static StringName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(StringName... enums) { int i = 0; for(StringName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(StringName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

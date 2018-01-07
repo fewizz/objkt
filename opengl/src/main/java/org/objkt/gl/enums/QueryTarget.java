@@ -25,17 +25,4 @@ public enum QueryTarget {
 	}
 	private static final Map<Integer, QueryTarget> MAP = Collections.unmodifiableMap(getMap());
 	public static QueryTarget get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(QueryTarget... enums) { int i = 0; for(QueryTarget e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(QueryTarget... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

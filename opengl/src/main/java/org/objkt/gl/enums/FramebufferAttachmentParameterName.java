@@ -32,17 +32,4 @@ public enum FramebufferAttachmentParameterName {
 	}
 	private static final Map<Integer, FramebufferAttachmentParameterName> MAP = Collections.unmodifiableMap(getMap());
 	public static FramebufferAttachmentParameterName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(FramebufferAttachmentParameterName... enums) { int i = 0; for(FramebufferAttachmentParameterName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(FramebufferAttachmentParameterName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

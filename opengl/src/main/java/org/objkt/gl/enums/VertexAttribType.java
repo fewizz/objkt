@@ -36,17 +36,4 @@ public enum VertexAttribType {
 	}
 	private static final Map<Integer, VertexAttribType> MAP = Collections.unmodifiableMap(getMap());
 	public static VertexAttribType get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(VertexAttribType... enums) { int i = 0; for(VertexAttribType e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(VertexAttribType... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

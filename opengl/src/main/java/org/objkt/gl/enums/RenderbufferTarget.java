@@ -20,17 +20,4 @@ public enum RenderbufferTarget {
 	}
 	private static final Map<Integer, RenderbufferTarget> MAP = Collections.unmodifiableMap(getMap());
 	public static RenderbufferTarget get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(RenderbufferTarget... enums) { int i = 0; for(RenderbufferTarget e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(RenderbufferTarget... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

@@ -22,17 +22,4 @@ public enum Buffer {
 	}
 	private static final Map<Integer, Buffer> MAP = Collections.unmodifiableMap(getMap());
 	public static Buffer get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(Buffer... enums) { int i = 0; for(Buffer e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(Buffer... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

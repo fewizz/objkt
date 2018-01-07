@@ -25,17 +25,4 @@ public enum GetPointervPName {
 	}
 	private static final Map<Integer, GetPointervPName> MAP = Collections.unmodifiableMap(getMap());
 	public static GetPointervPName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(GetPointervPName... enums) { int i = 0; for(GetPointervPName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(GetPointervPName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

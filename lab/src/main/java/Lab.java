@@ -152,7 +152,7 @@ public class Lab {
 		vao.vertexAttribPointer(p.attribLocation("pos"), VertexAttribInfo.POS2f, vbo).enable();
 
 		while ( !glfwWindowShouldClose(window) ) {
-			gl.clear(ClearBuffer.Mask.of(ClearBuffer.COLOR_BUFFER_BIT));
+			gl.clear(ClearBuffer.COLOR_BUFFER_BIT);
 			
 			p.use();
 			gl.drawArrays(vao, PrimitiveType.TRIANGLES, 3);

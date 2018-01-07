@@ -27,17 +27,4 @@ public enum StencilFunction {
 	}
 	private static final Map<Integer, StencilFunction> MAP = Collections.unmodifiableMap(getMap());
 	public static StencilFunction get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(StencilFunction... enums) { int i = 0; for(StencilFunction e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(StencilFunction... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

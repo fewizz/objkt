@@ -29,17 +29,4 @@ public enum AtomicCounterBufferPName {
 	}
 	private static final Map<Integer, AtomicCounterBufferPName> MAP = Collections.unmodifiableMap(getMap());
 	public static AtomicCounterBufferPName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(AtomicCounterBufferPName... enums) { int i = 0; for(AtomicCounterBufferPName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(AtomicCounterBufferPName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }

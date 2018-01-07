@@ -23,17 +23,4 @@ public enum ProgramInterfacePName {
 	}
 	private static final Map<Integer, ProgramInterfacePName> MAP = Collections.unmodifiableMap(getMap());
 	public static ProgramInterfacePName get(int raw) { return MAP.get(raw); }
-	public static int intMaskOf(ProgramInterfacePName... enums) { int i = 0; for(ProgramInterfacePName e : VALUES) i |= e.token; return i; }
-
-	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
-		int value;
-
-		public static Mask of(ProgramInterfacePName... enums) {
-			Mask m = MASKS.get();
-			m.value = intMaskOf(enums);
-			return m;
-		}
-		public int value() { return value; }
-	}
 }
