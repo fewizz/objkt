@@ -13,9 +13,7 @@ import org.objkt.gl.enums.ErrorCode;
 import org.objkt.gl.enums.GetPName;
 import org.objkt.gl.enums.PrimitiveType;
 import org.objkt.gl.enums.StringName;
-import org.objkt.gl.wrapper.ContextProvider;
-import org.objkt.gl.wrapper.LWJGLWrapper;
-import org.objkt.gl.wrapper.Wrapper;
+import org.objkt.gl.wrapper.*;
 import org.objkt.memory.MemBlock;
 
 public final class GLContext {
@@ -202,7 +200,11 @@ public final class GLContext {
 		wrap.core.drawArrays(mode.token, first, count);
 	}
 	
-	public void viewPort(int x, int y, int w, int h) {
-		
+	public void viewport(int x, int y, int w, int h) {
+		wrap.core.viewport(x, y, w, h);
+	}
+	
+	public void dedugMessageCallback(DebugMessageCallback callback) {
+		wrap.core.debugMessageCallback(callback);
 	}
 }

@@ -1,12 +1,8 @@
 package org.objkt.gl.wrapper;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 import org.objkt.gl.API;
+import org.objkt.gl.enums.*;
 
 public class LWJGLWrapper extends Wrapper {
 
@@ -63,6 +59,17 @@ public class LWJGLWrapper extends Wrapper {
 			@Override
 			public void viewport(int x, int y, int w, int h) {
 				GL11.glViewport(x, y, w, h);
+			}
+
+			@Override
+			public void debugMessageCallback(DebugMessageCallback callback) {
+				GL43.glDebugMessageCallback(new GLDebugMessageCallbackI() {
+					
+					@Override
+					public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
+						callback.callback(DebugSource.get(source), DebugType.get(type), id, DebugSeverity.get(severity), GLDebugMessageCallback.getMessage(length, message));
+					}
+				}, 0);
 			}
 		};
 	}

@@ -1,13 +1,10 @@
 package org.objkt.gl;
 
 import java.nio.IntBuffer;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.lwjgl.opengl.GL20;
-import org.objkt.gl.enums.ObjectIdentifier;
-import org.objkt.gl.enums.ProgramPropertyARB;
-import org.objkt.gl.enums.ShaderType;
+import org.objkt.gl.enums.*;
 import org.objkt.memory.MemBlock;
 
 public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
@@ -36,9 +33,9 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	
 	public void use() {
 		checkIfGenerated();
-		if(!isLinked()) {
-			throw new Error("ShaderProgram is not linked");
-		}
+		//if(!isLinked()) {
+		//	throw new Error("ShaderProgram is not linked");
+		//}
 		ctx.wrap.shaderProg.use(getName());
 	}
 	
@@ -64,10 +61,10 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		
 		ctx.wrap.shaderProg.link(getName());
 
-		if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
+		/*if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
 			System.err.println("Program is not compiled! Error message:");
 			System.err.println(GL20.glGetProgramInfoLog(getName()));
-		}
+		}*/
 		
 		linked = true;
 	}

@@ -44,6 +44,7 @@ public abstract class Wrapper {
 		int getInteger(int pname);
 		String getString(int pname);
 		void viewport(int x, int y, int w, int h);
+		void debugMessageCallback(DebugMessageCallback callback);
 	}
 	
 	static interface ObjWrap {
