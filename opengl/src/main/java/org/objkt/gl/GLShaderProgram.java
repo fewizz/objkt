@@ -33,9 +33,9 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	
 	public void use() {
 		checkIfGenerated();
-		//if(!isLinked()) {
-		//	throw new Error("ShaderProgram is not linked");
-		//}
+		if(!isLinked()) {
+			throw new Error("ShaderProgram is not linked");
+		}
 		ctx.wrap.shaderProg.use(getName());
 	}
 	
@@ -61,10 +61,9 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		
 		ctx.wrap.shaderProg.link(getName());
 
-		/*if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
-			System.err.println("Program is not compiled! Error message:");
-			System.err.println(GL20.glGetProgramInfoLog(getName()));
-		}*/
+		if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
+			throw new GLError(GL20.glGetProgramInfoLog(getName()));
+		}
 		
 		linked = true;
 	}

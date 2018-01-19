@@ -169,6 +169,11 @@ public class LWJGLWrapper extends Wrapper {
 			public void source(int name, String src) {
 				GL20.glShaderSource(name, src);
 			}
+
+			@Override
+			public void compile(int name) {
+				GL20.glCompileShader(name);
+			}
 		};
 	}
 

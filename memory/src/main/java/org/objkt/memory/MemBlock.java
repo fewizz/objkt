@@ -20,7 +20,7 @@ public class MemBlock {
 	}
 	
 	public static MemBlock ofFloats(float... floats) {
-		return new MemBlock().allocateFloats(floats.length).putFloats(floats);
+		return new MemBlock().allocateWithFloats(floats);
 	}
 	
 	public static long getAllocatedTotal() {
@@ -49,14 +49,6 @@ public class MemBlock {
 		return isAllocated() ? reallocate(bytes) : allocate(bytes);
 	}
 	
-	/*@Deprecated
-	public MemBlock capture(boolean freePrevious, long address, long bytes) {
-		if(freePrevious) {
-			free();
-		}
-		return capture(address, bytes);
-	}*/
-	
 	@Deprecated
 	public MemBlock capture(long address, long bytes) {
 		this.address = address;
@@ -82,6 +74,12 @@ public class MemBlock {
 	
 	public MemBlock allocateFloats(int floats) {
 		return allocate(floats * Float.BYTES);
+	}
+	
+	public MemBlock allocateWithFloats(float... values) {
+		allocateFloats(values.length);
+		putFloats(values);
+		return this;
 	}
 	
 	public boolean isAllocated() {

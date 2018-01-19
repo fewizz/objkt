@@ -75,6 +75,7 @@ public abstract class Wrapper {
 	
 	public static interface ShaderWrap extends CreatableObjWrap {
 		void source(int name, String src);
+		void compile(int name);
 	}
 	
 	public static interface ShaderProgramWrap extends CreatableObjWrap {

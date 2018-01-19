@@ -1,25 +1,15 @@
 package org.objkt.gl;
 
-import static org.lwjgl.opengl.GL11.glDisable;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glIsEnabled;
+import static org.lwjgl.opengl.GL11.*;
 
-import java.util.Arrays;
-import java.util.EnumMap;
+import java.util.*;
 
-import org.objkt.gl.enums.Capability;
-import org.objkt.gl.enums.ClearBuffer;
-import org.objkt.gl.enums.ErrorCode;
-import org.objkt.gl.enums.GetPName;
-import org.objkt.gl.enums.PrimitiveType;
-import org.objkt.gl.enums.StringName;
+import org.objkt.gl.enums.*;
 import org.objkt.gl.wrapper.*;
-import org.objkt.memory.MemBlock;
 
 public final class GLContext {
 	static final ThreadLocal<GLContext> CONTEXTS = new ThreadLocal<>();
 	final Thread thread;
-	final MemBlock tempMemBlock = new MemBlock(64 * Float.BYTES);
 	final EnumMap<Capability, Boolean> capabilityMap = new EnumMap<>(Capability.class);
 	final Wrapper wrap;
 	final GLTexture[] activeTextures;
