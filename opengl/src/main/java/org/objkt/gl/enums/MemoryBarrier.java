@@ -40,7 +40,7 @@ public enum MemoryBarrier {
 	public static int intMaskOf(MemoryBarrier... enums) { int i = 0; for(MemoryBarrier e : VALUES) i |= e.token; return i; }
 
 	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(new java.util.function.Supplier<Mask>() {public Mask get() {return new Mask();}});
 		int value;
 
 		public static Mask of(MemoryBarrier... enums) {

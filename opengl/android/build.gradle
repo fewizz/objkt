@@ -4,5 +4,6 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-	compile project(':objkt-memory')
+	compile project(':objkt-opengl')
+	compile fileTree('libs/')
 }

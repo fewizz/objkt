@@ -1,7 +1,5 @@
 package org.objkt.gl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.objkt.gl.enums.ObjectIdentifier;
@@ -12,7 +10,7 @@ public abstract class GLObjectWithId<SELF> {
 	public static final int NOT_GENERATED = -1;
 	public static final int UNUSED = 0;
 	
-	final List<Consumer<SELF>> deletionListeners = new ArrayList<>();
+	Consumer<SELF> deletionListener;
 	final GLContext ctx;
 	private int name = NOT_GENERATED;
 	
@@ -44,8 +42,7 @@ public abstract class GLObjectWithId<SELF> {
 		checkIfGenerated();
 		delete0();
 		
-		deletionListeners.forEach(l -> l.accept(getThis()));
-		deletionListeners.clear();
+		deletionListener.accept(getThis());
 		name = UNUSED;
 	}
 
@@ -77,7 +74,7 @@ public abstract class GLObjectWithId<SELF> {
 	protected abstract void delete0();
 	
 	public void doAlwaysAfterDeletion(Consumer<SELF> action) {;
-		deletionListeners.add(action);
+		deletionListener = action;
 	}
 	
 	@Override

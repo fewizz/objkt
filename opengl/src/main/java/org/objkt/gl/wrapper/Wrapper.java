@@ -45,6 +45,9 @@ public abstract class Wrapper {
 		String getString(int pname);
 		void viewport(int x, int y, int w, int h);
 		void debugMessageCallback(DebugMessageCallback callback);
+		boolean isEnabled(int cap);
+		void enable(int cap);
+		void disable(int cap);
 	}
 	
 	static interface ObjWrap {
@@ -64,6 +67,10 @@ public abstract class Wrapper {
 		void parameteri(int tar, int pname, int val);
 		void parameterf(int tar, int pname, float val);
 		int getTexLevelParameteri(int target, int level, int param);
+		void image2D(int tar, int level, int internalFormat, int w, int h, int border, int bufferPixelFormat, int bufferDataType, long address);
+		void subImage2D(int tar, int level, int xOff, int yOff, int w, int h, int bufferPixelFormat, int bufferDataType, long address);
+		void image3D(int tar, int level, int internalFormat, int w, int h, int d, int border, int bufferPixelFormat, int bufferDataType, long address);
+		void subImage3D(int tar, int level, int xOff, int yOff, int zOff, int w, int h, int d, int bufferPixelFormat, int bufferDataType, long address);
 	}
 	
 	public static interface BuffWrap extends BindableObjWrap {
@@ -76,6 +83,8 @@ public abstract class Wrapper {
 	public static interface ShaderWrap extends CreatableObjWrap {
 		void source(int name, String src);
 		void compile(int name);
+		int geti(int name, int pname);
+		String getInfoLog(int name);
 	}
 	
 	public static interface ShaderProgramWrap extends CreatableObjWrap {
@@ -85,6 +94,10 @@ public abstract class Wrapper {
 		int geti(int name, int pname);
 		int attribLoc(int name, String attribName);
 		int uniformLoc(int name, String uniformName);
+		String getInfoLog(int name);
+		void uniform1iv(int loc, int count, long address);
+		void uniformMatrix4fv(int loc, int count, boolean trans, long address);
+		void uniform1i(int loc, int val);
 	}
 	
 	public static interface VertexArrayWrap extends BindableObjWrap {

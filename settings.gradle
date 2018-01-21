@@ -1,9 +1,13 @@
 include 'memory'
 include 'opengl'
+include 'opengl/lwjgl'
+include 'opengl/android'
 include 'lab'
 
 project(':memory').name = 'objkt-memory'
 project(':opengl').name = 'objkt-opengl'
+project(':opengl/lwjgl').name = 'objkt-opengl-lwjgl'
+project(':opengl/android').name = 'objkt-opengl-android'
 project(':lab').name = 'objkt-lab'
 
 rootProject.name = 'objkt'

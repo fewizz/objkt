@@ -34,7 +34,7 @@ public enum MapBufferUsage {
 	public static int intMaskOf(MapBufferUsage... enums) { int i = 0; for(MapBufferUsage e : VALUES) i |= e.token; return i; }
 
 	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(new java.util.function.Supplier<Mask>() {public Mask get() {return new Mask();}});
 		int value;
 
 		public static Mask of(MapBufferUsage... enums) {

@@ -3,9 +3,8 @@ package org.objkt.gl;
 import java.nio.IntBuffer;
 import java.util.*;
 
-import org.lwjgl.opengl.GL20;
 import org.objkt.gl.enums.*;
-import org.objkt.memory.MemBlock;
+import org.objkt.memory.*;
 
 public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	final Set<GLShader> shaders = new LinkedHashSet<>();
@@ -62,7 +61,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		ctx.wrap.shaderProg.link(getName());
 
 		if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
-			throw new GLError(GL20.glGetProgramInfoLog(getName()));
+			throw new GLError(ctx.wrap.shaderProg.getInfoLog(getName()));
 		}
 		
 		linked = true;
@@ -82,7 +81,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 
 	public void setUniformInt(int location, int value) {
 		use();
-		GL20.glUniform1i(location, value);
+		ctx.wrap.shaderProg.uniform1i(location, value);
 	}
 
 	/*public void setUniformMatrix4f(int location, Matrix4f mat) {
@@ -95,21 +94,21 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	
 	public void setUniformMatrix4f(int location, MemBlock mat) {
 		use();
-		GL20.nglUniformMatrix4fv(location, 1, false, mat.address());
+		ctx.wrap.shaderProg.uniformMatrix4fv(location, 1, false, mat.address());
 	}
 
 	public void setUniformIntArray(int location, IntBuffer value) {
 		use();
-		GL20.glUniform1iv(location, value);
+		ctx.wrap.shaderProg.uniform1iv(location, value.capacity(), Utils.address(value));
 	}
 	
 	public void setUniformIntArray(int location, int count, MemBlock values) {
 		use();
-		GL20.nglUniform1iv(location, count, values.address());
+		ctx.wrap.shaderProg.uniform1iv(location, count, values.address());
 	}
 	
 	public void setUniformIntArray(int location, MemBlock values) {
 		use();
-		GL20.nglUniform1iv(location, values.ints(), values.address());
+		ctx.wrap.shaderProg.uniform1iv(location, values.ints(), values.address());
 	}
 }

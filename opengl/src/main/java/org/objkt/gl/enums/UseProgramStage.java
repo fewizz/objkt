@@ -31,7 +31,7 @@ public enum UseProgramStage {
 	public static int intMaskOf(UseProgramStage... enums) { int i = 0; for(UseProgramStage e : VALUES) i |= e.token; return i; }
 
 	public static class Mask {
-		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(() -> new Mask());
+		static final ThreadLocal<Mask> MASKS = ThreadLocal.withInitial(new java.util.function.Supplier<Mask>() {public Mask get() {return new Mask();}});
 		int value;
 
 		public static Mask of(UseProgramStage... enums) {

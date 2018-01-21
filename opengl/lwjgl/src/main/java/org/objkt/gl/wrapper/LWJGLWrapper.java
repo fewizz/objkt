@@ -62,14 +62,25 @@ public class LWJGLWrapper extends Wrapper {
 			}
 
 			@Override
-			public void debugMessageCallback(DebugMessageCallback callback) {
-				GL43.glDebugMessageCallback(new GLDebugMessageCallbackI() {
-					
-					@Override
-					public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
-						callback.callback(DebugSource.get(source), DebugType.get(type), id, DebugSeverity.get(severity), GLDebugMessageCallback.getMessage(length, message));
-					}
-				}, 0);
+			public void debugMessageCallback(final DebugMessageCallback callback) {
+				GL43.glDebugMessageCallback((int source, int type, int id, int severity, int length, long message, long userParam) ->
+					callback.callback(DebugSource.get(source), DebugType.get(type), id, DebugSeverity.get(severity), GLDebugMessageCallback.getMessage(length, message))	
+				, 0);
+			}
+
+			@Override
+			public boolean isEnabled(int cap) {
+				return GL11.glIsEnabled(cap);
+			}
+
+			@Override
+			public void enable(int cap) {
+				GL11.glEnable(cap);
+			}
+
+			@Override
+			public void disable(int cap) {
+				GL11.glDisable(cap);
 			}
 		};
 	}
@@ -106,6 +117,26 @@ public class LWJGLWrapper extends Wrapper {
 			@Override
 			public int getTexLevelParameteri(int target, int level, int param) {
 				return GL11.glGetTexLevelParameteri(target, level, param);
+			}
+
+			@Override
+			public void image2D(int tar, int level, int intfor, int w, int h, int border, int bufferPixelFormat, int bufferDataType, long address) {
+				GL11.nglTexImage2D(tar, level, intfor, w, h, border, bufferPixelFormat, bufferDataType, address);
+			}
+
+			@Override
+			public void subImage2D(int tar, int level, int xOff, int yOff, int w, int h, int bufferPixelFormat, int bufferDataType, long address) {
+				GL11.nglTexSubImage2D(tar, level, xOff, yOff, w, h, bufferPixelFormat, bufferDataType, address);
+			}
+
+			@Override
+			public void image3D(int tar, int level, int internalFormat, int w, int h, int d, int border, int bufferPixelFormat, int bufferDataType, long address) {
+				GL12.nglTexImage3D(tar, level, internalFormat, w, h, d, border, bufferPixelFormat, bufferDataType, address);
+			}
+
+			@Override
+			public void subImage3D(int tar, int level, int xOff, int yOff, int zOff, int w, int h, int d, int bufferPixelFormat, int bufferDataType, long address) {
+				GL12.nglTexSubImage3D(tar, level, xOff, yOff, zOff, w, h, d, bufferPixelFormat, bufferDataType, address);
 			}
 		};
 	}
@@ -174,6 +205,16 @@ public class LWJGLWrapper extends Wrapper {
 			public void compile(int name) {
 				GL20.glCompileShader(name);
 			}
+
+			@Override
+			public int geti(int name, int pname) {
+				return GL20.glGetShaderi(name, pname);
+			}
+
+			@Override
+			public String getInfoLog(int name) {
+				return GL20.glGetShaderInfoLog(name);
+			}
 		};
 	}
 
@@ -219,6 +260,26 @@ public class LWJGLWrapper extends Wrapper {
 			@Override
 			public void link(int prog) {
 				GL20.glLinkProgram(prog);
+			}
+
+			@Override
+			public String getInfoLog(int name) {
+				return GL20.glGetProgramInfoLog(name);
+			}
+
+			@Override
+			public void uniform1iv(int loc, int count, long address) {
+				GL20.nglUniform1iv(loc, count, address);
+			}
+
+			@Override
+			public void uniformMatrix4fv(int loc, int count, boolean trans, long address) {
+				GL20.nglUniformMatrix4fv(loc, count, trans, address);
+			}
+
+			@Override
+			public void uniform1i(int loc, int val) {
+				GL20.glUniform1i(loc, val);
 			}
 		};
 	}

@@ -1,9 +1,6 @@
 package org.objkt.gl;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.objkt.gl.enums.ObjectIdentifier;
-import org.objkt.gl.enums.ShaderType;
+import org.objkt.gl.enums.*;
 
 public class GLShader extends GLObjectWithId<GLShader> {
 	final ShaderType type;
@@ -48,9 +45,9 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		
 		ctx.wrap.shader.compile(getName());
 		
-		if (GL20.glGetShaderi(getName(), GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+		if (ctx.wrap.shader.geti(getName(), GLConstants.GL_COMPILE_STATUS) == GLConstants.GL_FALSE) {
 			System.err.println(source + " \n" + type.name() + " not compiled!");
-			System.err.println(GL20.glGetShaderInfoLog(getName()));
+			System.err.println(ctx.wrap.shader.getInfoLog(getName()));
 		}
 		return this;
 	}

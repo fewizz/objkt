@@ -1,8 +1,7 @@
 package org.objkt.gl;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import java.util.*;
+import java.util.function.*;
 
 import org.objkt.gl.enums.*;
 import org.objkt.gl.wrapper.*;
@@ -58,7 +57,7 @@ public final class GLContext {
 			throw new Error("Already created");
 		
 		wrapper.preContextObjectCreatrion();
-		GLContext c = new GLContext();
+		GLContext c = new GLContext(wrapper);
 		CONTEXTS.set(c);
 		return c;
 	}
@@ -71,9 +70,9 @@ public final class GLContext {
 		return false;
 	}
 
-	private GLContext() {
+	private GLContext(Wrapper w) {
 		thread = Thread.currentThread();
-		wrap = new LWJGLWrapper();
+		wrap = w;
 		api = wrap.getApi();
 		
 		versionMajor = getInteger(GLConstants.GL_MAJOR_VERSION);
@@ -84,7 +83,7 @@ public final class GLContext {
 		Arrays.fill(activeTextures, defaultTexture);
 		
 		for(Capability c : Capability.VALUES) {
-			capabilityMap.put(c, glIsEnabled(c.token));
+			capabilityMap.put(c, wrap.core.isEnabled(c.token));
 		}
 	}
 	
@@ -96,17 +95,28 @@ public final class GLContext {
 		if(bindable instanceof GLTexture) {
 			GLTexture tex = (GLTexture) bindable;
 			
-			tex.doAlwaysAfterDeletion(t -> {
-				for (int unit = 0; unit < activeTextures.length; unit++) {
-					if (activeTextures[unit] == t)
-						activeTextures[unit] = defaultTexture;
+			tex.doAlwaysAfterDeletion(new Consumer<GLTexture>() {
+				@Override
+				public void accept(GLTexture t) {
+					for (int unit = 0; unit < activeTextures.length; unit++) {
+						if (activeTextures[unit] == t)
+							activeTextures[unit] = defaultTexture;
+					}
 				}
 			});
 			
-			tex.bindOnlyIf(t -> t != boundTexture);
-			tex.doAlwaysAfterBind(t ->  {
-				activeTextures[activeTextureUnit] = t;
-				boundTexture = t;
+			tex.bindOnlyIf(new Predicate<GLTexture>() {
+				@Override
+				public boolean test(GLTexture t) {
+					return t != boundTexture;
+				}
+			});
+			tex.doAlwaysAfterBind(new Consumer<GLTexture>() {
+				@Override
+				public void accept(GLTexture t) {
+					activeTextures[activeTextureUnit] = t;
+					boundTexture = t;
+				}
 			});
 		}
 	}
@@ -114,9 +124,9 @@ public final class GLContext {
 	public void set(Capability cap, boolean bool) {
 		if(capabilityMap.put(cap, bool) != bool) {
 			if(bool)
-				glEnable(cap.token);
+				wrap.core.enable(cap.token);
 			else
-				glDisable(cap.token);
+				wrap.core.disable(cap.token);
 		}
 	}
 	
