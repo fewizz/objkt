@@ -3,6 +3,7 @@ package org.objkt.gl;
 import java.nio.IntBuffer;
 import java.util.*;
 
+import org.objkt.gl.GLShader.GLShaderCompilationError;
 import org.objkt.gl.enums.*;
 import org.objkt.memory.*;
 
@@ -19,7 +20,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		createObject();
 	}
 	
-	public GLShaderProgram(ShaderType t1, String src1, ShaderType t2, String src2) {
+	public GLShaderProgram(ShaderType t1, String src1, ShaderType t2, String src2) throws GLShaderCompilationError{
 		this();
 		attachShaders(new GLShader(t1, src1), new GLShader(t2, src2));
 		link();

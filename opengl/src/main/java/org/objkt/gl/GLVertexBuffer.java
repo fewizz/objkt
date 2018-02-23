@@ -1,7 +1,6 @@
 package org.objkt.gl;
 
-import org.objkt.gl.enums.BufferTarget;
-import org.objkt.gl.enums.BufferUsage;
+import org.objkt.gl.enums.*;
 import org.objkt.memory.MemBlock;
 
 public class GLVertexBuffer extends GLBuffer<GLVertexBuffer> {

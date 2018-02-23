@@ -179,6 +179,11 @@ public class LWJGLWrapper extends Wrapper {
 			public void unmap(int target) {
 				GL15.glUnmapBuffer(target);
 			}
+
+			@Override
+			public int getVBOParameteri(BufferTarget tar, VertexBufferObjectParameter pname) {
+				return GL15.glGetBufferParameteri(tar.token, pname.token);
+			}
 		};
 	}
 

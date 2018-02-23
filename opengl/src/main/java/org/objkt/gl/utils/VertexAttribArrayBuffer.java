@@ -10,12 +10,12 @@ class VertexAttribArrayBuffer extends MemBlock {
 	
 	private VertexAttribArrayBuffer(VertexAttribArray vaa) {
 		this.vaa = vaa;
-		nextVertexMemoryBlock.allocate(vaa.info.componentsBytes());
+		nextVertexMemoryBlock.allocate(vaa.info.bytes());
 	}
 	
 	public static VertexAttribArrayBuffer map(VertexAttribArray vaa, int size) {
 		VertexAttribArrayBuffer vaab = new VertexAttribArrayBuffer(vaa);
-		vaa.vbo.mapRange(0, size * vaa.info.componentsBytes(), vaab, BufferAccess.MAP_WRITE_BIT);
+		vaa.vbo.mapRange(0, size * vaa.info.bytes(), vaab, BufferAccess.MAP_WRITE_BIT);
 		
 		return vaab;
 	}

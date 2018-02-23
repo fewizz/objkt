@@ -13,7 +13,7 @@ public class WorldRenderer {
 	
 	public static void render() {
 		RENDERERS.forEach(cr -> {
-			
+			cr.render();
 		});
 	}
 }

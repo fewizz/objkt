@@ -70,7 +70,6 @@ public class Client {
 				.title("Cubic")
 				.width(600)
 				.height(600)
-				.defaultHints()
 				.hint(GLFW_CONTEXT_VERSION_MAJOR, 3)
 				.hint(GLFW_CONTEXT_VERSION_MINOR, 2)
 				.hint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE)

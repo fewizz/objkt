@@ -94,6 +94,10 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 			disableVertexAttribArray(info.index);
 			return this;
 		}
+		
+		public int getVertexCount() {
+			return vbo.size() / info.bytes();
+		}
 	}
 	
 	public static class VertexAttribFormat {
@@ -111,7 +115,7 @@ public class GLVertexArray extends GLBindableObject<GLVertexArray> {
 			this.index = index;
 		}
 		
-		public int componentsBytes() {
+		public int bytes() {
 			return components * clientDataType.bytes;
 		}
 		

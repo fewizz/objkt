@@ -16,7 +16,7 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		createObject();
 	}
 	
-	public GLShader(ShaderType type, String src) {
+	public GLShader(ShaderType type, String src) throws GLShaderCompilationError {
 		this(type);
 		source(src);
 		compile();
@@ -40,14 +40,13 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		return ctx.wrap.shader.create(type.token);
 	}
 
-	public GLShader compile() {
+	public GLShader compile() throws GLShaderCompilationError {
 		checkIfGenerated();
 		
 		ctx.wrap.shader.compile(getName());
 		
 		if (ctx.wrap.shader.geti(getName(), GLConstants.GL_COMPILE_STATUS) == GLConstants.GL_FALSE) {
-			System.err.println(source + " \n" + type.name() + " not compiled!");
-			System.err.println(ctx.wrap.shader.getInfoLog(getName()));
+			throw new GLShaderCompilationError(source + " \n" + type.name() + " not compiled!\n" + ctx.wrap.shader.getInfoLog(getName()));
 		}
 		return this;
 	}

@@ -5,7 +5,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.util.LinkedHashSet;
 
 public class GLFWWindowBuilder {
-	boolean defaults = false;
 	LinkedHashSet<Long> hints = new LinkedHashSet<>();
 	int width = -1;
 	int height = -1;
@@ -13,11 +12,6 @@ public class GLFWWindowBuilder {
 	
 	public GLFWWindowBuilder hint(int hint, int value) {
 		hints.add(((long)hint << 32) | value);
-		return this;
-	}
-	
-	public GLFWWindowBuilder defaultHints() {
-		defaults = true;
 		return this;
 	}
 	

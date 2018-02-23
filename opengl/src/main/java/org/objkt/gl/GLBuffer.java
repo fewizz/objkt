@@ -1,9 +1,6 @@
 package org.objkt.gl;
 
-import org.objkt.gl.enums.BufferAccess;
-import org.objkt.gl.enums.BufferTarget;
-import org.objkt.gl.enums.BufferUsage;
-import org.objkt.gl.enums.ObjectIdentifier;
+import org.objkt.gl.enums.*;
 import org.objkt.memory.MemBlock;
 
 public class GLBuffer<SELF> extends GLBindableObject<SELF> {
@@ -33,6 +30,10 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 	@Override
 	public void bind0() {
 		ctx.wrap.buff.bind(target.token, getName());
+	}
+	
+	public int size() {
+		return ctx.wrap.buff.getVBOParameteri(BufferTarget.ARRAY_BUFFER, VertexBufferObjectParameter.BUFFER_SIZE);
 	}
 
 	public SELF allocate(long bytes, BufferUsage usage) {

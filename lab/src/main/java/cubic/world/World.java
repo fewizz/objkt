@@ -3,6 +3,8 @@ package cubic.world;
 
 import java.util.*;
 
+import org.objkt.memory.MemBlockDataInput;
+
 import cubic.Entity;
 import io.netty.util.collection.*;
 
@@ -30,5 +32,14 @@ public class World {
 	
 	public void removeChunk(int x, int y, int z) {
 		chunks.remove(Chunk.Position.toLong(x, y, z));
+	}
+	
+	public Chunk addChunkFromData(int x, int y, int z, MemBlockDataInput in) {
+		Chunk chunk = new Chunk(x, y, z);
+		chunk.readBlockData(in);
+		in.free();
+
+		chunks.put(chunk.pos.toLong(), chunk);
+		return chunk;
 	}
 }

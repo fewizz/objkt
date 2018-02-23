@@ -29,7 +29,7 @@ public class VertexArrayBuilder {
 			}
 			
 			GLVertexBuffer vbo = new GLVertexBuffer();
-			vbo.allocate(numberOfVerticies * attribFormat.componentsBytes(), usage);
+			vbo.allocate(numberOfVerticies * attribFormat.bytes(), usage);
 			attribs[attribFormat.index] = VertexAttribArrayBuffer.map(va.vertexAttribPointer(attribFormat, vbo).enable(), p_verts);
 		}
 		
@@ -42,7 +42,7 @@ public class VertexArrayBuilder {
 		}
 
 		for(VertexAttribArrayBuffer vab : attribs) {
-			int step = vab.vaa.info.componentsBytes();
+			int step = vab.vaa.info.bytes();
 			int start = step * vertex;
 			vab.nextVertexMemoryBlock.copyTo(vab, 0, start, step);
 		}

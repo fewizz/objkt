@@ -218,6 +218,12 @@ public class AndroidWrapper extends Wrapper {
 				GLES11.glBufferData(target, (int)size, buff, usage);
 				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
+
+			@Override
+			public int getVBOParameteri(BufferTarget tar, VertexBufferObjectParameter pname) {
+				GLES11.glGetBufferParameteriv(tar.token, pname.token, buffi);
+				return buffi.get(0);
+			}
 		};
 	}
 

@@ -1,6 +1,7 @@
 package org.objkt.gl.wrapper;
 
 import org.objkt.gl.API;
+import org.objkt.gl.enums.*;
 
 public abstract class Wrapper {
 	public final TexWrap tex;
@@ -78,6 +79,7 @@ public abstract class Wrapper {
 		void subData(int target, long offset, long size, long data);
 		long mapBufferRange(int target, long offset, long length, int access);
 		void unmap(int target);
+		int getVBOParameteri(BufferTarget tar, VertexBufferObjectParameter pname);
 	}
 	
 	public static interface ShaderWrap extends CreatableObjWrap {

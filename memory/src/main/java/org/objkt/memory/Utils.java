@@ -39,7 +39,7 @@ public class Utils {
 		UNSAFE = u;
 	}
 	
-	public static long address(ByteBuffer buff) {
+	public static long address(Buffer buff) {
 		try {
 			return FIELD_BUFFER_ADDRESS.getLong(buff);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -84,11 +84,11 @@ public class Utils {
 		return null;
 	}
 	
-	public static void invalidateBuffer(ByteBuffer b) {
+	public static void invalidateBuffer(Buffer b) {
 		setBufferAddressAndCapacity(b, 0, 0);
 	}
 	
-	public static void setBufferAddressAndCapacity(ByteBuffer b, long addr, int cap) {
+	public static void setBufferAddressAndCapacity(Buffer b, long addr, int cap) {
 		try {
 			FIELD_BUFFER_ADDRESS.setLong(b, addr);
 			FIELD_BUFFER_CAPACITY.setInt(b, cap);
