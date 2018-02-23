@@ -281,6 +281,11 @@ public class LWJGLWrapper extends Wrapper {
 			public void uniform1i(int loc, int val) {
 				GL20.glUniform1i(loc, val);
 			}
+
+			@Override
+			public void attrib1fv(int loc, int count, long address) {
+				GL20.nglVertexAttrib1fv(loc, address);
+			}
 		};
 	}
 

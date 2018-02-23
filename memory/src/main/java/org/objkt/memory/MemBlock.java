@@ -1,12 +1,12 @@
 package org.objkt.memory;
 
-import static org.objkt.memory.Utils.unsafe;
+import static org.objkt.memory.Utils.UNSAFE;
 
 import java.util.Arrays;
 
 public class MemBlock {
 	public static final long NULL_ADDRESS = 0L;
-	static final boolean DEBUG = true;
+	static final boolean DEBUG = false;
 	private static long allocatedTotal = 0;
 	protected Allocation allocation;
 	protected long address = NULL_ADDRESS;
@@ -32,7 +32,7 @@ public class MemBlock {
 			allocation = new Allocation();
 		}
 		
-		capture(unsafe.allocateMemory(bytes), bytes);
+		capture(UNSAFE.allocateMemory(bytes), bytes);
 		return this;
 	}
 	
@@ -41,7 +41,7 @@ public class MemBlock {
 			allocation = new Allocation();
 		}
 		
-		capture(unsafe.reallocateMemory(address, bytes), bytes);
+		capture(UNSAFE.reallocateMemory(address, bytes), bytes);
 		return this;
 	}
 	
@@ -91,7 +91,7 @@ public class MemBlock {
 	}
 	
 	public void set(byte value, int from, long bytes) {
-		unsafe.setMemory(address + from, bytes, value);
+		UNSAFE.setMemory(address + from, bytes, value);
 	}
 	
 	public long address() {
@@ -100,44 +100,54 @@ public class MemBlock {
 
 	// Byte
 	public byte get(int pos) {
-		return unsafe.getByte(address + pos);
+		return UNSAFE.getByte(address + pos);
 	}
 
 	public MemBlock put(int pos, byte value) {
 		onPut(pos);
-		unsafe.putByte(address + pos, value);
+		UNSAFE.putByte(address + pos, value);
 		return this;
 	}
 	
 	// Short
 	public short getShort0(int pos) {
-		return unsafe.getShort(address + pos);
+		return UNSAFE.getShort(address + pos);
 	}
 
 	public short getShort(int pos) {
-		return unsafe.getShort(address + pos * Short.BYTES);
+		return UNSAFE.getShort(address + pos * Short.BYTES);
 	}
 
 	public void putShort(int pos, short value) {
 		pos *= Short.BYTES;
 		onPut(pos);
-		unsafe.putShort(address + pos, value);
+		UNSAFE.putShort(address + pos, value);
+	}
+	
+	public void putShort0(int pos, short value) {
+		onPut(pos);
+		UNSAFE.putShort(address + pos, value);
 	}
 
 	// Float
 	public float getFloat0(int pos) {
-		return unsafe.getFloat(address + pos);
+		return UNSAFE.getFloat(address + pos);
 	}
 
 	public float getFloat(int pos) {
-		return unsafe.getFloat(address + pos * Float.BYTES);
+		return UNSAFE.getFloat(address + pos * Float.BYTES);
 	}
 
 	public MemBlock putFloat(int pos, float value) {
 		pos *= Float.BYTES;
 		onPut(pos);
-		unsafe.putFloat(address + pos, value);
+		UNSAFE.putFloat(address + pos, value);
 		return this;
+	}
+	
+	public void putFloat0(int pos, float value) {
+		onPut(pos);
+		UNSAFE.putFloat(address + pos, value);
 	}
 	
 	public MemBlock putFloats(float... values) {
@@ -152,58 +162,126 @@ public class MemBlock {
 	
 	// Int
 	public int getInt0(int pos) {
-		return unsafe.getInt(address + pos);
+		return UNSAFE.getInt(address + pos);
 	}
 
 	public int getInt(int pos) {
-		return unsafe.getInt(address + pos * Integer.BYTES);
+		return UNSAFE.getInt(address + pos * Integer.BYTES);
 	}
 	
 	public void putInt0(int pos, int value) {
 		onPut(pos);
-		unsafe.putInt(address + pos, value);
+		UNSAFE.putInt(address + pos, value);
 	}
 
 	public void putInt(int pos, int value) {
 		pos *= Integer.BYTES;
 		onPut(pos);
-		unsafe.putInt(address + pos, value);
+		UNSAFE.putInt(address + pos, value);
 	}
 	
 	// Double
 	public double getDouble0(int pos) {
-		return unsafe.getDouble(address + pos);
+		return UNSAFE.getDouble(address + pos);
 	}
 
 	public double getDouble(int pos) {
-		return unsafe.getDouble(address + pos * Double.BYTES);
+		return UNSAFE.getDouble(address + pos * Double.BYTES);
 	}
 
 	public void putDouble(int pos, double value) {
 		pos *= Double.BYTES;
 		onPut(pos);
-		unsafe.putDouble(address + pos, value);
+		UNSAFE.putDouble(address + pos, value);
+	}
+	
+	public void putDouble0(int pos, double value) {
+		onPut(pos);
+		UNSAFE.putDouble(address + pos, value);
 	}
 
 	// Long
 	public long getLong0(int pos) {
-		return unsafe.getLong(address + pos);
+		return UNSAFE.getLong(address + pos);
 	}
 
 	public long getLong(int pos) {
-		return unsafe.getLong(address + pos * Long.BYTES);
+		return UNSAFE.getLong(address + pos * Long.BYTES);
 	}
 
 	public void putLong0(int pos, long value) {
 		onPut(pos);
-		unsafe.putLong(address + pos, value);
+		UNSAFE.putLong(address + pos, value);
 	}
 
 	public MemBlock putLong(int pos, long value) {
 		pos *= Long.BYTES;
 		onPut(pos);
-		unsafe.putLong(address + pos, value);
+		UNSAFE.putLong(address + pos, value);
 		return this;
+	}
+	
+	// Char
+	public char getChar0(int pos) {
+		return UNSAFE.getChar(address + pos);
+	}
+	
+	public char getChar(int pos) {
+		return UNSAFE.getChar(address + pos * Character.BYTES);
+	}
+	
+	public MemBlock putChar(int pos, char value) {
+		pos *= Character.BYTES;
+		onPut(pos);
+		UNSAFE.putChar(address + pos, value);
+		return this;
+	}
+	
+	public void putChar0(int pos, char value) {
+		onPut(pos);
+		UNSAFE.putChar(address + pos, value);
+	}
+	
+	public MemBlock putUTF8(CharSequence text, int offset, boolean nullTerminated) {
+		// Mostly from lwjgl's MemoryTextUtil!
+		int i = 0, len = text.length(), p = offset;
+
+        char c;
+
+        // ASCII fast path
+        while (i < len && (c = text.charAt(i)) < 0x80) {
+            put(p++, (byte)c);
+            i++;
+        }
+
+        // Slow path
+        while (i < len) {
+            c = text.charAt(i++);
+            if (c < 0x80) {
+                put(p++, (byte)c);
+            } else {
+                int cp = c;
+                if (c < 0x800) {
+                    put(p++, (byte)(0xC0 | cp >> 6));
+                } else {
+                    if (!Character.isHighSurrogate(c)) {
+                        put(p++, (byte)(0xE0 | cp >> 12));
+                    } else {
+                        cp = Character.toCodePoint(c, text.charAt(i++));
+
+                        put(p++, (byte)(0xF0 | cp >> 18));
+                        put(p++, (byte)(0x80 | cp >> 12 & 0x3F));
+                    }
+                    put(p++, (byte)(0x80 | cp >> 6 & 0x3F));
+                }
+                put(p++, (byte)(0x80 | cp & 0x3F));
+            }
+        }
+
+        if (nullTerminated) {
+            put(p++, (byte)0);
+        }
+        return this;
 	}
 
 	public void free() {
@@ -216,7 +294,7 @@ public class MemBlock {
 			allocation = null;
 		}
 		
-		unsafe.freeMemory(address);
+		UNSAFE.freeMemory(address);
 		address = NULL_ADDRESS;
 		setBytes(0);
 	}
@@ -227,7 +305,7 @@ public class MemBlock {
 	}
 	
 	public void copyTo(long adrressDest, long src, long bytes) {
-		unsafe.copyMemory(address + src, adrressDest, bytes);
+		UNSAFE.copyMemory(address + src, adrressDest, bytes);
 	}
 	
 	public void copyTo(MemBlock destMemoryBlock, long src, long dest, long bytes) {

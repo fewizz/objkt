@@ -98,6 +98,7 @@ public abstract class Wrapper {
 		void uniform1iv(int loc, int count, long address);
 		void uniformMatrix4fv(int loc, int count, boolean trans, long address);
 		void uniform1i(int loc, int val);
+		void attrib1fv(int loc, int count, long address);
 	}
 	
 	public static interface VertexArrayWrap extends BindableObjWrap {

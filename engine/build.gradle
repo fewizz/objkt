@@ -1,0 +1,7 @@
+apply plugin: 'java'
+
+dependencies {
+    runtime project(':objkt-memory')
+    runtime project(':objkt-opengl')
+	runtime project(':objkt-opengl-lwjgl')
+}

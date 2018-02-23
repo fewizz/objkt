@@ -2,35 +2,42 @@ package org.objkt.gl.utils;
 
 import org.objkt.gl.GLVertexArray;
 import org.objkt.gl.GLVertexBuffer;
-import org.objkt.gl.GLVertexArray.VertexAttribInfo;
+import org.objkt.gl.GLVertexArray.VertexAttribFormat;
 import org.objkt.gl.enums.BufferUsage;
 import org.objkt.memory.MemBlock;
 
 public class VertexArrayBuilder {
 	final GLVertexArray va;
-	final int vertexNumber;
+	final int numberOfVerticies;
 	int vertex;
 	final BufferUsage usage;
 	final VertexAttribArrayBuffer[] attribs;
 
-	public VertexArrayBuilder(BufferUsage u, int p_vertexNumber, VertexAttribInfo... attribsArray) {
+	public VertexArrayBuilder(BufferUsage u, int p_verts, VertexAttribFormat... attribsArray) {
 		this.va = new GLVertexArray();
-		this.vertexNumber = p_vertexNumber;
+		this.numberOfVerticies = p_verts;
 		this.usage = u;
-		this.attribs = new VertexAttribArrayBuffer[attribsArray.length];
+		
+		int maxIndex = 0;
+		for(VertexAttribFormat format : attribsArray) if(format.index > maxIndex) maxIndex = format.index;
+		
+		this.attribs = new VertexAttribArrayBuffer[maxIndex + 1];
 
-		for (int i = 0; i < attribsArray.length; i++) {
-			VertexAttribInfo attribInfo = attribsArray[i];
+		for (VertexAttribFormat attribFormat : attribsArray) {
+			if(attribs[attribFormat.index] != null) {
+				throw new Error("Attrib index " + attribFormat.index + " uses multiple times");
+			}
+			
 			GLVertexBuffer vbo = new GLVertexBuffer();
-			vbo.allocate(vertexNumber * attribInfo.componentsBytes(), usage);
-			attribs[i] = VertexAttribArrayBuffer.map(va.vertexAttribPointer(i, attribInfo, vbo).enable(), p_vertexNumber);
+			vbo.allocate(numberOfVerticies * attribFormat.componentsBytes(), usage);
+			attribs[attribFormat.index] = VertexAttribArrayBuffer.map(va.vertexAttribPointer(attribFormat, vbo).enable(), p_verts);
 		}
 		
 		vertex = 0;
 	}
 
-	public void endVertex() {
-		if (vertex >= vertexNumber) {
+	public final void endVertex() {
+		if (vertex >= numberOfVerticies) {
 			throw new Error("Too much verticies.");
 		}
 
@@ -52,8 +59,8 @@ public class VertexArrayBuilder {
 		return va;
 	}
 
-	public VertexArrayBuilder float3(int location, float f1, float f2, float f3) {
-		MemBlock mb = attribs[location].nextVertexMemoryBlock;
+	public final VertexArrayBuilder float3(int index, float f1, float f2, float f3) {
+		MemBlock mb = attribs[index].nextVertexMemoryBlock;
 
 		mb.putFloat(0, f1);
 		mb.putFloat(1, f2);
@@ -61,26 +68,26 @@ public class VertexArrayBuilder {
 		return this;
 	}
 
-	public VertexArrayBuilder float2(int location, float f1, float f2) {
-		MemBlock mb = attribs[location].nextVertexMemoryBlock;
+	public final VertexArrayBuilder float2(int index, float f1, float f2) {
+		MemBlock mb = attribs[index].nextVertexMemoryBlock;
 
 		mb.putFloat(0, f1);
 		mb.putFloat(1, f2);
 		return this;
 	}
 
-	public VertexArrayBuilder float1(int location, float f) {
-		attribs[location].nextVertexMemoryBlock.putFloat(0, f);
+	public final VertexArrayBuilder float1(int index, float f) {
+		attribs[index].nextVertexMemoryBlock.putFloat(0, f);
 		return this;
 	}
 
-	public VertexArrayBuilder int1(int location, int i) {
-		attribs[location].nextVertexMemoryBlock.putInt(0, i);
+	public final VertexArrayBuilder int1(int index, int i) {
+		attribs[index].nextVertexMemoryBlock.putInt(0, i);
 		return this;
 	}
 
-	public VertexArrayBuilder short1(int location, short s) {
-		attribs[location].nextVertexMemoryBlock.putShort(0, s);
+	public final VertexArrayBuilder short1(int index, short s) {
+		attribs[index].nextVertexMemoryBlock.putShort(0, s);
 		return this;
 	}
 }

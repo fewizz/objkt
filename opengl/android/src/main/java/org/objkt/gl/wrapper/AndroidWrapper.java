@@ -135,36 +135,36 @@ public class AndroidWrapper extends Wrapper {
 			public void image2D(int tar, int level, int internalFormat, int w, int h, int border, int bufferPixelFormat, int bufferDataType, long address) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, address, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, address, prevSize);
 				GLES10.glTexImage2D(tar, level, internalFormat, w, h, border, bufferPixelFormat, bufferDataType, buff);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
 
 			@Override
 			public void subImage2D(int tar, int level, int xOff, int yOff, int w, int h, int bufferPixelFormat, int bufferDataType, long address) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, address, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, address, prevSize);
 				GLES10.glTexSubImage2D(tar, level, xOff, yOff, w, h, bufferPixelFormat, bufferDataType, buff);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
 
 			@Override
 			public void image3D(int tar, int level, int internalFormat, int w, int h, int d, int border, int bufferPixelFormat, int bufferDataType, long address) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, address, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, address, prevSize);
 				GLES30.glTexImage3D(tar, level, internalFormat, w, h, d, border, bufferPixelFormat, bufferDataType, buff);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
 
 			@Override
 			public void subImage3D(int tar, int level, int xOff, int yOff, int zOff, int w, int h, int d, int bufferPixelFormat, int bufferDataType, long address) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, address, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, address, prevSize);
 				GLES30.glTexSubImage3D(tar, level, xOff, yOff, zOff, w, h, d, bufferPixelFormat, bufferDataType, buff);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 				
 			}
 		};
@@ -200,9 +200,9 @@ public class AndroidWrapper extends Wrapper {
 			public void subData(int target, long offset, long size, long data) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, data, (int)size);
+				Utils.setBufferAddressAndCapacity(buff, data, (int)size);
 				GLES11.glBufferSubData(target, (int)offset, (int)size, buff);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
 			
 			@Override
@@ -214,9 +214,9 @@ public class AndroidWrapper extends Wrapper {
 			public void data(int target, long size, long data, int usage) {
 				long prev = Utils.address(buff);
 				int prevSize = buff.capacity();
-				Utils.setBuffer(buff, data, (int)size);
+				Utils.setBufferAddressAndCapacity(buff, data, (int)size);
 				GLES11.glBufferData(target, (int)size, buff, usage);
-				Utils.setBuffer(buff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buff, prev, prevSize);
 			}
 		};
 	}
@@ -312,23 +312,32 @@ public class AndroidWrapper extends Wrapper {
 			public void uniform1iv(int loc, int count, long address) {
 				long prev = Utils.address(buffi);
 				int prevSize = buffi.capacity();
-				Utils.setBuffer(buffi, address, count);
+				Utils.setBufferAddressAndCapacity(buffi, address, count);
 				GLES20.glUniform1iv(loc, count, buffi);
-				Utils.setBuffer(buffi, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(buffi, prev, prevSize);
 			}
 
 			@Override
 			public void uniformMatrix4fv(int loc, int count, boolean trans, long address) {
 				long prev = Utils.address(bufff);
 				int prevSize = bufff.capacity();
-				Utils.setBuffer(bufff, address, count);
+				Utils.setBufferAddressAndCapacity(bufff, address, count);
 				GLES20.glUniformMatrix4fv(loc, count, trans, bufff);
-				Utils.setBuffer(bufff, prev, prevSize);
+				Utils.setBufferAddressAndCapacity(bufff, prev, prevSize);
 			}
 
 			@Override
 			public void uniform1i(int loc, int val) {
 				GLES20.glUniform1i(loc, val);
+			}
+
+			@Override
+			public void attrib1fv(int loc, int count, long address) {
+				long prev = Utils.address(bufff);
+				int prevSize = bufff.capacity();
+				Utils.setBufferAddressAndCapacity(bufff, address, count);
+				GLES20.glVertexAttrib1fv(loc, bufff);
+				Utils.setBufferAddressAndCapacity(bufff, prev, prevSize);
 			}
 		};
 	}

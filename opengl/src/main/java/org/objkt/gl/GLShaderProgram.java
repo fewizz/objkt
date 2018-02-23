@@ -111,4 +111,9 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		use();
 		ctx.wrap.shaderProg.uniform1iv(location, values.ints(), values.address());
 	}
+	
+	public void setAttrib() {
+		use();
+		
+	}
 }

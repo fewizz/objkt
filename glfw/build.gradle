@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+	jcenter()
+}
+
+dependencies {
+	compile project(':objkt-memory')
+	compile 'org.lwjgl:lwjgl:3.1.5'
+	compile 'org.lwjgl:lwjgl-glfw:3.1.5'
+}

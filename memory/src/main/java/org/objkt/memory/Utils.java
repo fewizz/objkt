@@ -1,71 +1,105 @@
 package org.objkt.memory;
 
-import java.lang.reflect.Field;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.lang.reflect.*;
+import java.nio.*;
 
 import sun.misc.Unsafe;
 
 public class Utils {
-	static Unsafe unsafe;
-	static Field bufferAddressField;
-	static Field bufferCapField;
+	public static final Unsafe UNSAFE;
+	static final Field FIELD_BUFFER_ADDRESS;
+	static final Field FIELD_BUFFER_CAPACITY;
+	static final Constructor<?> CONSTRUCTOR_DIRECT_BUFFER;
 	
 	static {
+		Unsafe u = null;
+		Field ba = null;
+		Field bc = null;
+		Constructor<?> dbc = null;
 		try {
-			Field f = Unsafe.class.getDeclaredField("theUnsafe");
-			f.setAccessible(true);
-			unsafe = (Unsafe) f.get(null);
+			Field uf = Unsafe.class.getDeclaredField("theUnsafe");
+			uf.setAccessible(true);
+			u = (Unsafe) uf.get(null);
 			
-			bufferAddressField = Buffer.class.getDeclaredField("address");
-			bufferAddressField.setAccessible(true);
+			ba = Buffer.class.getDeclaredField("address");
+			ba.setAccessible(true);
 			
-			bufferCapField = Buffer.class.getDeclaredField("capacity");
-			bufferCapField.setAccessible(true);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			bc = Buffer.class.getDeclaredField("capacity");
+			bc.setAccessible(true);
+			
+			dbc = Class.forName("java.nio.DirectByteBuffer").getDeclaredConstructor(long.class, int.class);
+			dbc.setAccessible(true);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		CONSTRUCTOR_DIRECT_BUFFER = dbc;
+		FIELD_BUFFER_ADDRESS = ba;
+		FIELD_BUFFER_CAPACITY = bc;
+		UNSAFE = u;
 	}
 	
-	public static long address(Buffer buff) {
+	public static long address(ByteBuffer buff) {
 		try {
-			return bufferAddressField.getLong(buff);
+			return FIELD_BUFFER_ADDRESS.getLong(buff);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return 0;
 	}
 	
-	public static long addressOfStringUTF8(String s, boolean nullT) {
-		ByteBuffer b = java.nio.charset.Charset.forName("UTF-8").encode(s + (nullT ? '\0' : ""));
-		ByteBuffer direct = directByteBuffer(b.capacity()).put(b);
-		direct.flip();
-		return address(direct);
+	public static int utf8Length(CharSequence sequence) {
+		int count = 0;
+	    for (int i = 0, len = sequence.length(); i < len; i++) {
+	      char ch = sequence.charAt(i);
+	      if (ch <= 0x7F) {
+	        count++;
+	      } else if (ch <= 0x7FF) {
+	        count += 2;
+	      } else if (Character.isHighSurrogate(ch)) {
+	        count += 4;
+	        ++i;
+	      } else {
+	        count += 3;
+	      }
+	    }
+	    return count;
 	}
 	
-	public static ByteBuffer directByteBuffer(int cap) {
-		return ByteBuffer.allocateDirect(cap).order(ByteOrder.nativeOrder());
-	}
-	
-	public static FloatBuffer directFloatBuffer(int cap) {
-		return directByteBuffer(cap * Float.BYTES).asFloatBuffer();
-	}
-	
-	public static IntBuffer directIntBuffer(int cap) {
-		return directByteBuffer(cap * Integer.BYTES).asIntBuffer();
-	}
-	
-	public static void invalidateBuffer(Buffer b) {
-		setBuffer(b, 0, 0);
-	}
-	
-	public static void setBuffer(Buffer b, long addr, int cap) {
+	public static ByteBuffer newNullDirectBufferWithoutCleaner() {
 		try {
-			bufferAddressField.setLong(b, addr);
-			bufferCapField.setInt(b, cap);
+			return ((ByteBuffer) CONSTRUCTOR_DIRECT_BUFFER.newInstance(0L, 0)).order(ByteOrder.nativeOrder());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static ByteBuffer newDirectBufferWithoutCleaner(int capacity) {
+		try {
+			return ((ByteBuffer) CONSTRUCTOR_DIRECT_BUFFER.newInstance(UNSAFE.allocateMemory(capacity), capacity)).order(ByteOrder.nativeOrder());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static void invalidateBuffer(ByteBuffer b) {
+		setBufferAddressAndCapacity(b, 0, 0);
+	}
+	
+	public static void setBufferAddressAndCapacity(ByteBuffer b, long addr, int cap) {
+		try {
+			FIELD_BUFFER_ADDRESS.setLong(b, addr);
+			FIELD_BUFFER_CAPACITY.setInt(b, cap);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void setBufferAddress(ByteBuffer b, long addr) {
+		try {
+			FIELD_BUFFER_ADDRESS.setLong(b, addr);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

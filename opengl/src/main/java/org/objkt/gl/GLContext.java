@@ -3,6 +3,7 @@ package org.objkt.gl;
 import java.util.*;
 import java.util.function.*;
 
+import org.objkt.gl.GLVertexArray.VertexAttribFormat;
 import org.objkt.gl.enums.*;
 import org.objkt.gl.wrapper.*;
 
@@ -56,6 +57,7 @@ public final class GLContext {
 		if (CONTEXTS.get() != null)
 			throw new Error("Already created");
 		
+		cp.createContext();
 		wrapper.preContextObjectCreatrion();
 		GLContext c = new GLContext(wrapper);
 		CONTEXTS.set(c);
@@ -116,6 +118,16 @@ public final class GLContext {
 				public void accept(GLTexture t) {
 					activeTextures[activeTextureUnit] = t;
 					boundTexture = t;
+				}
+			});
+		}
+		
+		if(obj instanceof GLVertexArray) {
+			GLVertexArray vao = (GLVertexArray) obj;
+			vao.doAlwaysAfterBind(new Consumer<GLVertexArray>() {
+				@Override
+				public void accept(GLVertexArray arg0) {
+					boundVertexArray = arg0;
 				}
 			});
 		}
@@ -206,5 +218,20 @@ public final class GLContext {
 	
 	public void dedugMessageCallback(DebugMessageCallback callback) {
 		wrap.core.debugMessageCallback(callback);
+	}
+	
+	public void vertexAttribPointer(int index, VertexAttribFormat attribInfo, GLVertexBuffer vbo, int stride, long offset) {
+		if(boundVertexArray != defaultVertexArray) {
+			defaultVertexArray.bind();
+		}
+		vbo.bind();
+		wrap.vertexArray.vertexAttribPointer(index, attribInfo.components, attribInfo.clientDataType.token, attribInfo.normalized, stride, offset);
+	}
+	
+	public void enableVertexAttribArray(int index) {
+		if(boundVertexArray != defaultVertexArray) {
+			defaultVertexArray.bind();
+		}
+		wrap.vertexArray.enableAttrib(index);
 	}
 }

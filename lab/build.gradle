@@ -6,10 +6,15 @@ repositories {
 }
 
 dependencies {
+	compile 'org.joml:joml:1.9.8'
 	compile project(':objkt-opengl-lwjgl')
+	compile project(':objkt-engine')
+	compile project(':objkt-glfw')
 	compile 'org.lwjgl:lwjgl-glfw:3.1.5'
 	runtime 'org.lwjgl:lwjgl-glfw:3.1.5:natives-windows'
 	compile 'org.lwjgl:lwjgl:3.1.5'
 	runtime 'org.lwjgl:lwjgl:3.1.5:natives-windows'
 	runtime 'org.lwjgl:lwjgl-opengl:3.1.5:natives-windows'
+	compile 'io.netty:netty-all:4.1.21.Final'
+	runtime 'org.fusesource.jansi:jansi:1.17'
 }
