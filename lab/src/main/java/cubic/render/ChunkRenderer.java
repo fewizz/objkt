@@ -3,7 +3,6 @@ package cubic.render;
 import org.objkt.gl.*;
 import org.objkt.gl.enums.*;
 
-import cubic.Client;
 import cubic.world.Chunk;
 
 public class ChunkRenderer {
@@ -16,7 +15,6 @@ public class ChunkRenderer {
 		compile();
 		
 		if(program == null) {
-			try {
 			program = new GLShaderProgram(
 					ShaderType.VERTEX_SHADER,
 					  "#version 320"
@@ -37,9 +35,7 @@ public class ChunkRenderer {
 					+ "void main() {"
 					+ "	gl_FragColor = vs_color;"
 					+ "}");
-			} catch(Error e) {
-				Client.LOGGER.severe(e.toString());
-			}
+
 		}
 	}
 	

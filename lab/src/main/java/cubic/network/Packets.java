@@ -1,5 +1,7 @@
 package cubic.network;
 
+import cubic.PacketClientReady;
+
 public class Packets {
 	public static final PacketHelloFromServer HELLO_FROM_SERVER = new PacketHelloFromServer();
 	public static final PacketFullChunk FULL_CHUNK = new PacketFullChunk();

@@ -5,10 +5,8 @@ import java.nio.ByteBuffer;
 import org.objkt.memory.*;
 
 import cubic.Client;
-import cubic.Server.ConnectionState;
 import cubic.world.Chunk;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 
 public class PacketFullChunk extends PacketInfo<Chunk> {
 
@@ -19,7 +17,7 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	void read(Channel channel, ByteBuf buf) {
+	public void read(ExtendedChannel channel, ByteBuf buf) {
 		int x = buf.readInt();
 		int y = buf.readInt();
 		int z = buf.readInt();
@@ -27,6 +25,7 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 		ByteBuffer buff = Utils.newDirectBufferWithoutCleaner(buf.readInt());
 		
 		buf.readBytes(buff);
+		buff.position(0);
 		
 		Client.TASKS.add(() -> {
 			MemBlock block = new MemBlock();
@@ -42,13 +41,13 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	void write(ByteBuf buf, Chunk ch) {
-		buf.writeInt(ch.pos.x);
-		buf.writeInt(ch.pos.y);
-		buf.writeInt(ch.pos.z);
+	public void write(ByteBuf buf, Chunk chunk) {
+		buf.writeInt(chunk.pos.x);
+		buf.writeInt(chunk.pos.y);
+		buf.writeInt(chunk.pos.z);
 		
 		MemBlockDataOutput dataOut = new MemBlockDataOutput();
-		ch.writeBlockData(dataOut);
+		chunk.writeBlockData(dataOut);
 		buf.writeInt(dataOut.size());
 		
 		ByteBuffer buff = Utils.newNullDirectBufferWithoutCleaner();
@@ -58,17 +57,13 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 			
 			Utils.setBufferAddressAndCapacity(buff, block.address(), dataOut.lengths.get(i));
 			buff.limit(dataOut.lengths.get(i));
+			buff.position(0);
 			
 			buf.writeBytes(buff);
 		}
 		
 		Utils.setBufferAddress(buff, 0);
 		dataOut.free();
-	}
-
-	@Override
-	ConnectionState getConnectionState() {
-		return ConnectionState.PLAYTIME;
 	}
 
 }

@@ -7,7 +7,7 @@ public final class MemBlockDataOutput implements DataOutput {
 	public final List<MemBlock> blocks = new ArrayList<>();
 	public final List<Integer> lengths = new ArrayList<>();
 	int current;
-	int position = 0;
+	//int position = 0;
 	public final int blockSize = 0xFFF;
 	
 	public MemBlockDataOutput() {
@@ -22,7 +22,9 @@ public final class MemBlockDataOutput implements DataOutput {
 	}
 	
 	public int size() {
-		return position;
+		int p = 0;
+		for(int s : lengths) p += s;
+		return p;
 	}
 	
 	private void check(int size) {
@@ -39,8 +41,8 @@ public final class MemBlockDataOutput implements DataOutput {
 	@Override
 	public void write(int b) {
 		check(Byte.BYTES);
-		blocks.get(current).put(lengths.get(current), (byte) b);
-		position += Byte.BYTES;
+		blocks.get(current).put(lengths.get(current) - Byte.BYTES, (byte) b);
+		//position += Byte.BYTES;
 	}
 
 	@Override
@@ -76,8 +78,8 @@ public final class MemBlockDataOutput implements DataOutput {
 	@Override
 	public void writeChar(int v) {
 		check(Character.BYTES);
-		blocks.get(current).putChar0(lengths.get(current), (char) v);
-		position += Character.BYTES;
+		blocks.get(current).putChar0(lengths.get(current) - Character.BYTES, (char) v);
+		//position += Character.BYTES;
 	}
 
 	@Override
@@ -91,44 +93,44 @@ public final class MemBlockDataOutput implements DataOutput {
 	@Override
 	public void writeDouble(double v) {
 		check(Double.BYTES);
-		blocks.get(current).putDouble0(lengths.get(current), v);
-		position += Double.BYTES;
+		blocks.get(current).putDouble0(lengths.get(current) - Double.BYTES, v);
+		//position += Double.BYTES;
 	}
 
 	@Override
 	public void writeFloat(float v) {
 		check(Float.BYTES);
-		blocks.get(current).putFloat0(lengths.get(current), v);
-		position += Float.BYTES;
+		blocks.get(current).putFloat0(lengths.get(current) - Float.BYTES, v);
+		//position += Float.BYTES;
 	}
 
 	@Override
 	public void writeInt(int v) {
 		check(Integer.BYTES);
-		blocks.get(current).putInt0(lengths.get(current), v);
-		position += Integer.BYTES;
+		blocks.get(current).putInt0(lengths.get(current) - Integer.BYTES, v);
+		//position += Integer.BYTES;
 	}
 
 	@Override
 	public void writeLong(long v) {
 		check(Long.BYTES);
-		blocks.get(current).putLong0(lengths.get(current), v);
-		position += Long.BYTES;
+		blocks.get(current).putLong0(lengths.get(current) - Long.BYTES, v);
+		//position += Long.BYTES;
 	}
 
 	@Override
 	public void writeShort(int v) {
 		check(Short.BYTES);
-		blocks.get(current).putShort0(lengths.get(current), (short) v);
-		position += Short.BYTES;
+		blocks.get(current).putShort0(lengths.get(current) - Short.BYTES, (short) v);
+		//position += Short.BYTES;
 	}
 
 	@Override
 	public void writeUTF(String s) {
 		int len = Utils.utf8Length(s);
 		check(len);
-		blocks.get(current).putUTF8(s, lengths.get(current), false);
-		position += len;
+		blocks.get(current).putUTF8(s, lengths.get(current) - len, false);
+		//position += len;
 	}
 
 }

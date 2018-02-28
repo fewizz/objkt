@@ -31,21 +31,21 @@ public class MemBlockDataInput implements DataInput {
 
 	@Override
 	public char readChar() {
-		char v = block.getChar(position);
+		char v = block.getChar0(position);
 		position += Character.BYTES;
 		return v;
 	}
 
 	@Override
 	public double readDouble() {
-		double v = block.getDouble(position);
+		double v = block.getDouble0(position);
 		position += Double.BYTES;
 		return v;
 	}
 
 	@Override
 	public float readFloat() {
-		float v = block.getFloat(position);
+		float v = block.getFloat0(position);
 		position += Float.BYTES;
 		return v;
 	}
@@ -64,7 +64,7 @@ public class MemBlockDataInput implements DataInput {
 
 	@Override
 	public int readInt() {
-		int v = block.getInt(position);
+		int v = block.getInt0(position);
 		position += Integer.BYTES;
 		return v;
 	}
@@ -77,14 +77,14 @@ public class MemBlockDataInput implements DataInput {
 
 	@Override
 	public long readLong() {
-		long v = block.getLong(position);
+		long v = block.getLong0(position);
 		position += Long.BYTES;
 		return v;
 	}
 
 	@Override
 	public short readShort() {
-		short v = block.getShort(position);
+		short v = block.getShort0(position);
 		position += Short.BYTES;
 		return v;
 	}

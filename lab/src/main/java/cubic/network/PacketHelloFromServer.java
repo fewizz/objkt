@@ -4,9 +4,7 @@ import java.util.Random;
 
 import cubic.*;
 import cubic.Registry.RegistryElement;
-import cubic.Server.ConnectionState;
 import io.netty.buffer.*;
-import io.netty.channel.Channel;
 import io.netty.util.CharsetUtil;
 
 public class PacketHelloFromServer extends PacketInfo<String> {
@@ -15,15 +13,10 @@ public class PacketHelloFromServer extends PacketInfo<String> {
 	public String getName() {
 		return "cubic:hello_from_server";
 	}
-	
-	@Override
-	ConnectionState getConnectionState() {
-		return ConnectionState.PREPARING;
-	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	void read(Channel ch, ByteBuf buff) {
+	public void read(ExtendedChannel ch, ByteBuf buff) {
 		int regs = buff.readInt();
 		
 		Client.LOGGER.info("Reading " + regs + " regs from packet");
@@ -50,11 +43,11 @@ public class PacketHelloFromServer extends PacketInfo<String> {
 			}
 		}
 		
-		Client.network.sendPacket(Packets.IM_READY, "Player" + Integer.toString(new Random().nextInt(1000)));
+		Client.channel.sendPacket(Packets.IM_READY, "Player" + Integer.toString(new Random().nextInt(1000)));
 	}
 
 	@Override
-	void write(ByteBuf buf, String s) {
+	public void write(ByteBuf buf, String s) {
 		buf.writeInt(Registries.LIST.size());
 		
 		Registries.LIST.forEach(r -> {

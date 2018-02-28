@@ -1,10 +1,8 @@
 package cubic.network;
 
 import cubic.Client;
-import cubic.Server.ConnectionState;
 import cubic.world.Chunk;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 
 public class PacketUnloadChunk extends PacketInfo<Chunk> {
 
@@ -14,7 +12,7 @@ public class PacketUnloadChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	void read(Channel channel, ByteBuf buf) {
+	public void read(ExtendedChannel channel, ByteBuf buf) {
 		long posLong = buf.readLong();
 		
 		Client.TASKS.add(() -> {
@@ -24,13 +22,8 @@ public class PacketUnloadChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	void write(ByteBuf buf, Chunk t) {
+	public void write(ByteBuf buf, Chunk t) {
 		buf.writeLong(t.pos.toLong());
-	}
-
-	@Override
-	ConnectionState getConnectionState() {
-		return ConnectionState.PLAYTIME;
 	}
 
 }

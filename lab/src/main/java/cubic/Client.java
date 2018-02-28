@@ -2,7 +2,7 @@ package cubic;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 import org.joml.Matrix4f;
 import org.objkt.engine.Tasks;
@@ -12,22 +12,20 @@ import org.objkt.gl.wrapper.*;
 import org.objkt.glfw.*;
 
 import cubic.network.*;
-import cubic.world.*;
+import cubic.world.ClientWorld;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class Client {
 	public static final Logger LOGGER = Logger.getLogger("CLIENT");
-	public static final Matrix4f mat = new Matrix4f();
-	final static Camera cam = new Camera();
+	public static final Matrix4f MAT = new Matrix4f();
+	final static Camera CAM = new Camera();
 	public static GLContext gl;
 	public static final Tasks GL_TASKS = new Tasks();
 	public static final Tasks TASKS = new Tasks();
 	public static GLFWWindow window;
-	public static NetworkManager network;
+	public static ExtendedNioSocketChannel channel;
 	public static ClientWorld world;
 	
 	static void start() {
@@ -40,6 +38,7 @@ public class Client {
 		
 		new Thread(() -> Server.start("127.0.0.1", 25565), "Server Thread").start();
 		
+		world = new ClientWorld();
 		connectToServer();
 		
 		new Thread(() -> {
@@ -68,7 +67,7 @@ public class Client {
 	static void createWindow() {
 		window = new GLFWWindowBuilder()
 				.title("Cubic")
-				.width(600)
+				.width(1000)
 				.height(600)
 				.hint(GLFW_CONTEXT_VERSION_MAJOR, 3)
 				.hint(GLFW_CONTEXT_VERSION_MINOR, 2)
@@ -82,7 +81,7 @@ public class Client {
 				window.setShouldClose();
 		});
 		window.setCursorPosCallback((long window, double xpos, double ypos) -> {
-			cam.rotate(xpos, ypos);
+			CAM.rotate(xpos, ypos);
 		});
 		window.setFramebufferSizeCallback((long window, int width, int height) -> {
 			GL_TASKS.add(() -> gl.viewport(0, 0, width, height));
@@ -94,17 +93,17 @@ public class Client {
 
 		gl.dedugMessageCallback((DebugSource source, DebugType type, int id, DebugSeverity severity, String message) -> {
 			if(type == DebugType.DEBUG_TYPE_ERROR) {
-				System.err.println(message);
+				LOGGER.severe(message);
 				System.exit(1);
 			}
 			
-			System.out.println(source.name() + ": " + message);
+			LOGGER.info("GL " + source.name() + ": " + message);
 		});
 	}
 	
 	static void connectToServer() {
 		Bootstrap boot = new Bootstrap();
-		boot.channel(NioSocketChannel.class);
+		boot.channel(ExtendedNioSocketChannel.class);
 		boot.group(new NioEventLoopGroup());
 		boot.handler(new ChannelInitializer<Channel>() {
 			@Override
@@ -112,9 +111,8 @@ public class Client {
 				ch.pipeline().addLast(new ChannelPacketReadHandler());
 			}
 		});
-		SocketChannel channel = (SocketChannel) boot.connect("127.0.0.1", 25565).awaitUninterruptibly().channel();
+		channel = (ExtendedNioSocketChannel) boot.connect("127.0.0.1", 25565).awaitUninterruptibly().channel();
 		channel.config().setTcpNoDelay(true);
-		network = new NetworkManager(channel);
 		
 		LOGGER.info("I connected to server!");
 	}
