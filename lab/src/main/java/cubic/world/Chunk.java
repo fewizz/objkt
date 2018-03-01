@@ -39,14 +39,14 @@ public class Chunk {
 		return this == arg0;
 	}
 	
-	public void writeBlockData(MemBlockDataOutput out) {
+	public void writeBlockData(DataOutput out) {
 		for(Block b : blocks) {
 			out.writeInt(Registries.BLOCKS.idOf(b.getProvider()));
 			b.write(out);
 		}
 	}
 	
-	public void readBlockData(MemBlockDataInput in) {
+	public void readBlockData(DataInput in) {
 		for(int i = 0; i < 16*16*16; i++) {
 			int id = in.readInt();
 			

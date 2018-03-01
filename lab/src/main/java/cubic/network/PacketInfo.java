@@ -1,10 +1,11 @@
 package cubic.network;
 
+import org.objkt.memory.*;
+
 import cubic.Registry.SimpleRegistryElement;
-import io.netty.buffer.ByteBuf;
 
 public abstract class PacketInfo<T> extends SimpleRegistryElement {
-	protected abstract void read(ExtendedChannel channel, ByteBuf buf);
+	public abstract void read(DataInput in);
 	
-	protected abstract void write(ByteBuf buf, T t);
+	public abstract void write(DataOutput out, T t);
 }

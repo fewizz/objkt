@@ -5,12 +5,11 @@ import java.util.*;
 import org.objkt.engine.MathUtils;
 
 import cubic.*;
-import cubic.network.*;
-import io.netty.util.collection.*;
+import cubic.network.Packets;
 
 public class ChunksWatcher {
 	static final int RAD = 10;
-	final LongObjectMap<List<ServerPlayer>> chunkToPlayersMap = new LongObjectHashMap<>();
+	final Map<Long, List<ServerPlayer>> chunkToPlayersMap = new HashMap<>();
 	final Map<ServerPlayer, List<Long>> playerToChunksMap = new HashMap<>();
 	final Map<ServerPlayer, Long> playerChunkPositions = new HashMap<>();
 	

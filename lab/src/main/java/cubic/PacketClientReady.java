@@ -1,8 +1,8 @@
 package cubic;
 
+import org.objkt.memory.*;
+
 import cubic.network.*;
-import io.netty.buffer.*;
-import io.netty.util.CharsetUtil;
 
 public class PacketClientReady extends PacketInfo<String> {
 	@Override
@@ -11,14 +11,15 @@ public class PacketClientReady extends PacketInfo<String> {
 	}
 	
 	@Override
-	public void write(ByteBuf buf, String name) {
-		buf.writeInt(name.length());
-		ByteBufUtil.writeUtf8(buf, name);
+	public void write(DataOutput out, String name) {
+		out.writeInt(name.length());
+		out.writeUTF(name);
 	}
 	
 	@Override
-	public void read(ExtendedChannel ch, ByteBuf buf) {
-		String name = buf.readCharSequence(buf.readInt(), CharsetUtil.UTF_8).toString();
+	public void read(DataInput in) {
+		String name = in.readUTF();
+		
 		Server.TASKS.add(() -> {
 			ch.setPlayer(new ServerPlayer(ch, name));
 			Server.onPlayerReadyToPlay((ServerPlayer) ch.getPlayer());

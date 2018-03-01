@@ -3,11 +3,9 @@ package cubic;
 import java.util.*;
 import java.util.function.BiConsumer;
 
-import io.netty.util.collection.IntObjectHashMap;
-
 public class Registry<T extends Registry.RegistryElement> {
 	public final String name;
-	IntObjectHashMap<T> intObjMap = new IntObjectHashMap<>();
+	Map<Integer, T> intObjMap = new HashMap<>();
 	Map<T, Integer> objIntMap = new HashMap<>();
 	
 	public Registry(String name) {

@@ -15,6 +15,6 @@ dependencies {
 	compile 'org.lwjgl:lwjgl:3.1.5'
 	runtime 'org.lwjgl:lwjgl:3.1.5:natives-windows'
 	runtime 'org.lwjgl:lwjgl-opengl:3.1.5:natives-windows'
-	compile 'io.netty:netty-all:4.1.21.Final'
+	//compile 'io.netty:netty-all:4.1.21.Final'
 	runtime 'org.fusesource.jansi:jansi:1.17'
 }

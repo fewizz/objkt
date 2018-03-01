@@ -1,6 +1,6 @@
 package cubic.block;
 import org.objkt.engine.Color;
-import org.objkt.memory.MemBlockDataOutput;
+import org.objkt.memory.*;
 
 import cubic.render.ChunkVertexArrayBuilder;
 import cubic.world.Chunk;
@@ -66,6 +66,6 @@ public class Block {
 		builder.position(x, y, z).endVertex();
 	}
 	
-	public void write(MemBlockDataOutput out) {
+	public void write(DataOutput out) {
 	}
 }

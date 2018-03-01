@@ -2,6 +2,8 @@ package cubic;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.net.InetSocketAddress;
+import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
 import org.joml.Matrix4f;
@@ -11,11 +13,8 @@ import org.objkt.gl.enums.*;
 import org.objkt.gl.wrapper.*;
 import org.objkt.glfw.*;
 
-import cubic.network.*;
+import cubic.network.ExtendedNioSocketChannel;
 import cubic.world.ClientWorld;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
 
 public class Client {
 	public static final Logger LOGGER = Logger.getLogger("CLIENT");
@@ -101,8 +100,8 @@ public class Client {
 		});
 	}
 	
-	static void connectToServer() {
-		Bootstrap boot = new Bootstrap();
+	static void connectToServer() { try {
+		/*Bootstrap boot = new Bootstrap();
 		boot.channel(ExtendedNioSocketChannel.class);
 		boot.group(new NioEventLoopGroup());
 		boot.handler(new ChannelInitializer<Channel>() {
@@ -112,8 +111,10 @@ public class Client {
 			}
 		});
 		channel = (ExtendedNioSocketChannel) boot.connect("127.0.0.1", 25565).awaitUninterruptibly().channel();
-		channel.config().setTcpNoDelay(true);
+		channel.config().setTcpNoDelay(true);*/
+		SocketChannel sc = SocketChannel.open();
+		sc.connect(new InetSocketAddress("127.0.0.1", 25565));
 		
 		LOGGER.info("I connected to server!");
-	}
+	} catch(Exception e) {LOGGER.severe(e.getMessage());} }
 }

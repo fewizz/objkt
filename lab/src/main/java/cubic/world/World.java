@@ -3,14 +3,13 @@ package cubic.world;
 
 import java.util.*;
 
-import org.objkt.memory.MemBlockDataInput;
+import org.objkt.memory.*;
 
 import cubic.Entity;
-import io.netty.util.collection.*;
 
 public class World {
 	public final List<Entity> entities = new ArrayList<>();
-	public final LongObjectMap<Chunk> chunks = new LongObjectHashMap<>();
+	public final Map<Long, Chunk> chunks = new HashMap<>();
 	public final Random random;
 	public final long seed;
 
@@ -34,10 +33,9 @@ public class World {
 		chunks.remove(Chunk.Position.toLong(x, y, z));
 	}
 	
-	public Chunk addChunkFromData(int x, int y, int z, MemBlockDataInput in) {
+	public Chunk addChunkFromData(int x, int y, int z, DataInput in) {
 		Chunk chunk = new Chunk(x, y, z);
 		chunk.readBlockData(in);
-		in.free();
 
 		chunks.put(chunk.pos.toLong(), chunk);
 		return chunk;
