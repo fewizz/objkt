@@ -1,5 +1,6 @@
 package cubic;
 
+import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -9,13 +10,13 @@ import java.util.logging.Logger;
 import org.objkt.engine.Tasks;
 import org.objkt.memory.*;
 
+import cubic.network.*;
 import cubic.world.ServerWorld;
 
 public class Server {
 	public static final Logger LOGGER = Logger.getLogger("SERVER");
 	public static ServerWorld world;
 	static Registries registries;
-	//static ExtendedServerSocketChannel channel;
 	static ServerSocketChannel channel;
 	public static final Map<String, ServerPlayer> PLAYERS = new HashMap<>();
 	public static final Tasks TASKS = new Tasks();
@@ -36,27 +37,10 @@ public class Server {
 	private static void start0(String ip, int port) throws Exception {
 		LOGGER.info("Starting server");
 		
-		/*ServerBootstrap boot = new ServerBootstrap();
-		boot.channel(ExtendedNioServerSocketChannel.class);
-		boot.group(new NioEventLoopGroup());
-		
-		boot.childHandler(new ChannelInitializer<ExtendedChannel>() {
-			@Override
-			protected void initChannel(ExtendedChannel ch) throws Exception {
-				LOGGER.info("Client is connected to server!");
-				
-				ch.pipeline().addLast(new ChannelPacketReadHandler());
-				
-				ch.sendPacket(Packets.HELLO_FROM_SERVER);
-			}
-		});
-		
-		channel = (ExtendedServerSocketChannel) boot.bind(ip, port).awaitUninterruptibly().channel();
-		channel.config().setOption(ChannelOption.TCP_NODELAY, Boolean.TRUE);*/
+
 		channel = ServerSocketChannel.open();
-		channel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-		channel.setOption(StandardSocketOptions.TCP_NODELAY, true);
 		channel.bind(new InetSocketAddress(ip, port));
+		channel.configureBlocking(false);
 		
 		startChannelHandler();
 		
@@ -71,43 +55,25 @@ public class Server {
 	private static void startChannelHandler() { new Thread(() -> { try {
 		Selector selector = Selector.open();
 		channel.register(selector, SelectionKey.OP_ACCEPT);
-			
+		
 		Queue<MemBlock> blocks = new ArrayDeque<>();
 		ByteBuffer buff = Utils.newNullDirectBufferWithoutCleaner();
+		OffheapDataChannel mem = new OffheapDataChannel();
 			
 		for(;;) {
 			selector.select();
 				
 			if(channel.keyFor(selector).isAcceptable()) {
 				SocketChannel sc = channel.accept();
-				sc.register(selector, SelectionKey.OP_READ);
+				sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
+				sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+				sc.keyFor(selector).attach(new PacketHandler());
 			}
 			else for(SelectionKey key : selector.selectedKeys()) {
-				if(!key.isReadable())
-					continue;
-					
-				SocketChannel sc = (SocketChannel) key.channel();
-				MemBlockBuffer mem = new MemBlockBuffer();
-					
-				for(;;) {
-					MemBlock memBlock = blocks.peek();
-					if(memBlock == null) {
-						memBlock = new MemBlock(channel.getOption(StandardSocketOptions.SO_RCVBUF));
-						blocks.add(memBlock);
-					}
-						
-					Utils.setBufferAddressAndCapacity(buff, memBlock.address(), (int) memBlock.bytes());
-					
-					if(sc.read(buff) <= 0)
-						break;
-						
-					mem.capture(memBlock);
-				}
-					
-				for(;mem.isReadable();) {
-					int packetID = mem.readInt();
-					Registries.PACKETS.get(packetID).read(mem);
-				}
+				if(key.isReadable())
+					readPackets(key, blocks, buff, mem); 
+				if(key.isWritable())
+					sendPackets(key, blocks, buff, mem);
 			}
 		}
 	} catch (Exception e) { e.printStackTrace(); }}, "Server Channel Thread").start();}

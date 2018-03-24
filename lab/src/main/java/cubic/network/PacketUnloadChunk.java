@@ -13,7 +13,7 @@ public class PacketUnloadChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	public void read(DataInput in) {
+	public void read(DataInput in, Connection c) {
 		long posLong = in.readLong();
 		
 		Client.TASKS.add(() -> {
@@ -23,7 +23,7 @@ public class PacketUnloadChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	public void write(DataOutput out, Chunk t) {
+	public void write(DataOutput out, Chunk t, Connection c) {
 		out.writeLong(t.pos.toLong());
 	}
 

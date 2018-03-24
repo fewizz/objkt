@@ -16,7 +16,7 @@ public class PacketHelloFromServer extends PacketInfo<String> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void read(DataInput in) {
+	public void read(DataInput in, Connection c) {
 		int regs = in.readInt();
 		
 		Client.LOGGER.info("Reading " + regs + " regs from packet");
@@ -43,11 +43,11 @@ public class PacketHelloFromServer extends PacketInfo<String> {
 			}
 		}
 		
-		Client.channel.sendPacket(Packets.IM_READY, "Player" + Integer.toString(new Random().nextInt(1000)));
+		Client.connection.sendPacketAsynchronously(Packets.IM_READY, "Player" + Integer.toString(new Random().nextInt(1000)));
 	}
 
 	@Override
-	public void write(DataOutput out, String s) {
+	public void write(DataOutput out, String s, Connection c) {
 		out.writeInt(Registries.LIST.size());
 		
 		Registries.LIST.forEach(r -> {

@@ -7,7 +7,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.objkt.memory.MemBlock;
 
 public class GLFWWindow {
-	private final MemBlock tempMemoryBlock = new MemBlock().allocate(8);
+	private final MemBlock tempMemoryBlock = MemBlock.alloc(8);
 	public final long id;
 	
 	GLFWWindow(int w, int h, String title) {

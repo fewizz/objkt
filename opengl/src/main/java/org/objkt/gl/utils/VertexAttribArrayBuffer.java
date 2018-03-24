@@ -6,11 +6,12 @@ import org.objkt.memory.MemBlock;
 
 class VertexAttribArrayBuffer extends MemBlock {
 	final VertexAttribArray vaa;
-	public final MemBlock nextVertexMemoryBlock = new MemBlock();
+	public final MemBlock nextVertexMemoryBlock = MemBlock.empty();
 	
 	private VertexAttribArrayBuffer(VertexAttribArray vaa) {
+		super(0);
 		this.vaa = vaa;
-		nextVertexMemoryBlock.allocate(vaa.info.bytes());
+		nextVertexMemoryBlock.allocate(vaa.info.bytes()); 
 	}
 	
 	public static VertexAttribArrayBuffer map(VertexAttribArray vaa, int size) {

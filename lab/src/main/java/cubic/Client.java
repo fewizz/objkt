@@ -3,7 +3,7 @@ package cubic;
 import static org.lwjgl.glfw.GLFW.*;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.logging.Logger;
 
 import org.joml.Matrix4f;
@@ -13,7 +13,7 @@ import org.objkt.gl.enums.*;
 import org.objkt.gl.wrapper.*;
 import org.objkt.glfw.*;
 
-import cubic.network.ExtendedNioSocketChannel;
+import cubic.network.Connection;
 import cubic.world.ClientWorld;
 
 public class Client {
@@ -24,7 +24,7 @@ public class Client {
 	public static final Tasks GL_TASKS = new Tasks();
 	public static final Tasks TASKS = new Tasks();
 	public static GLFWWindow window;
-	public static ExtendedNioSocketChannel channel;
+	public static Connection connection;
 	public static ClientWorld world;
 	
 	static void start() {
@@ -113,6 +113,7 @@ public class Client {
 		channel = (ExtendedNioSocketChannel) boot.connect("127.0.0.1", 25565).awaitUninterruptibly().channel();
 		channel.config().setTcpNoDelay(true);*/
 		SocketChannel sc = SocketChannel.open();
+		connection = new Connection(sc, Selector.open());
 		sc.connect(new InetSocketAddress("127.0.0.1", 25565));
 		
 		LOGGER.info("I connected to server!");

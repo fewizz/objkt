@@ -11,18 +11,18 @@ public class PacketClientReady extends PacketInfo<String> {
 	}
 	
 	@Override
-	public void write(DataOutput out, String name) {
+	public void write(DataOutput out, String name, Connection c) {
 		out.writeInt(name.length());
 		out.writeUTF(name);
 	}
 	
 	@Override
-	public void read(DataInput in) {
+	public void read(DataInput in, Connection c) {
 		String name = in.readUTF();
 		
 		Server.TASKS.add(() -> {
-			ch.setPlayer(new ServerPlayer(ch, name));
-			Server.onPlayerReadyToPlay((ServerPlayer) ch.getPlayer());
+			c.setPlayer(new ServerPlayer(c, name));
+			Server.onPlayerReadyToPlay((ServerPlayer) c.getPlayer());
 		});
 	}
 }

@@ -14,7 +14,7 @@ public class BlockDirt extends Block implements BlockProvider {
 	}
 
 	@Override
-	public Block getBlock(MemBlockDataInput in) {
+	public Block getBlock(DataInput in) {
 		return Blocks.DIRT;
 	}
 

@@ -13,7 +13,7 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	public void read(DataInput in) {
+	public void read(DataInput in, Connection c) {
 		int x = in.readInt();
 		int y = in.readInt();
 		int z = in.readInt();
@@ -37,7 +37,7 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 	}
 
 	@Override
-	public void write(DataOutput out, Chunk chunk) {
+	public void write(DataOutput out, Chunk chunk, Connection c) {
 		out.writeInt(chunk.pos.x);
 		out.writeInt(chunk.pos.y);
 		out.writeInt(chunk.pos.z);
