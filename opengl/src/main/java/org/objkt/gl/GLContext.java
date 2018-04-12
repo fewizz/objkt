@@ -1,7 +1,6 @@
 package org.objkt.gl;
 
 import java.util.*;
-import java.util.function.*;
 
 import org.objkt.gl.GLVertexArray.VertexAttribFormat;
 import org.objkt.gl.enums.*;
@@ -18,40 +17,13 @@ public final class GLContext {
 	final int versionMajor;
 	final int versionMinor;
 	
-	public final GLTexture defaultTexture = new GLTexture(this, null) {
-		protected void createObject() {};
-		protected int getName() {return 0;}
-		protected void setName(int id) {/* nope */};
-		//public void bind0() {throw new Error();};
-		public void delete() {throw new Error();};
-	};
-	
-	public final GLVertexArray defaultVertexArray = new GLVertexArray(this) {
-		protected void createObject() {};
-		protected int getName() {return 0;}
-		protected void setName(int id) {/* nope */};
-		//public void bind0() {throw new Error();};
-		public void delete() {throw new Error();};
-	};
-	
-	public final GLBuffer<?> defaultBuffer = new GLBuffer<GLBuffer<?>>(this, null) {
-		protected void createObject() {};
-		protected int getName() {return 0;}
-		protected void setName(int id) {/* nope */};
-		//public void bind0() {throw new Error();};
-		public void delete() {throw new Error();};
-	};
-	
-	public final GLShaderProgram defaultProgram = new GLShaderProgram(this) {
-		protected void createObject() {};
-		protected int getName() {return 0;}
-		protected void setName(int id) {/* nope */};
-		public void delete() {throw new Error();};
-	};
-	
-	GLTexture boundTexture = defaultTexture;
-	GLVertexArray boundVertexArray = defaultVertexArray;
-	GLShaderProgram usingProgram = defaultProgram;
+	public final GLTexture defaultTexture;
+	public final GLVertexArray defaultVertexArray;
+	public final GLBuffer<?> defaultBuffer;
+	public final GLShaderProgram defaultProgram;
+	GLTexture boundTexture;
+	GLVertexArray boundVertexArray;
+	GLShaderProgram usingProgram;
 	
 	public static GLContext createForThisThread(ContextProvider cp, Wrapper wrapper) {
 		if (CONTEXTS.get() != null)
@@ -67,10 +39,6 @@ public final class GLContext {
 	public static GLContext current() {
 		return CONTEXTS.get();
 	}
-	
-	public static boolean isThatThreadHaveSameGLContext() {
-		return false;
-	}
 
 	private GLContext(Wrapper w) {
 		thread = Thread.currentThread();
@@ -79,9 +47,25 @@ public final class GLContext {
 		
 		versionMajor = getInteger(GLConstants.GL_MAJOR_VERSION);
 		versionMinor = getInteger(GLConstants.GL_MINOR_VERSION);
-		
-		int maxTextureUnitsAmount = getInteger(GLConstants.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-		activeTextures = new GLTexture[maxTextureUnitsAmount];
+		activeTextures = new GLTexture[getInteger(GLConstants.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS)];
+
+		defaultTexture = new GLTexture(this, TextureTarget.TEXTURE_2D, 0) {
+			@Override
+			public void delete() {throw new Error();}
+		};
+		defaultVertexArray = new GLVertexArray(this, 0) {
+			@Override
+			public void delete() {throw new Error();}
+		};
+		defaultBuffer = new GLBuffer<GLBuffer<?>>(this, BufferTarget.ARRAY_BUFFER, 0) {
+			public void delete() {throw new Error();}
+		};
+		defaultProgram = new GLShaderProgram(this, 0) {
+			public void delete() {throw new Error();}
+		};
+		boundTexture = defaultTexture;
+		boundVertexArray = defaultVertexArray;
+		usingProgram = defaultProgram;
 		Arrays.fill(activeTextures, defaultTexture);
 		
 		for(Capability c : Capability.VALUES) {
@@ -89,47 +73,10 @@ public final class GLContext {
 		}
 	}
 	
-	void onGLObjectCreated(GLObjectWithId<?> obj) {
-		if(!(obj instanceof GLBindableObject<?>)) return;
-		
-		GLBindableObject<?> bindable = (GLBindableObject<?>) obj;
-		
-		if(bindable instanceof GLTexture) {
-			GLTexture tex = (GLTexture) bindable;
-			
-			tex.doAlwaysAfterDeletion(new Consumer<GLTexture>() {
-				@Override
-				public void accept(GLTexture t) {
-					for (int unit = 0; unit < activeTextures.length; unit++) {
-						if (activeTextures[unit] == t)
-							activeTextures[unit] = defaultTexture;
-					}
-				}
-			});
-			
-			tex.bindOnlyIf(new Predicate<GLTexture>() {
-				@Override
-				public boolean test(GLTexture t) {
-					return t != boundTexture;
-				}
-			});
-			tex.doAlwaysAfterBind(new Consumer<GLTexture>() {
-				@Override
-				public void accept(GLTexture t) {
-					activeTextures[activeTextureUnit] = t;
-					boundTexture = t;
-				}
-			});
-		}
-		
-		if(obj instanceof GLVertexArray) {
-			GLVertexArray vao = (GLVertexArray) obj;
-			vao.doAlwaysAfterBind(new Consumer<GLVertexArray>() {
-				@Override
-				public void accept(GLVertexArray arg0) {
-					boundVertexArray = arg0;
-				}
-			});
+	void onTextureDeleted(GLTexture tex) {
+		for (int unit = 0; unit < activeTextures.length; unit++) {
+			if (activeTextures[unit] == tex)
+				activeTextures[unit] = defaultTexture;
 		}
 	}
 	
@@ -154,22 +101,6 @@ public final class GLContext {
 		return capabilityMap.get(cap);
 	}
 
-	public void bindTextureUnit(GLTexture texture, int index) {
-		if(activeTextures[index] == texture) {
-			return;
-		}
-		
-		if (activeTextureUnit != index) {
-			setActiveTextureUnitIndex(index);
-		}
-		if(texture == boundTexture)
-			texture.bind0();
-		else {
-			texture.bind();
-		}
-		activeTextures[index] = texture;
-	}
-
 	void setActiveTextureUnitIndex(int index) {
 		activeTextureUnit = index;
 		wrap.core.activeTexture(GLConstants.GL_TEXTURE0 + activeTextureUnit);
@@ -179,9 +110,7 @@ public final class GLContext {
 		return getInteger(pname.token);
 	}
 	
-	public int getInteger(int pname) {
-		return wrap.core.getInteger(pname);
-	}
+	public int getInteger(int pname) { return wrap.core.getInteger(pname); }
 	
 	public String getString(StringName pname) {
 		return wrap.core.getString(pname.token);

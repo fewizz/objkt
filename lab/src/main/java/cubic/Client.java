@@ -3,9 +3,11 @@ package cubic;
 import static org.lwjgl.glfw.GLFW.*;
 
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.*;
 import java.util.logging.Logger;
 
+import cubic.network.Packets;
 import org.joml.Matrix4f;
 import org.objkt.engine.Tasks;
 import org.objkt.gl.GLContext;
@@ -57,7 +59,11 @@ public class Client {
 		
 		
 		for(;;) try {
-			TASKS.waitAndExecute();
+			TASKS.executeAvailable();
+			connection.flushPackets();
+			connection.read();
+			Thread.sleep(50);
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -101,21 +107,13 @@ public class Client {
 	}
 	
 	static void connectToServer() { try {
-		/*Bootstrap boot = new Bootstrap();
-		boot.channel(ExtendedNioSocketChannel.class);
-		boot.group(new NioEventLoopGroup());
-		boot.handler(new ChannelInitializer<Channel>() {
-			@Override
-			protected void initChannel(Channel ch) throws Exception {
-				ch.pipeline().addLast(new ChannelPacketReadHandler());
-			}
-		});
-		channel = (ExtendedNioSocketChannel) boot.connect("127.0.0.1", 25565).awaitUninterruptibly().channel();
-		channel.config().setTcpNoDelay(true);*/
 		SocketChannel sc = SocketChannel.open();
-		connection = new Connection(sc, Selector.open());
 		sc.connect(new InetSocketAddress("127.0.0.1", 25565));
+		sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
+		sc.configureBlocking(false);
+		connection = new Connection(sc);
+		connection.sendPacketAsynchronously(Packets.IM_READY, "Player000");
 		
 		LOGGER.info("I connected to server!");
-	} catch(Exception e) {LOGGER.severe(e.getMessage());} }
+	} catch(Exception e) {e.printStackTrace();} }
 }

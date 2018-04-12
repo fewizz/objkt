@@ -16,8 +16,11 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	}
 	
 	GLShaderProgram(GLContext c) {
-		super(c, ObjectIdentifier.PROGRAM);
-		createObject();
+		this(c, c.wrap.shaderProg.create(-1));
+	}
+
+	GLShaderProgram(GLContext c, int name) {
+		super(c, name);
 	}
 	
 	public GLShaderProgram(ShaderType t1, String src1, ShaderType t2, String src2) throws GLShaderCompilationError{
@@ -26,28 +29,19 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		link();
 	}
 	
-	@Override
-	public int create() {
-		return ctx.wrap.shaderProg.create(-1);
-	}
-	
 	public void use() {
-		checkIfGenerated();
 		if(!isLinked()) {
 			throw new Error("ShaderProgram is not linked");
 		}
-		ctx.wrap.shaderProg.use(getName());
+		ctx.wrap.shaderProg.use(name);
 	}
-	
-	@Override
-	public void delete0() {
-		ctx.wrap.shaderProg.delete(getName());
+
+	public void delete() {
+		ctx.wrap.shaderProg.delete(name);
 	}
 
 	public void attachShader(GLShader shader) {
-		checkIfGenerated();
-		
-		ctx.wrap.shaderProg.attachShader(getName(), shader.getName());
+		ctx.wrap.shaderProg.attachShader(name, shader.name);
 		shaders.add(shader);
 	}
 
@@ -57,12 +51,10 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	}
 
 	public void link() {
-		checkIfGenerated();
-		
-		ctx.wrap.shaderProg.link(getName());
+		ctx.wrap.shaderProg.link(name);
 
-		if (ctx.wrap.shaderProg.geti(getName(), ProgramPropertyARB.LINK_STATUS.token) == 0) {
-			throw new GLError(ctx.wrap.shaderProg.getInfoLog(getName()));
+		if (ctx.wrap.shaderProg.geti(name, ProgramPropertyARB.LINK_STATUS.token) == 0) {
+			throw new GLError(ctx.wrap.shaderProg.getInfoLog(name));
 		}
 		
 		linked = true;
@@ -73,25 +65,17 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	}
 
 	public int attribLocation(String name) {
-		return ctx.wrap.shaderProg.attribLoc(getName(), name);
+		return ctx.wrap.shaderProg.attribLoc(this.name, name);
 	}
 
 	public int getUniformLocation(String name) {
-		return ctx.wrap.shaderProg.uniformLoc(getName(), name);
+		return ctx.wrap.shaderProg.uniformLoc(this.name, name);
 	}
 
 	public void setUniformInt(int location, int value) {
 		use();
 		ctx.wrap.shaderProg.uniform1i(location, value);
 	}
-
-	/*public void setUniformMatrix4f(int location, Matrix4f mat) {
-		use();
-		try (MemoryStack ms = MemoryStack.stackPush()) {
-			FloatBuffer buff = ms.mallocFloat(4 * 4);
-			GL20.glUniformMatrix4fv(location, false, mat.get(buff));
-		}
-	}*/
 	
 	public void setUniformMatrix4f(int location, MemBlock mat) {
 		use();
@@ -110,11 +94,10 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 	
 	public void setUniformIntArray(int location, MemBlock values) {
 		use();
-		ctx.wrap.shaderProg.uniform1iv(location, values.ints(), values.address());
+		ctx.wrap.shaderProg.uniform1iv(location, (int)values.bytes() / Integer.BYTES, values.address());
 	}
 	
 	public void setAttrib() {
 		use();
-		
 	}
 }

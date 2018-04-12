@@ -9,9 +9,9 @@ public class GLVertexBuffer extends GLBuffer<GLVertexBuffer> {
 		super(BufferTarget.ARRAY_BUFFER);
 	}
 	
-	public GLVertexBuffer(MemBlock mb, BufferUsage usage) {
-		super(BufferTarget.ARRAY_BUFFER, usage, mb);
-	}
+	//public GLVertexBuffer(MemBlock mb, BufferUsage usage) {
+//		super(BufferTarget.ARRAY_BUFFER, usage, mb);
+	//}
 	
 	/*public GLVertexBuffer floatData(BufferUsage usage, float... values) {
 		MemBlock bl = MemBlock.ofFloats(values);

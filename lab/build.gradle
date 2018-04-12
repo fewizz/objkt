@@ -1,11 +1,28 @@
-apply plugin: 'java'
+buildscript {
+    ext.kotlin_version = '1.2.31'
 
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
 
 repositories {
 	mavenCentral()
 	jcenter()
+}
+
+sourceSets {
+    main.kotlin.srcDirs += main.java.srcDirs
 }
 
 dependencies {
@@ -19,5 +36,23 @@ dependencies {
 	runtime 'org.lwjgl:lwjgl:3.1.5:natives-windows'
 	runtime 'org.lwjgl:lwjgl-opengl:3.1.5:natives-windows'
 	//compile 'io.netty:netty-all:4.1.21.Final'
-	runtime 'org.fusesource.jansi:jansi:1.17'
+	compile 'org.fusesource.jansi:jansi:1.17'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+mainClassName = "cubic.Cubic"
+
+task runClient(type: JavaExec) {
+	args ''
 }

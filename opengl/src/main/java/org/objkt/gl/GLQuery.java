@@ -7,18 +7,12 @@ public class GLQuery extends GLObjectWithId<GLQuery> {
 	public final QueryTarget target;
 	
 	public GLQuery(GLContext c, QueryTarget target) {
-		super(c, ObjectIdentifier.QUERY);
+		super(c, c.wrap.query.create(-1));
 		this.target = target;
-		createObject();
-	}
-
-	@Override
-	public int create() {
-		return ctx.wrap.query.create(-1);
 	}
 
 	public void begin() {
-		ctx.wrap.query.begin(target.token, getName());
+		ctx.wrap.query.begin(target.token, name);
 	}
 	
 	public void end() {
@@ -34,8 +28,8 @@ public class GLQuery extends GLObjectWithId<GLQuery> {
 	}*/
 
 	@Override
-	public void delete0() {
-		ctx.wrap.query.delete(getName());
+	public void delete() {
+		ctx.wrap.query.delete(name);
 	}
 
 }

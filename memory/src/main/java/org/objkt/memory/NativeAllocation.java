@@ -7,4 +7,9 @@ public class NativeAllocation extends Allocation {
 		this.bytes = bytes;
 	}
 
+	public void set(long a, long b) {
+		this.address = a;
+		this.bytes = b;
+	}
+
 }

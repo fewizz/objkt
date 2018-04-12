@@ -7,7 +7,7 @@ import org.fusesource.jansi.*;
 public class Cubic {
 	public static final Formatter DEFAULT_LOGGER_HANDLER_FORMATTER = new Formatter() {
 		@Override
-		public String format(LogRecord record) {
+		public synchronized String format(LogRecord record) {
 			return Ansi.ansi().fgGreen().a("[" + record.getLoggerName() + "](" + Thread.currentThread().getName() + "): "+ record.getMessage() + "\n").toString();
 		}
 	};
@@ -22,11 +22,11 @@ public class Cubic {
 			super.publish(record);
 			flush();
 		}
+
+
 	}
 	
 	public static void main(String[] args) {
-		//AnsiConsole.systemInstall();
-		//AnsiConsole.
 		Client.start();
 	}
 	

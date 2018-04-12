@@ -1,16 +1,16 @@
 package cubic.network;
 
-import java.nio.channels.NetworkChannel;
+import java.nio.channels.*;
 
 public class ChannelExtension {
-	NetworkChannel channel;
-	Connection connection;
-	PacketHandler packetHandler;
+	public final SocketChannel channel;
+	public final Connection connection;
+	//public final PacketHandler packetHandler;
 	
-	public ChannelExtension(NetworkChannel channel, Connection connection, PacketHandler packetHandler) {
+	public ChannelExtension(SocketChannel channel) {
 		this.channel = channel;
-		this.connection = connection;
-		this.packetHandler = packetHandler;
+		this.connection = new Connection(channel);
+		//this.packetHandler = new PacketHandler(this);
 	}
 	
 	

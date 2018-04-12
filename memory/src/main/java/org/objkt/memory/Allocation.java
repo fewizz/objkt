@@ -23,6 +23,10 @@ public class Allocation {
 		address = 0;
 	}
 	
+	public long address() {
+		return address;
+	}
+	
 	/*public void set(byte value, int from, long bytes) {
 		UNSAFE.setMemory(address + from, bytes, value);
 	}

@@ -1,18 +1,12 @@
 package cubic.network;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.objkt.memory.*;
-
-import cubic.*;
+import cubic.Registries;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class PacketHandler {
-	OffheapDataChannel mem = new OffheapDataChannel();
 	ChannelExtension extension;
 	private Map second;
 	
@@ -40,7 +34,7 @@ public class PacketHandler {
 		return ref.get();
 	}
 	
-	private void readPackets() {
+	/*private void readPackets() {
 		int packetSize = Integer.MAX_VALUE;
 		int readed = 0;
 		
@@ -49,7 +43,7 @@ public class PacketHandler {
 			Registries.PACKETS.get(packetID).read(mem, null);
 		}
 		
-		mem.blocks.forEach(block -> tmpBlocks.add(block));
+		mem.blocks.forEach(block -> tmpBlocks.addSection(block));
 		mem.reset();
 	}
 	
@@ -83,7 +77,7 @@ public class PacketHandler {
 		mem.resetPosition();
 		
 		mem.forEachBlock((block, len) -> {
-			Utils.setBufferAddressAndCapacity(tmpBuff, block.address(), len);
+			Utils.setBufferAddressAndSize(tmpBuff, block.address(), len);
 			tmpBuff.position(0);
 			tmpBuff.limit(len);
 			
@@ -95,5 +89,5 @@ public class PacketHandler {
 		});
 		
 		mem.reset();
-	}
+	}*/
 }

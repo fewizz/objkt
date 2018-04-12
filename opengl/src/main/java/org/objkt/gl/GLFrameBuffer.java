@@ -8,29 +8,19 @@ public class GLFrameBuffer extends GLBindableObject<GLFrameBuffer> {
 	
 	
 	GLFrameBuffer(GLContext c, FramebufferTarget target) {
-		super(c, ObjectIdentifier.FRAMEBUFFER);
+		super(c, c.wrap.frameBuff.gen());
 		this.target = target;
-		createObject();
-	}
-
-	@Override
-	public void bind0() {
-		ctx.wrap.frameBuff.bind(target.token, getName());
-	}
-
-	@Override
-	protected int gen() {
-		return ctx.wrap.frameBuff.gen();
-	}
-
-	@Override
-	protected void delete0() {
-		ctx.wrap.frameBuff.delete(getName());
-	}
-	
-	/*public void texture(FramebufferAttachment attachment, GLTexture tex, int level) {
 		bind();
-		context.wrapper.framebufferTexture(target, attachment, tex.getName(), level);
-	}*/
+	}
+
+	@Override
+	public void bind() {
+		ctx.wrap.frameBuff.bind(target.token, name);
+	}
+
+	@Override
+	public void delete() {
+		ctx.wrap.frameBuff.delete(name);
+	}
 
 }

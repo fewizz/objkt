@@ -1,11 +1,11 @@
 package org.objkt.memory;
 
 import java.nio.ByteOrder;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 public class OffheapDataChannelOppositeByteOrder extends OffheapDataChannel {
 
-	OffheapDataChannelOppositeByteOrder(ByteOrder order, Supplier<MemBlock> factory) {
+	OffheapDataChannelOppositeByteOrder(ByteOrder order, IntFunction<Allocation> factory) {
 		super(order, factory);
 	}
 

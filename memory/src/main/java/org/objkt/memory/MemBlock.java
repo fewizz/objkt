@@ -28,6 +28,7 @@ public class MemBlock {
 	
 	public void free() {
 		this.alloc.release();
+		this.alloc = null;
 	}
 	
 	public void setAllocation(Allocation alloc) {
@@ -41,6 +42,8 @@ public class MemBlock {
 	public long bytes() {
 		return alloc.bytes;
 	}
+
+	public long address() { return alloc.address; }
 
 	public void set(byte value) {
 		set(value, 0, alloc.bytes);
@@ -69,7 +72,7 @@ public class MemBlock {
 	}
 
 	public void putShort(int pos, short value) {
-		putShort0(pos*=Short.BYTES, value);
+		putShort0(pos * Short.BYTES, value);
 	}
 	
 	public void putShort0(int pos, short value) {
@@ -82,7 +85,7 @@ public class MemBlock {
 	}
 
 	public float getFloat(int pos) {
-		return getFloat0(pos*Float.BYTES);
+		return getFloat0(pos * Float.BYTES);
 	}
 
 	public void putFloat(int pos, float value) {
@@ -143,7 +146,7 @@ public class MemBlock {
 	}
 
 	public long getLong(int pos) {
-		return getLong(pos*Long.BYTES);
+		return getLong0(pos*Long.BYTES);
 	}
 
 	public void putLong0(int pos, long value) {
@@ -169,48 +172,6 @@ public class MemBlock {
 	
 	public void putChar0(int pos, char value) {
 		UNSAFE.putChar(alloc.address + pos, value);
-	}
-	
-	public MemBlock putUTF8(CharSequence text, int offset, boolean nullTerminated) {
-		// Mostly from lwjgl's MemoryTextUtil!
-		int i = 0, len = text.length(), p = offset;
-
-        char c;
-
-        // ASCII fast path
-        while (i < len && (c = text.charAt(i)) < 0x80) {
-            put(p++, (byte)c);
-            i++;
-        }
-
-        // Slow path
-        while (i < len) {
-            c = text.charAt(i++);
-            if (c < 0x80) {
-                put(p++, (byte)c);
-            } else {
-                int cp = c;
-                if (c < 0x800) {
-                    put(p++, (byte)(0xC0 | cp >> 6));
-                } else {
-                    if (!Character.isHighSurrogate(c)) {
-                        put(p++, (byte)(0xE0 | cp >> 12));
-                    } else {
-                        cp = Character.toCodePoint(c, text.charAt(i++));
-
-                        put(p++, (byte)(0xF0 | cp >> 18));
-                        put(p++, (byte)(0x80 | cp >> 12 & 0x3F));
-                    }
-                    put(p++, (byte)(0x80 | cp >> 6 & 0x3F));
-                }
-                put(p++, (byte)(0x80 | cp & 0x3F));
-            }
-        }
-
-        if (nullTerminated) {
-            put(p++, (byte)0);
-        }
-        return this;
 	}
 	
 	public void copyTo(MemBlock mb) {

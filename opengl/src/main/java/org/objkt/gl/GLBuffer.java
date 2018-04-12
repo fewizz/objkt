@@ -1,35 +1,36 @@
 package org.objkt.gl;
 
 import org.objkt.gl.enums.*;
+import org.objkt.memory.Allocation;
 import org.objkt.memory.MemBlock;
+import org.objkt.memory.NativeAllocation;
 
 public class GLBuffer<SELF> extends GLBindableObject<SELF> {
-	MemBlock mappedMemBlock;
+	NativeAllocation allocation = new NativeAllocation(0, 0);
 	final protected BufferTarget target;
 
 	public GLBuffer(BufferTarget target) {
 		this(GLContext.current(), target);
 	}
 	
-	public GLBuffer(BufferTarget target, BufferUsage usage, MemBlock b) {
+	/*public GLBuffer(BufferTarget target, BufferUsage usage, MemBlock b) {
 		this(target);
 		data(b, usage);
-	}
+	}*/
 	
 	GLBuffer(GLContext c, BufferTarget target) {
-		super(c, ObjectIdentifier.BUFFER);
+		this(c, target, c.wrap.buff.gen());
+	}
+
+	GLBuffer(GLContext c, BufferTarget target, int name) {
+		super(c, name);
 		this.target = target;
-		createObject();
+		bind();
 	}
 
 	@Override
-	public int gen() {
-		return ctx.wrap.buff.gen();
-	}
-
-	@Override
-	public void bind0() {
-		ctx.wrap.buff.bind(target.token, getName());
+	public void bind() {
+		ctx.wrap.buff.bind(target.token, name);
 	}
 	
 	public int size() {
@@ -37,7 +38,7 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 	}
 
 	public SELF allocate(long bytes, BufferUsage usage) {
-		data(bytes, MemBlock.NULL_ADDRESS, usage);
+		data(bytes, 0L, usage);
 		return getThis();
 	}
 
@@ -46,59 +47,35 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 	}
 	
 	public void data(long size, long address, BufferUsage usage) {
-		/*check();
-
-		if(context.supportsGL(4, 5)) {
-			((GLWrapper)context.wrapper).glNamedBufferData(getName(), size, address, usage.token);
-			return;
-		}
-		
-
-		bind();*/
-		//context.wrapper.glBufferData(target.token, size, address, usage.token);
 		bind();
 		ctx.wrap.buff.data(target.token, size, address, usage.token);
 	}
 
 	public void subData(long offset, long size, long address) {
-		/*check();
-		if(context.supportsGL(4, 5)) {
-			((GLWrapper)context.wrapper).glNamedBufferSubData(getName(), offset, size, address);
-			return;
-		}
-		 
-		bind();
-		context.wrapper.glBufferSubData(target.token, offset, size, address);*/
 		bind();
 		ctx.wrap.buff.subData(target.token, offset, size, address);
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void mapRange(long offset, long size, MemBlock mb, BufferAccess... access) {
-		if(mappedMemBlock != null) {
+	public Allocation mapRange(long offset, long size, BufferAccess... access) {
+		if(allocation.address() != 0) {
 			throw new Error("Is already mapped");
 		}
 		bind();
-		long address = ctx.wrap.buff.mapBufferRange(target.token, offset, size, BufferAccess.intMaskOf(access));//context.wrapper.glMapBufferRange(target.token, offset, size, access.token);
-		
-		if(mb.address() != address && mb.address() != MemBlock.NULL_ADDRESS)
-			mb.free();
-		mb.capture(address, size);
-		mappedMemBlock = mb;
+		long address = ctx.wrap.buff.mapBufferRange(target.token, offset, size, BufferAccess.intMaskOf(access));
+		allocation.set(address, size);
+		return allocation;
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void unmap() {
-		mappedMemBlock.capture(MemBlock.NULL_ADDRESS, 0);
-		mappedMemBlock = null;
+		allocation.set(0, 0);
 		bind();
-		ctx.wrap.buff.unmap(target.token);//context.wrapper.glUnmapBuffer(target.token);
+		ctx.wrap.buff.unmap(target.token);
 	}
 
 	@Override
-	public void delete0() {
-		/*context.tempMemBlock.putInt(0, getName());
-		context.wrapper.glDeleteBuffers(1, context.tempMemBlock.address());*/
-		ctx.wrap.buff.delete(getName());
+	public void delete() {
+		ctx.wrap.buff.delete(name);
 	}
 }

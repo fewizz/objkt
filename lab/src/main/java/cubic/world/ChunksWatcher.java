@@ -35,7 +35,7 @@ public class ChunksWatcher {
 			if(MathUtils.isOutOfRadius(RAD, pos.x - plx, pos.y - ply, pos.z - plz)) {
 				removePlayerFromChunk(player, occupiedPos);
 				//Server.LOGGER.info("Unloading chunk at: " + pos.x + " " + pos.y + " " + pos.z);
-				player.channel.sendPacketAsynchronously(Packets.UNLOAD_CHUNK_ON_CLIENT, Server.world.getChunk(pos.x, pos.y, pos.z));
+				player.connection.sendPacketAsynchronously(Packets.UNLOAD_CHUNK_ON_CLIENT, Server.world.getChunk(pos.x, pos.y, pos.z));
 			}
 		}
 		
@@ -61,7 +61,8 @@ public class ChunksWatcher {
 			}
 			
 			addPlayerToChunk(player, pos);
-			player.channel.sendPacketAsynchronously(Packets.FULL_CHUNK, Server.world.getChunk(x, y, z));
+			player.connection.sendPacketAsynchronously(Packets.FULL_CHUNK, Server.world.getChunk(x, y, z));
+			Server.LOGGER.info("sending chunk: " + pos);
 		}
 		
 		playerChunkPositions.put(player, player.getChunkLong());

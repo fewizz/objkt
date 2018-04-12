@@ -6,7 +6,7 @@ import org.objkt.memory.MemBlock;
 
 class VertexAttribArrayBuffer extends MemBlock {
 	final VertexAttribArray vaa;
-	public final MemBlock nextVertexMemoryBlock = MemBlock.empty();
+	public final MemBlock nextVertexMemoryBlock = new MemBlock();
 	
 	private VertexAttribArrayBuffer(VertexAttribArray vaa) {
 		super(0);
@@ -16,7 +16,7 @@ class VertexAttribArrayBuffer extends MemBlock {
 	
 	public static VertexAttribArrayBuffer map(VertexAttribArray vaa, int size) {
 		VertexAttribArrayBuffer vaab = new VertexAttribArrayBuffer(vaa);
-		vaa.vbo.mapRange(0, size * vaa.info.bytes(), vaab, BufferAccess.MAP_WRITE_BIT);
+		vaab.setAllocation(vaa.vbo.mapRange(0, size * vaa.info.bytes(), BufferAccess.MAP_WRITE_BIT));
 		
 		return vaab;
 	}
@@ -24,7 +24,7 @@ class VertexAttribArrayBuffer extends MemBlock {
 	public void freeClientData() {
 		nextVertexMemoryBlock.free();
 		
-		if(isAllocated()) {
+		if(alloc.address() != 0) {
 			System.err.println("VertexAttribBuffer is mapped");
 		}
 	}

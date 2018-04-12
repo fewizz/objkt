@@ -1,56 +1,44 @@
 package org.objkt.gl;
 
-import static org.objkt.gl.GLConstants.GL_TEXTURE_DEPTH;
-import static org.objkt.gl.GLConstants.GL_TEXTURE_MAG_FILTER;
-import static org.objkt.gl.GLConstants.GL_TEXTURE_MIN_FILTER;
-import static org.objkt.gl.GLConstants.GL_TEXTURE_WIDTH;
-import static org.objkt.gl.GLConstants.GL_TEXTURE_WRAP_S;
-import static org.objkt.gl.GLConstants.GL_TEXTURE_WRAP_T;
-
-import org.objkt.gl.enums.ObjectIdentifier;
 import org.objkt.gl.enums.TextureMagFilter;
 import org.objkt.gl.enums.TextureTarget;
 import org.objkt.gl.enums.TextureWrapMode;
 
+import static org.objkt.gl.GLConstants.*;
+
 public abstract class GLTexture extends GLBindableObject<GLTexture> {
 	public final TextureTarget target;
 	
-	GLTexture(GLContext c, TextureTarget tar) {
-		super(c, ObjectIdentifier.TEXTURE);
-		this.target = tar;
-		createObject();
+	GLTexture(GLContext c, TextureTarget target, int name) {
+		super(c, name);
+		this.target = target;
+		bind();
 	}
-	
+
+	GLTexture(GLContext c, TextureTarget tar) {
+		this(GLContext.current(), tar, c.wrap.tex.gen());
+	}
 	public GLTexture(TextureTarget tar) {
 		this(GLContext.current(), tar);
 	}
-	
-	@Override
-	protected void createObject() {
-		super.createObject();
-		wrapMode(TextureWrapMode.REPEAT);
-		filter(TextureMagFilter.NEAREST);
+
+	public void bind() {
+		ctx.wrap.tex.bind(target.token, name);
+		ctx.activeTextures[ctx.activeTextureUnit] = this;
+		ctx.boundTexture = this;
+	}
+
+	public void bindTextureUnit(int index) {
+		ctx.setActiveTextureUnitIndex(index);
+		bind();
 	}
 
 	@Override
-	protected int gen() {
-		return ctx.wrap.tex.gen();
+	public void delete() {
+		ctx.wrap.tex.delete(name);
+		ctx.onTextureDeleted(this);
 	}
-	
-	@Override
-	public void bind0() {
-		ctx.wrap.tex.bind(target.token, getName());
-	}
-	
-	public void bindTextureUnit(int index) {
-		ctx.bindTextureUnit(this, index);
-	}
-	
-	@Override
-	protected void delete0() {
-		ctx.wrap.tex.delete(getName());
-	}
-	
+
 	public void wrapMode(TextureWrapMode mode) {
 		bind();
 		parameter(GL_TEXTURE_WRAP_S, mode.token);

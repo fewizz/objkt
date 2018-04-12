@@ -17,7 +17,7 @@ public class Server {
 	public static final Logger LOGGER = Logger.getLogger("SERVER");
 	public static ServerWorld world;
 	static Registries registries;
-	static ServerSocketChannel channel;
+	static volatile ServerSocketChannel channel;
 	public static final Map<String, ServerPlayer> PLAYERS = new HashMap<>();
 	public static final Tasks TASKS = new Tasks();
 	
@@ -42,9 +42,9 @@ public class Server {
 		channel.bind(new InetSocketAddress(ip, port));
 		channel.configureBlocking(false);
 		
-		startChannelHandler();
-		
 		world = new ServerWorld();
+
+		startChannelHandler();
 		
 		for(;;) {
 			TASKS.executeAvailable();
@@ -55,30 +55,30 @@ public class Server {
 	private static void startChannelHandler() { new Thread(() -> { try {
 		Selector selector = Selector.open();
 		channel.register(selector, SelectionKey.OP_ACCEPT);
-		
-		Queue<MemBlock> blocks = new ArrayDeque<>();
-		ByteBuffer buff = Utils.newNullDirectBufferWithoutCleaner();
-		OffheapDataChannel mem = new OffheapDataChannel();
 			
 		for(;;) {
 			selector.select();
-				
-			if(channel.keyFor(selector).isAcceptable()) {
+
+			if(selector.selectedKeys().contains(channel.keyFor(selector)) && channel.keyFor(selector).isAcceptable()) {
 				SocketChannel sc = channel.accept();
+				if(sc == null) continue;
+				sc.configureBlocking(false);
 				sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
 				sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-				sc.keyFor(selector).attach(new PacketHandler());
+				sc.keyFor(selector).attach(new ChannelExtension(sc));
 			}
-			else for(SelectionKey key : selector.selectedKeys()) {
+			for(SelectionKey key : selector.selectedKeys()) {
+				ChannelExtension extension = (ChannelExtension) key.attachment();
 				if(key.isReadable())
-					readPackets(key, blocks, buff, mem); 
+					extension.connection.read();
 				if(key.isWritable())
-					sendPackets(key, blocks, buff, mem);
+					extension.connection.flushPackets();
 			}
 		}
 	} catch (Exception e) { e.printStackTrace(); }}, "Server Channel Thread").start();}
 	
 	static void onPlayerReadyToPlay(ServerPlayer player) {
 		PLAYERS.put(player.name, player);
+		LOGGER.info(player.name + " connected");
 	}
 }

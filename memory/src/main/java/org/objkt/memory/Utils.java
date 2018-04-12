@@ -85,13 +85,14 @@ public class Utils {
 	}
 	
 	public static void invalidateBuffer(Buffer b) {
-		setBufferAddressAndCapacity(b, 0, 0);
+		setBufferAddressAndSize(b, 0, 0);
 	}
 	
-	public static void setBufferAddressAndCapacity(Buffer b, long addr, int cap) {
+	public static void setBufferAddressAndSize(Buffer b, long addr, int cap) {
 		try {
 			FIELD_BUFFER_ADDRESS.setLong(b, addr);
 			FIELD_BUFFER_CAPACITY.setInt(b, cap);
+			b.limit(cap);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

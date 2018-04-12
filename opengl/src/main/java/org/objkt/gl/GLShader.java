@@ -11,9 +11,8 @@ public class GLShader extends GLObjectWithId<GLShader> {
 	}
 	
 	public GLShader(GLContext c, ShaderType type) {
-		super(c, ObjectIdentifier.SHADER);
+		super(c, c.wrap.shader.create(type.token));
 		this.type = type;
-		createObject();
 	}
 	
 	public GLShader(ShaderType type, String src) throws GLShaderCompilationError {
@@ -21,32 +20,22 @@ public class GLShader extends GLObjectWithId<GLShader> {
 		source(src);
 		compile();
 	}
-	
-	@Override
-	public void delete0() {
-		ctx.wrap.shader.delete(getName());
+
+	public void delete() {
+		ctx.wrap.shader.delete(name);
 	}
 
 	public GLShader source(String source) {
-		checkIfGenerated();
-		
 		this.source = source;
-		ctx.wrap.shader.source(getName(), source);
+		ctx.wrap.shader.source(name, source);
 		return this;
 	}
 
-	@Override
-	public int create() {
-		return ctx.wrap.shader.create(type.token);
-	}
-
 	public GLShader compile() throws GLShaderCompilationError {
-		checkIfGenerated();
+		ctx.wrap.shader.compile(name);
 		
-		ctx.wrap.shader.compile(getName());
-		
-		if (ctx.wrap.shader.geti(getName(), GLConstants.GL_COMPILE_STATUS) == GLConstants.GL_FALSE) {
-			throw new GLShaderCompilationError(source + " \n" + type.name() + " not compiled!\n" + ctx.wrap.shader.getInfoLog(getName()));
+		if (ctx.wrap.shader.geti(name, GLConstants.GL_COMPILE_STATUS) == GLConstants.GL_FALSE) {
+			throw new GLShaderCompilationError(source + " \n" + type.name() + " not compiled!\n" + ctx.wrap.shader.getInfoLog(name));
 		}
 		return this;
 	}
