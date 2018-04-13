@@ -8,11 +8,11 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	private int relPosition = 0;
 	Segment current;
 	final Segment first;
-	MemBlock tempMemBlock = new MemBlock(Long.BYTES);
+	OffheapAllocation tempOffheapAllocation = new OffheapAllocation(Long.BYTES);
 	public final ByteOrder byteOrder;
 	final IntFunction<Allocation> memBlockfactory;
 	
-	public static class Segment extends MemBlock {
+	public static class Segment extends OffheapAllocation {
 		private Segment next;
 		private Segment prev;
 		
@@ -53,12 +53,12 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	}
 	
 	interface WOp {
-		void write(int position, MemBlock mem);
+		void write(int position, OffheapAllocation mem);
 	}
 
 	@FunctionalInterface
 	private interface ROp<T> {
-		T read(int position, MemBlock mem);
+		T read(int position, OffheapAllocation mem);
 	}
 	
 	public Segment firstSection() {
@@ -91,14 +91,14 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return s;
 	}
 	
-	public void addToEnd(MemBlock memBlock) {
-		addToEnd(memBlock.getAllocation());
+	public void addToEnd(OffheapAllocation offheapAllocation) {
+		addToEnd(offheapAllocation.alloc());
 	}
 	
 	public void addToEnd(Allocation alloc) {
 		Segment last = last();
 		if(last.alloc == null)
-			last.setAllocation(alloc);
+			last.alloc(alloc);
 		else
 			last.setNext(new Segment(alloc));
 	}
@@ -205,7 +205,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		
 		while(buff.remaining() != 0) {
 			if(current.alloc == null)
-				current.setAllocation(memBlockfactory.apply(4096));
+				current.alloc(memBlockfactory.apply(4096));
 			int toWrite = Math.min((int)current.bytes() - relPosition, buff.remaining());
 			Utils.UNSAFE.copyMemory(Utils.address(buff) + buff.position(), current.alloc.address + relPosition, toWrite);
 			buff.position(buff.position() + toWrite);
@@ -218,16 +218,16 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	
 	private void write(int size, WOp op) {
 		if(current.alloc == null)
-			current.setAllocation(memBlockfactory.apply(4096));
+			current.alloc(memBlockfactory.apply(4096));
 		if(relPosition + size > current.bytes()) {
-			op.write(0, tempMemBlock);
+			op.write(0, tempOffheapAllocation);
 			int left = size;
 			
 			while(left != 0) {
 				if(current.alloc == null)
-					current.setAllocation(memBlockfactory.apply(4096));
+					current.alloc(memBlockfactory.apply(4096));
 				int toWrite = Math.min(left, (int)current.bytes() - relPosition);
-				tempMemBlock.copyTo(current, size - left, relPosition, toWrite);
+				tempOffheapAllocation.copyTo(current, size - left, relPosition, toWrite);
 				left-=toWrite;
 				incPosition(toWrite);
 			}
@@ -244,12 +244,12 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 			
 			while(left != 0) {
 				int toRead = Math.min((int)current.bytes() - relPosition, left);
-				current.copyTo(tempMemBlock, relPosition, size - left, toRead);
+				current.copyTo(tempOffheapAllocation, relPosition, size - left, toRead);
 				left-=toRead;
 				incPosition(toRead);
 			}
 			
-			return op.read(0, tempMemBlock);
+			return op.read(0, tempOffheapAllocation);
 		}
 		
 		relPosition+=size;
@@ -500,7 +500,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		
 		buff.reset();
 		
-		buff.addToEnd(new MemBlock(3));
+		buff.addToEnd(new OffheapAllocation(3));
 		buff.writeInt(1122334455);
 		System.out.println(buff.position());
 		

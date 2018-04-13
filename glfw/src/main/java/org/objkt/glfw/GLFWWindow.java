@@ -4,10 +4,10 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryUtil;
-import org.objkt.memory.MemBlock;
+import org.objkt.memory.OffheapAllocation;
 
 public class GLFWWindow {
-	private final MemBlock tempMemoryBlock = new MemBlock(8);
+	private final OffheapAllocation tempMemoryBlock = new OffheapAllocation(8);
 	public final long id;
 	
 	GLFWWindow(int w, int h, String title) {

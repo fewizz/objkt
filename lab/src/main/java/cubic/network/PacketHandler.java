@@ -47,7 +47,7 @@ public class PacketHandler {
 		mem.reset();
 	}
 	
-	private void sendPackets(SelectionKey key, Queue<MemBlock> tmpBlocks, ByteBuffer tmpBuff, OffheapDataChannel mem) {
+	private void sendPackets(SelectionKey key, Queue<OffheapAllocation> tmpBlocks, ByteBuffer tmpBuff, OffheapDataChannel mem) {
 		SocketChannel sc = (SocketChannel) key.channel();
 		key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
 		
@@ -56,7 +56,7 @@ public class PacketHandler {
 		map.forEach((pi, additionalObjects) -> {
 			int position = -1;
 			int section = -1;
-			MemBlock bl = null;
+			OffheapAllocation bl = null;
 			
 			for(Object obj : additionalObjects) {
 				position = mem.position();

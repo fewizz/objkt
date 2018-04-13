@@ -2,7 +2,7 @@ package org.objkt.gl;
 
 import org.objkt.gl.enums.*;
 import org.objkt.memory.Allocation;
-import org.objkt.memory.MemBlock;
+import org.objkt.memory.OffheapAllocation;
 import org.objkt.memory.NativeAllocation;
 
 public class GLBuffer<SELF> extends GLBindableObject<SELF> {
@@ -13,7 +13,7 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		this(GLContext.current(), target);
 	}
 	
-	/*public GLBuffer(BufferTarget target, BufferUsage usage, MemBlock b) {
+	/*public GLBuffer(BufferTarget target, BufferUsage usage, OffheapAllocation b) {
 		this(target);
 		data(b, usage);
 	}*/
@@ -42,7 +42,7 @@ public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 		return getThis();
 	}
 
-	public void data(MemBlock mem, BufferUsage usage) {
+	public void data(OffheapAllocation mem, BufferUsage usage) {
 		data(mem.bytes(), mem.address(), usage);
 	}
 	

@@ -1,7 +1,6 @@
 package org.objkt.gl;
 
 import org.objkt.gl.enums.*;
-import org.objkt.memory.MemBlock;
 
 public class GLVertexBuffer extends GLBuffer<GLVertexBuffer> {
 	
@@ -9,12 +8,12 @@ public class GLVertexBuffer extends GLBuffer<GLVertexBuffer> {
 		super(BufferTarget.ARRAY_BUFFER);
 	}
 	
-	//public GLVertexBuffer(MemBlock mb, BufferUsage usage) {
+	//public GLVertexBuffer(OffheapAllocation mb, BufferUsage usage) {
 //		super(BufferTarget.ARRAY_BUFFER, usage, mb);
 	//}
 	
 	/*public GLVertexBuffer floatData(BufferUsage usage, float... values) {
-		MemBlock bl = MemBlock.ofFloats(values);
+		OffheapAllocation bl = OffheapAllocation.ofFloats(values);
 		super.data(bl, usage);
 		bl.free();
 		return this;

@@ -4,7 +4,7 @@ import org.objkt.gl.GLVertexArray;
 import org.objkt.gl.GLVertexBuffer;
 import org.objkt.gl.GLVertexArray.VertexAttribFormat;
 import org.objkt.gl.enums.BufferUsage;
-import org.objkt.memory.MemBlock;
+import org.objkt.memory.OffheapAllocation;
 
 public class VertexArrayBuilder {
 	final GLVertexArray va;
@@ -60,7 +60,7 @@ public class VertexArrayBuilder {
 	}
 
 	public final VertexArrayBuilder float3(int index, float f1, float f2, float f3) {
-		MemBlock mb = attribs[index].nextVertexMemoryBlock;
+		OffheapAllocation mb = attribs[index].nextVertexMemoryBlock;
 
 		mb.putFloat(0, f1);
 		mb.putFloat(1, f2);
@@ -69,7 +69,7 @@ public class VertexArrayBuilder {
 	}
 
 	public final VertexArrayBuilder float2(int index, float f1, float f2) {
-		MemBlock mb = attribs[index].nextVertexMemoryBlock;
+		OffheapAllocation mb = attribs[index].nextVertexMemoryBlock;
 
 		mb.putFloat(0, f1);
 		mb.putFloat(1, f2);

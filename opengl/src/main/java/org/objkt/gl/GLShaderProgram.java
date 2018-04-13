@@ -77,7 +77,7 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		ctx.wrap.shaderProg.uniform1i(location, value);
 	}
 	
-	public void setUniformMatrix4f(int location, MemBlock mat) {
+	public void setUniformMatrix4f(int location, OffheapAllocation mat) {
 		use();
 		ctx.wrap.shaderProg.uniformMatrix4fv(location, 1, false, mat.address());
 	}
@@ -87,12 +87,12 @@ public class GLShaderProgram extends GLObjectWithId<GLShaderProgram> {
 		ctx.wrap.shaderProg.uniform1iv(location, value.capacity(), Utils.address(value));
 	}
 	
-	public void setUniformIntArray(int location, int count, MemBlock values) {
+	public void setUniformIntArray(int location, int count, OffheapAllocation values) {
 		use();
 		ctx.wrap.shaderProg.uniform1iv(location, count, values.address());
 	}
 	
-	public void setUniformIntArray(int location, MemBlock values) {
+	public void setUniformIntArray(int location, OffheapAllocation values) {
 		use();
 		ctx.wrap.shaderProg.uniform1iv(location, (int)values.bytes() / Integer.BYTES, values.address());
 	}

@@ -14,7 +14,7 @@ import cubic.Registries;
 public class Connection {
 	SocketChannel channel;
 	OffheapDataChannel offheapDataToRead = OffheapDataChannel.withByteOrder(ByteOrder.LITTLE_ENDIAN);
-	//MemBlock readBlock = new MemBlock(4096);
+	//OffheapAllocation readBlock = new OffheapAllocation(4096);
 	int left = 0;
 	int size = -1;
 	int packetToRead = -1;
@@ -79,8 +79,8 @@ public class Connection {
 		ByteBuffer bb = tempByteBuffers.get();
 		
 		for(;;) { try {
-			if(offheapDataToRead.currentSection().getAllocation() == null) {
-				offheapDataToRead.currentSection().setAllocation(new Allocation(4096));
+			if(offheapDataToRead.currentSection().alloc() == null) {
+				offheapDataToRead.currentSection().alloc(new Allocation(4096));
 			}
 			
 			if(packetToRead == -1) {

@@ -1,10 +1,10 @@
 package org.objkt.memory;
 
-public class SafeMemBlock extends MemBlock {
+public class SafeOffheapAllocation extends OffheapAllocation {
 	
-	public SafeMemBlock() {}
+	public SafeOffheapAllocation() {}
 	
-	public SafeMemBlock(long bytes) {
+	public SafeOffheapAllocation(long bytes) {
 		super(bytes);
 	}
 	
