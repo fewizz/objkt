@@ -8,15 +8,15 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	private int relPosition = 0;
 	Segment current;
 	final Segment first;
-	OffheapAllocation tempOffheapAllocation = new OffheapAllocation(Long.BYTES);
-	public final ByteOrder byteOrder;
-	final IntFunction<Allocation> memBlockfactory;
+	OffheapAllocation tempOffheapAllocation = new ImmutableOffheapAllocation(Long.BYTES);
+	final IntFunction<OffheapAllocation> memBlockfactory;
 	
-	public static class Segment extends OffheapAllocation {
+	public static class Segment {
 		private Segment next;
 		private Segment prev;
+		OffheapAllocation alloc;
 		
-		Segment(Allocation alloc) {
+		Segment(OffheapAllocation alloc) {
 			this.alloc = alloc;
 		}
 		
@@ -65,19 +65,18 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return first.next;
 	}
 
-	public static OffheapDataChannel withByteOrder(ByteOrder bo) {
-		return withByteOrder(bo, Allocation::new);
-	}
+	//public static OffheapDataChannel withByteOrder(ByteOrder bo) {
+	//	return withByteOrder(bo, Allocation::new);
+	//}
 	
-	public static OffheapDataChannel withByteOrder(ByteOrder bo, IntFunction<Allocation> factory) {
+	/*public static OffheapDataChannel withByteOrder(ByteOrder bo, IntFunction<Allocation> factory) {
 		if(bo == ByteOrder.nativeOrder())
 			return new OffheapDataChannel(ByteOrder.nativeOrder(), factory);
 		else
 			return new OffheapDataChannelOppositeByteOrder(bo, factory);
-	}
+	}*/
 	
-	OffheapDataChannel(ByteOrder order, IntFunction<Allocation> factory) {
-		this.byteOrder = order;
+	public OffheapDataChannel(IntFunction<OffheapAllocation> factory) {
 		this.memBlockfactory = factory;
 		first = new Segment(null);
 		reset();
@@ -91,14 +90,14 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return s;
 	}
 	
-	public void addToEnd(OffheapAllocation offheapAllocation) {
-		addToEnd(offheapAllocation.alloc());
-	}
+	//public void addToEnd(OffheapAllocation offheapAllocation) {
+	//	addToEnd(offheapAllocation);
+	//}
 	
-	public void addToEnd(Allocation alloc) {
+	public void addToEnd(OffheapAllocation alloc) {
 		Segment last = last();
 		if(last.alloc == null)
-			last.alloc(alloc);
+			last.alloc = alloc;
 		else
 			last.setNext(new Segment(alloc));
 	}
@@ -107,9 +106,9 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return current;
 	}
 	
-	public void addToEnd(ByteBuffer bb) {
+	/*public void addToEnd(ByteBuffer bb) {
 		addToEnd(new NativeAllocation(Utils.address(bb), bb.remaining()));
-	}
+	}*/
 	
 	public void forEachSection(Consumer<Segment> cons) {
 		for(Segment s = first; s != null;s = s.next) {
@@ -126,7 +125,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	public void reset() {
 		current = first;
 		relPosition = 0;
-		forEachSection(sec -> {if(sec.alloc != null)sec.free();});
+		forEachSection(sec -> {if(sec.alloc != null)sec.alloc.free();});
 		first.next = null;
 		first.prev = null;
 	}
@@ -135,7 +134,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	public long size() {
 		long size = 0;
 		for(Segment s = first.next;s != null; s = s.next) {
-			size+=s.bytes();
+			size+=s.alloc.bytes();
 		}
 		return size;
 	}
@@ -144,7 +143,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	public long position() {
 		long p = 0;
 		for(Segment s = first;s != current; s = s.next) {
-			p+=s.bytes();
+			p+=s.alloc.bytes();
 		}
 		return p + relPosition;
 	}
@@ -164,11 +163,11 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	private void incPosition(int val) {
 		while(val != 0) {
-			int toInc = Math.min(val, (int)current.bytes() - relPosition);
+			int toInc = Math.min(val, (int)current.alloc.bytes() - relPosition);
 			val -= toInc;
 			relPosition += toInc;
 			
-			if(relPosition == current.bytes()) {
+			if(relPosition == current.alloc.bytes()) {
 				if(current.next == null) current.setNext(new Segment(null));
 				current = current.next;
 				relPosition = 0;
@@ -183,8 +182,8 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		
 		int wrote = 0;
 		while(buff.remaining() != 0) {
-			int toWrite = Math.min((int)current.bytes() - relPosition, buff.remaining());
-			current.copyTo(Utils.address(buff) + buff.position(), relPosition, toWrite);
+			int toWrite = Math.min((int)current.alloc.bytes() - relPosition, buff.remaining());
+			current.alloc.copyTo(Utils.address(buff) + buff.position(), relPosition, toWrite);
 			buff.position(buff.position() + toWrite);
 			wrote += toWrite;
 			incPosition(toWrite);
@@ -205,9 +204,9 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		
 		while(buff.remaining() != 0) {
 			if(current.alloc == null)
-				current.alloc(memBlockfactory.apply(4096));
-			int toWrite = Math.min((int)current.bytes() - relPosition, buff.remaining());
-			Utils.UNSAFE.copyMemory(Utils.address(buff) + buff.position(), current.alloc.address + relPosition, toWrite);
+				current.alloc = memBlockfactory.apply(4096);
+			int toWrite = Math.min((int)current.alloc.bytes() - relPosition, buff.remaining());
+			Utils.UNSAFE.copyMemory(Utils.address(buff) + buff.position(), current.alloc.address() + relPosition, toWrite);
 			buff.position(buff.position() + toWrite);
 			wrote += toWrite;
 			incPosition(toWrite);
@@ -218,33 +217,33 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	
 	private void write(int size, WOp op) {
 		if(current.alloc == null)
-			current.alloc(memBlockfactory.apply(4096));
-		if(relPosition + size > current.bytes()) {
+			current.alloc = memBlockfactory.apply(4096);
+		if(relPosition + size > current.alloc.bytes()) {
 			op.write(0, tempOffheapAllocation);
 			int left = size;
 			
 			while(left != 0) {
 				if(current.alloc == null)
-					current.alloc(memBlockfactory.apply(4096));
-				int toWrite = Math.min(left, (int)current.bytes() - relPosition);
-				tempOffheapAllocation.copyTo(current, size - left, relPosition, toWrite);
+					current.alloc =  memBlockfactory.apply(4096);
+				int toWrite = Math.min(left, (int)current.alloc.bytes() - relPosition);
+				tempOffheapAllocation.copyTo(current.alloc, size - left, relPosition, toWrite);
 				left-=toWrite;
 				incPosition(toWrite);
 			}
 			return;
 		}
 		
-		op.write(relPosition, current);
+		op.write(relPosition, current.alloc);
 		relPosition += size;
 	}
 	
 	private <T> T read(int size, ROp<T> op) {
-		if(relPosition + size > current.bytes()) {
+		if(relPosition + size > current.alloc.bytes()) {
 			int left = size;
 			
 			while(left != 0) {
-				int toRead = Math.min((int)current.bytes() - relPosition, left);
-				current.copyTo(tempOffheapAllocation, relPosition, size - left, toRead);
+				int toRead = Math.min((int)current.alloc.bytes() - relPosition, left);
+				current.alloc.copyTo(tempOffheapAllocation, relPosition, size - left, toRead);
 				left-=toRead;
 				incPosition(toRead);
 			}
@@ -253,7 +252,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		}
 		
 		relPosition+=size;
-		return op.read(relPosition-size, current);
+		return op.read(relPosition-size, current.alloc);
 	}
 
 	@Override
@@ -488,8 +487,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	}
 	
 	public static void main(String... args) {
-		OffheapDataChannel buff = OffheapDataChannel.withByteOrder(ByteOrder.BIG_ENDIAN);
-		System.out.println(buff.byteOrder);
+		OffheapDataChannel buff = new OffheapDataChannel(size -> new ImmutableOffheapAllocation(size));
 		buff.writeInt(56);
 		assert(buff.position() == 4);
 		buff.position(0);
@@ -500,7 +498,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		
 		buff.reset();
 		
-		buff.addToEnd(new OffheapAllocation(3));
+		buff.addToEnd(new ImmutableOffheapAllocation(3));
 		buff.writeInt(1122334455);
 		System.out.println(buff.position());
 		

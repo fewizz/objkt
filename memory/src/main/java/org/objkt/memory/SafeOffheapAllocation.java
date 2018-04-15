@@ -1,18 +1,12 @@
 package org.objkt.memory;
 
-public class SafeOffheapAllocation extends OffheapAllocation {
-	
-	public SafeOffheapAllocation() {}
-	
-	public SafeOffheapAllocation(long bytes) {
-		super(bytes);
-	}
+public class SafeOffheapAllocation implements OffheapAllocation {
 	
 	// Byte
 	@Override
-	public byte get(int pos) {
+	default byte get(int pos) {
 		check(pos);
-		return super.get(pos);
+		return OffheapAllocation.super.get(pos);
 	}
 	
 	@Override
@@ -99,8 +93,8 @@ public class SafeOffheapAllocation extends OffheapAllocation {
 		super.putDouble0(pos, value);
 	}
 	
-	void check(int pos) {
-		if(pos < 0 || pos >= alloc.bytes) throw new Error();
+	default void check(int pos) {
+		if(pos < 0 || pos >= bytes()) throw new Error();
 	}
 
 }

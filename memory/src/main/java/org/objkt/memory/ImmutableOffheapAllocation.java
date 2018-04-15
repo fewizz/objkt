@@ -1,17 +1,26 @@
 package org.objkt.memory;
 
-import java.nio.ByteBuffer;
+public class ImmutableOffheapAllocation implements OffheapAllocation {
+	final long address;
+	final long bytes;
 
-public class ImmutableOffheapAllocation extends OffheapAllocation {
-	ByteBuffer buffer =
-
-	@Override
-	protected long address() {
-		return 0;
+	ImmutableOffheapAllocation(long bytes) {
+		address = Utils.UNSAFE.allocateMemory(bytes);
+		this.bytes = bytes;
 	}
 
 	@Override
-	protected long bytes() {
-		return 0;
+	public long address() {
+		return address;
+	}
+
+	@Override
+	public long bytes() {
+		return bytes;
+	}
+
+	@Override
+	public void free() {
+		Utils.UNSAFE.freeMemory(bytes);
 	}
 }

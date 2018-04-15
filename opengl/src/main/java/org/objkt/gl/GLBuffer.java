@@ -1,9 +1,7 @@
 package org.objkt.gl;
 
 import org.objkt.gl.enums.*;
-import org.objkt.memory.Allocation;
 import org.objkt.memory.OffheapAllocation;
-import org.objkt.memory.NativeAllocation;
 
 public class GLBuffer<SELF> extends GLBindableObject<SELF> {
 	NativeAllocation allocation = new NativeAllocation(0, 0);

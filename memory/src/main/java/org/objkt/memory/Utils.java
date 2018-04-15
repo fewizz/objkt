@@ -17,9 +17,9 @@ public class Utils {
 		Field bc = null;
 		Constructor<?> dbc = null;
 		try {
-			Field uf = Unsafe.class.getDeclaredField("theUnsafe");
+			/*Field uf = Unsafe.class.getDeclaredField("theUnsafe");
 			uf.setAccessible(true);
-			u = (Unsafe) uf.get(null);
+			u = (Unsafe) uf.get(null);*/
 			
 			ba = Buffer.class.getDeclaredField("address");
 			ba.setAccessible(true);
@@ -75,14 +75,14 @@ public class Utils {
 		return null;
 	}
 	
-	public static ByteBuffer newDirectBufferWithoutCleaner(int capacity) {
+	/*public static ByteBuffer newDirectBufferWithoutCleaner(int capacity) {
 		try {
 			return ((ByteBuffer) CONSTRUCTOR_DIRECT_BUFFER.newInstance(UNSAFE.allocateMemory(capacity), capacity)).order(ByteOrder.nativeOrder());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
-	}
+	}*/
 	
 	public static void invalidateBuffer(Buffer b) {
 		setBufferAddressAndSize(b, 0, 0);
