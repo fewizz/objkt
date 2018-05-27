@@ -2,12 +2,18 @@ package org.objkt.glfw;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryUtil;
-import org.objkt.memory.OffheapAllocation;
+
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 
 public class GLFWWindow {
-	private final OffheapAllocation tempMemoryBlock = new OffheapAllocation(8);
+	ByteBuffer buff = BufferUtils.createByteBuffer(8);
+	IntBuffer buffi = buff.asIntBuffer();
+	DoubleBuffer buffd = buff.asDoubleBuffer();
 	public final long id;
 	
 	GLFWWindow(int w, int h, String title) {
@@ -30,23 +36,23 @@ public class GLFWWindow {
 	}
 	
 	public int width() {
-		nglfwGetWindowSize(id, tempMemoryBlock.address(), MemoryUtil.NULL);
-		return tempMemoryBlock.getInt(0);
+		glfwGetWindowSize(id, buffi, null);
+		return buff.getInt(0);
 	}
 	
 	public int height() {
-		nglfwGetWindowSize(id, MemoryUtil.NULL, tempMemoryBlock.address());
-		return tempMemoryBlock.getInt(0);
+		glfwGetWindowSize(id, null, buffi);
+		return buff.getInt(0);
 	}
 	
 	public int getX() {
-		nglfwGetWindowPos(id, tempMemoryBlock.address(), MemoryUtil.NULL);
-		return tempMemoryBlock.getInt(0);
+		glfwGetWindowPos(id, buffi, null);
+		return buff.getInt(0);
 	}
 	
 	public int getY() {
-		nglfwGetWindowPos(id, MemoryUtil.NULL, tempMemoryBlock.address());
-		return tempMemoryBlock.getInt(0);
+		glfwGetWindowPos(id, null, buffi);
+		return buff.getInt(0);
 	}
 	
 	public void setCursorPos(double x, double y) {
@@ -54,13 +60,13 @@ public class GLFWWindow {
 	}
 	
 	public double getCursorX() {
-		nglfwGetCursorPos(id, tempMemoryBlock.address(), MemoryUtil.NULL);
-		return tempMemoryBlock.getDouble0(0);
+		glfwGetCursorPos(id, buffd, null);
+		return buff.getDouble(0);
 	}
 	
 	public double getCursorY() {
-		nglfwGetCursorPos(id, MemoryUtil.NULL, tempMemoryBlock.address());
-		return tempMemoryBlock.getDouble0(0);
+		glfwGetCursorPos(id, null, buffd);
+		return buff.getDouble(0);
 	}
 	
 	public void setKeyCallback(GLFWKeyCallbackI c) {

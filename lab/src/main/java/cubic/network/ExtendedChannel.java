@@ -17,7 +17,7 @@ public interface ExtendedChannel extends Channel {
 		/*eventLoop().execute(() -> {
 			ByteBuf buf = alloc().directBuffer();
 			buf.writeInt(packet.getID());
-			packet.write(buf, obj);
+			packet.writeTo(buf, obj);
 			writeAndFlush(buf);
 		});*/
 		
@@ -34,7 +34,7 @@ public interface ExtendedChannel extends Channel {
 	default void readPacket(OffheapDataChannel msg) {
 		/*int packetID = msg.readInt();
 		PacketInfo<?> pi = Registries.PACKETS.get(packetID);
-		pi.read(this, msg);
+		pi.readFrom(this, msg);
 		ReferenceCountUtil.release(msg);*/
 	}
 }

@@ -1,9 +1,8 @@
 package cubic.render;
 
 import org.objkt.engine.Color;
-import org.objkt.gl.GLVertexArray.VertexAttribFormat;
-import org.objkt.gl.enums.BufferUsage;
-import org.objkt.gl.utils.VertexArrayBuilder;
+import fewizz.wrap.gl.GLVertexArray.VertexAttribFormat;
+import fewizz.wrap.gl.enums.BufferUsage;
 
 public class ChunkVertexArrayBuilder extends VertexArrayBuilder {
 

@@ -1,17 +1,18 @@
 package cubic;
 
-import java.io.IOException;
-import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.util.*;
-import java.util.logging.Logger;
-
-import org.objkt.engine.Tasks;
-import org.objkt.memory.*;
-
-import cubic.network.*;
+import cubic.network.ChannelExtension;
 import cubic.world.ServerWorld;
+import org.objkt.engine.Tasks;
+
+import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class Server {
 	public static final Logger LOGGER = Logger.getLogger("SERVER");
@@ -35,7 +36,7 @@ public class Server {
 	}
 	
 	private static void start0(String ip, int port) throws Exception {
-		LOGGER.info("Starting server");
+		LOGGER.info("Starting server...");
 		
 
 		channel = ServerSocketChannel.open();
@@ -61,13 +62,18 @@ public class Server {
 
 			if(selector.selectedKeys().contains(channel.keyFor(selector)) && channel.keyFor(selector).isAcceptable()) {
 				SocketChannel sc = channel.accept();
-				if(sc == null) continue;
-				sc.configureBlocking(false);
-				sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
-				sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-				sc.keyFor(selector).attach(new ChannelExtension(sc));
+				if(sc != null) {
+					LOGGER.info("connected: " + sc.getRemoteAddress());
+					sc.configureBlocking(false);
+					sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
+					sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+					sc.keyFor(selector).attach(new ChannelExtension(sc));
+				}
 			}
 			for(SelectionKey key : selector.selectedKeys()) {
+				if(key == channel.keyFor(selector))
+					continue;
+
 				ChannelExtension extension = (ChannelExtension) key.attachment();
 				if(key.isReadable())
 					extension.connection.read();

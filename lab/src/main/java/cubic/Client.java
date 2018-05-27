@@ -5,14 +5,18 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.*;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import cubic.network.Packets;
+import fewizz.wrap.gl.enums.DebugSeverity;
+import fewizz.wrap.gl.enums.DebugSource;
+import fewizz.wrap.gl.enums.DebugType;
+import fewizz.wrap.gl.wrapper.LWJGLGLFWContextProvider;
+import fewizz.wrap.gl.wrapper.LWJGLWrapper;
 import org.joml.Matrix4f;
 import org.objkt.engine.Tasks;
-import org.objkt.gl.GLContext;
-import org.objkt.gl.enums.*;
-import org.objkt.gl.wrapper.*;
+import fewizz.wrap.gl.GLContext;
 import org.objkt.glfw.*;
 
 import cubic.network.Connection;
@@ -41,6 +45,7 @@ public class Client {
 		
 		world = new ClientWorld();
 		connectToServer();
+		connection.sendPacketAsynchronously(Packets.IM_READY, "Player" + new Random().nextInt());
 		
 		new Thread(() -> {
 			createWindow();
@@ -63,9 +68,9 @@ public class Client {
 			connection.flushPackets();
 			connection.read();
 			Thread.sleep(50);
-
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 	
@@ -94,7 +99,7 @@ public class Client {
 	}
 	
 	static void initGL() {
-		gl = GLContext.createForThisThread(new LWJGLGLFWContextProvider(window.id), new LWJGLWrapper());
+		gl = GLContext.create(new LWJGLGLFWContextProvider(window.id), new LWJGLWrapper());
 
 		gl.dedugMessageCallback((DebugSource source, DebugType type, int id, DebugSeverity severity, String message) -> {
 			if(type == DebugType.DEBUG_TYPE_ERROR) {
@@ -112,8 +117,7 @@ public class Client {
 		sc.setOption(StandardSocketOptions.TCP_NODELAY, true);
 		sc.configureBlocking(false);
 		connection = new Connection(sc);
-		connection.sendPacketAsynchronously(Packets.IM_READY, "Player000");
 		
 		LOGGER.info("I connected to server!");
-	} catch(Exception e) {e.printStackTrace();} }
+	} catch(Exception e) {e.printStackTrace();System.exit(-1);} }
 }

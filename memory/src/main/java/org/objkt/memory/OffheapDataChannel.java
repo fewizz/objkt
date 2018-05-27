@@ -1,151 +1,123 @@
 package org.objkt.memory;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
-import java.util.function.*;
+import java.nio.channels.WritableByteChannel;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteChannel {
-	private int relPosition = 0;
+	final ByteBuffer tempOffheapAllocation;
+	final IntFunction<ByteBuffer> factory;
 	Segment current;
-	final Segment first;
-	OffheapAllocation tempOffheapAllocation = new ImmutableOffheapAllocation(Long.BYTES);
-	final IntFunction<OffheapAllocation> memBlockfactory;
-	
+	Segment first;
+	Segment last;
+	final int segmentSize;
+
+	public Segment current() {
+		return current;
+	}
+
+	public void addSegment() {
+		addSegment(factory.apply(segmentSize));
+	}
+	public void addSegment(ByteBuffer t) {addSegment(t, t.position());}
+	public void addSegment(ByteBuffer t, int offset) {
+		if(current == null) {
+			first = new Segment(t, null, offset);
+			current = first;
+			last = first;
+		}
+		else {
+			Segment s = new Segment(t, last, offset);
+			last.setNext(s);
+			last = s;
+		}
+	}
+
+	public void clear() {
+		current = null;
+		first = null;
+		last = null;
+	}
+
+	@Override
+	public long size() {
+		if(last == null) return 0;
+		return last.globalPosition + last.buffer.limit();
+	}
+
+	public void forEachSegment(Consumer<Segment> cons) {
+		for(Segment s = first; s != null; s = s.next) {
+			cons.accept(s);
+		}
+	}
+
 	public static class Segment {
-		private Segment next;
-		private Segment prev;
-		OffheapAllocation alloc;
-		
-		Segment(OffheapAllocation alloc) {
-			this.alloc = alloc;
+		Segment next;
+		final Segment prev;
+		final int globalPosition;
+		ByteBuffer buffer;
+		final int start;
+
+		Segment(ByteBuffer value, Segment prev, int offset) {
+			this.buffer = value;
+			this.prev = prev;
+			this.start = offset;
+
+			globalPosition = prev != null ? prev.globalPosition + prev.buffer.limit() : 0;
 		}
-		
-		void remove() {
-			if(prev != null)
-				prev.next = next;
-			if(next != null)
-				next.prev = prev;
+
+		public ByteBuffer buffer() {return buffer;}
+
+		void setNext(Segment next) {
+			this.next = next;
 		}
-		
-		void setNext(Segment newNext) {
-			newNext.next = next;
-			newNext.prev = this;
-			
-			if(next != null && next.alloc != null)
-				this.next.prev = newNext;
-			
-			next = newNext;
-		}
-		
-		void setPrev(Segment s) {
-			s.next = this;
-			s.prev = prev;
-			prev = s;
-		}
-		
+
 		public Segment next() {
 			return next;
 		}
-		
+
 		public Segment previous() {
 			return prev;
 		}
+
+		public void incrementPosition(int val) {
+			buffer.position(buffer.position() + val);
+		}
 	}
-	
+
 	interface WOp {
-		void write(int position, OffheapAllocation mem);
+		void write(ByteBuffer mem);
 	}
 
 	@FunctionalInterface
 	private interface ROp<T> {
-		T read(int position, OffheapAllocation mem);
-	}
-	
-	public Segment firstSection() {
-		return first.next;
+		T read(ByteBuffer mem);
 	}
 
-	//public static OffheapDataChannel withByteOrder(ByteOrder bo) {
-	//	return withByteOrder(bo, Allocation::new);
-	//}
-	
-	/*public static OffheapDataChannel withByteOrder(ByteOrder bo, IntFunction<Allocation> factory) {
-		if(bo == ByteOrder.nativeOrder())
-			return new OffheapDataChannel(ByteOrder.nativeOrder(), factory);
-		else
-			return new OffheapDataChannelOppositeByteOrder(bo, factory);
-	}*/
-	
-	public OffheapDataChannel(IntFunction<OffheapAllocation> factory) {
-		this.memBlockfactory = factory;
-		first = new Segment(null);
-		reset();
+	public OffheapDataChannel(IntFunction<ByteBuffer> factory) {
+		this(factory, 4096);
 	}
-	
-	public Segment last() {
-		Segment s = first;
-		while (s.next != null)
-			s = s.next;
 
-		return s;
-	}
-	
-	//public void addToEnd(OffheapAllocation offheapAllocation) {
-	//	addToEnd(offheapAllocation);
-	//}
-	
-	public void addToEnd(OffheapAllocation alloc) {
-		Segment last = last();
-		if(last.alloc == null)
-			last.alloc = alloc;
-		else
-			last.setNext(new Segment(alloc));
-	}
-	
-	public Segment currentSection() {
-		return current;
-	}
-	
-	/*public void addToEnd(ByteBuffer bb) {
-		addToEnd(new NativeAllocation(Utils.address(bb), bb.remaining()));
-	}*/
-	
-	public void forEachSection(Consumer<Segment> cons) {
-		for(Segment s = first; s != null;s = s.next) {
-			cons.accept(s);
-		}
+	public OffheapDataChannel(IntFunction<ByteBuffer> factory, int segmentSize) {
+		this.segmentSize = segmentSize;
+		this.factory = factory;
+		this.tempOffheapAllocation = factory.apply(Long.BYTES);
 	}
 	
 	@Override
 	public void close() {
-		reset();
-		current = null;
-	}
-	
-	public void reset() {
-		current = first;
-		relPosition = 0;
-		forEachSection(sec -> {if(sec.alloc != null)sec.alloc.free();});
-		first.next = null;
-		first.prev = null;
-	}
-	
-	@Override
-	public long size() {
-		long size = 0;
-		for(Segment s = first.next;s != null; s = s.next) {
-			size+=s.alloc.bytes();
-		}
-		return size;
+		clear();
 	}
 	
 	@Override
 	public long position() {
-		long p = 0;
-		for(Segment s = first;s != current; s = s.next) {
-			p+=s.alloc.bytes();
-		}
-		return p + relPosition;
+		if( current == null) return 0;
+		boundCheck(false);
+		return current.globalPosition + current.buffer.position();
 	}
 	
 	@Override
@@ -153,40 +125,101 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return current != null;
 	}
 
+	public int readFrom(ReadableByteChannel channel, int bytes) {
+		int left = bytes;
+
+		while(left > 0) {
+			boundCheck(true);
+			try {
+				int prevLimit = current.buffer.limit();
+				int toRead = Math.min(current.buffer.remaining(), left);
+				current.buffer.limit((int)position() + toRead);
+				int rought = channel.read(current.buffer);
+				current.buffer.limit(prevLimit);
+
+				if(rought == -1) {
+					if(left == bytes)
+						return -1;
+					break;
+				}
+				left-=rought;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return bytes - left;
+	}
+
+	public int writeTo(WritableByteChannel channel, int bytes) {
+		int left = bytes;
+
+		while(left > 0) {
+			boundCheck(true);
+			try {
+				int prevLimit = current.buffer.limit();
+				int toWrite = Math.min(current.buffer.remaining(), left);
+				current.buffer.limit(current.buffer.position() + toWrite);
+				left -= channel.write(current.buffer);
+				current.buffer.limit(prevLimit);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return bytes - left;
+	}
+
 	@Override
 	public SeekableByteChannel position(long pos) {
-		relPosition = 0;
-		current = first;
-		incPosition((int) pos);
+		int path = (int)pos - (int)position();
+
+		while(path != 0) {
+			if(path < 0) {
+				if(current.buffer.position() == 0)
+					current = current.prev;
+				int toStep = Math.min(current.buffer.position() - current.start, -path);
+				current.buffer.position(current.buffer.position() - toStep);
+				path+=toStep; // cos path is negative
+			}
+			else {
+				boundCheck(false);
+				int toStep = Math.min(current.buffer.remaining(), path);
+				current.buffer.position(current.buffer.position() + toStep);
+				path-=toStep;
+			}
+		}
 		return this;
 	}
 
-	private void incPosition(int val) {
-		while(val != 0) {
-			int toInc = Math.min(val, (int)current.alloc.bytes() - relPosition);
-			val -= toInc;
-			relPosition += toInc;
-			
-			if(relPosition == current.alloc.bytes()) {
-				if(current.next == null) current.setNext(new Segment(null));
+	private void boundCheck(boolean create) {
+		if(first == null && create)
+			addSegment();
+		else {
+			while(current.buffer.remaining() == 0) {
+				if (current.next == null)
+					addSegment();
 				current = current.next;
-				relPosition = 0;
 			}
 		}
+	}
+
+	public void ensureSize(int bytes) {
+		while(size() < bytes)
+			addSegment();
 	}
 	
 	@Override
 	public int read(ByteBuffer buff) {
-		if(position() == size()) 
+		if(position() == size())
 			return -1;
 		
 		int wrote = 0;
 		while(buff.remaining() != 0) {
-			int toWrite = Math.min((int)current.alloc.bytes() - relPosition, buff.remaining());
-			current.alloc.copyTo(Utils.address(buff) + buff.position(), relPosition, toWrite);
-			buff.position(buff.position() + toWrite);
-			wrote += toWrite;
-			incPosition(toWrite);
+			boundCheck(false);
+			int toWrite = Math.min(current.buffer.remaining(), buff.remaining());
+			ByteBufferUtils.put(buff, current.buffer, toWrite);
+			wrote+=toWrite;
 		}
 		
 		return wrote;
@@ -198,66 +231,67 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		return this;
 	}
 
+	public ByteBuffer getFreeBuffer() {
+		boundCheck(true);
+		return current.buffer;
+	}
+
 	@Override
 	public int write(ByteBuffer buff) {
 		int wrote = 0;
 		
 		while(buff.remaining() != 0) {
-			if(current.alloc == null)
-				current.alloc = memBlockfactory.apply(4096);
-			int toWrite = Math.min((int)current.alloc.bytes() - relPosition, buff.remaining());
-			Utils.UNSAFE.copyMemory(Utils.address(buff) + buff.position(), current.alloc.address() + relPosition, toWrite);
-			buff.position(buff.position() + toWrite);
+			boundCheck(true);
+			int toWrite = Math.min(buff.remaining(), current.buffer.remaining());
+			ByteBufferUtils.put(current.buffer, buff, toWrite);
 			wrote += toWrite;
-			incPosition(toWrite);
 		}
 		
 		return wrote;
 	}
 	
 	private void write(int size, WOp op) {
-		if(current.alloc == null)
-			current.alloc = memBlockfactory.apply(4096);
-		if(relPosition + size > current.alloc.bytes()) {
-			op.write(0, tempOffheapAllocation);
+		boundCheck(true);
+		if(current.buffer.remaining() < size) {
+			tempOffheapAllocation.position(0);
+			op.write(tempOffheapAllocation);
 			int left = size;
+			tempOffheapAllocation.position(0);
 			
-			while(left != 0) {
-				if(current.alloc == null)
-					current.alloc =  memBlockfactory.apply(4096);
-				int toWrite = Math.min(left, (int)current.alloc.bytes() - relPosition);
-				tempOffheapAllocation.copyTo(current.alloc, size - left, relPosition, toWrite);
+			while(left > 0) {
+				boundCheck(true);
+				int toWrite = Math.min(left, current.buffer.remaining());
+				ByteBufferUtils.put(current.buffer, tempOffheapAllocation, toWrite);
 				left-=toWrite;
-				incPosition(toWrite);
 			}
 			return;
 		}
 		
-		op.write(relPosition, current.alloc);
-		relPosition += size;
+		op.write(current.buffer);
 	}
 	
 	private <T> T read(int size, ROp<T> op) {
-		if(relPosition + size > current.alloc.bytes()) {
+		boundCheck(false);
+		if(current.buffer.remaining() < size) {
 			int left = size;
+			tempOffheapAllocation.position(0);
 			
 			while(left != 0) {
-				int toRead = Math.min((int)current.alloc.bytes() - relPosition, left);
-				current.alloc.copyTo(tempOffheapAllocation, relPosition, size - left, toRead);
-				left-=toRead;
-				incPosition(toRead);
+				boundCheck(false);
+				int toWrite = Math.min(current.buffer.remaining(), left);
+				ByteBufferUtils.put(tempOffheapAllocation, current.buffer, toWrite);
+				left-=toWrite;
 			}
-			
-			return op.read(0, tempOffheapAllocation);
+
+			return op.read(tempOffheapAllocation);
 		}
-		
-		relPosition+=size;
-		return op.read(relPosition-size, current.alloc);
+
+		return op.read(current.buffer);
 	}
 
 	@Override
 	public void write(int b) {
-		write(Byte.BYTES, (pos, mem) -> mem.put(pos, (byte) (b & 0xFF)));
+		write(Byte.BYTES, mem -> mem.put((byte) (b & 0xFF)));
 	}
 
 	@Override
@@ -292,7 +326,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public void writeChar(int v) {
-		write(Character.BYTES, (pos, mem) -> mem.putChar0(pos, (char) (v & 0xFFFF)));
+		write(Character.BYTES, mem -> mem.putChar((char) (v & 0xFFFF)));
 	}
 
 	@Override
@@ -305,33 +339,27 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public void writeDouble(double v) {
-		//wd.value = v;
-		write(Double.BYTES, (pos, mem) -> mem.putDouble0(pos, v));
+		write(Double.BYTES, mem -> mem.putDouble(v));
 	}
 
 	@Override
 	public void writeFloat(float v) {
-		//wf.value = v;
-		//write(Float.BYTES, wf);
-		write(Float.BYTES, (pos, mem) -> mem.putFloat0(pos, v));
+		write(Float.BYTES, mem -> mem.putFloat(v));
 	}
 
 	@Override
 	public void writeInt(int v) {
-		//wi.value = v;
-		write(Integer.BYTES, (pos, mem) -> mem.putInt0(pos, v));
+		write(Integer.BYTES, mem -> mem.putInt(v));
 	}
 
 	@Override
 	public void writeLong(long v) {
-		//wl.value = v;
-		write(Long.BYTES, (pos, mem) -> mem.putLong0(pos, v));
+		write(Long.BYTES, mem -> mem.putLong(v));
 	}
 
 	@Override
 	public void writeShort(int v) {
-		//ws.value = (short) (v & 0xFFFF);
-		write(Short.BYTES, (pos, mem) -> mem.putShort0(pos, (short) (v & 0xFFFF)));
+		write(Short.BYTES, mem -> mem.putShort((short) (v & 0xFFFF)));
 	}
 
 	@Override
@@ -362,22 +390,22 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public byte readByte() {
-		return read(Byte.BYTES, (pos, mem) -> mem.get(pos));
+		return read(Byte.BYTES, ByteBuffer::get);
 	}
 
 	@Override
 	public char readChar() {
-		return read(Character.BYTES, (pos, mem) -> mem.getChar0(pos));
+		return read(Character.BYTES, ByteBuffer::getChar);
 	}
 
 	@Override
 	public double readDouble() {
-		return read(Double.BYTES, (pos, mem) -> mem.getDouble0(pos));
+		return read(Double.BYTES, ByteBuffer::getDouble);
 	}
 
 	@Override
 	public float readFloat() {
-		return read(Float.BYTES, (pos, mem) -> mem.getFloat0(pos));
+		return read(Float.BYTES, ByteBuffer::getFloat);
 	}
 
 	@Override
@@ -394,7 +422,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public int readInt() {
-		return read(Integer.BYTES, (pos, mem) -> mem.getInt0(pos));
+		return read(Integer.BYTES, ByteBuffer::getInt);
 	}
 
 	@Override
@@ -423,12 +451,12 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public long readLong() {
-		return read(Long.BYTES, (pos, mem) -> mem.getLong0(pos));
+		return read(Long.BYTES, ByteBuffer::getLong);
 	}
 
 	@Override
 	public short readShort() {
-		return read(Short.BYTES, (pos, mem) -> mem.getShort0(pos));
+		return read(Short.BYTES, ByteBuffer::getShort);
 	}
 
 	@Override
@@ -479,15 +507,13 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 
 	@Override
 	public int skipBytes(int n) {
-		for(int i = 0; i < n; n++) {
-			read(Byte.BYTES, (op, mem) -> 0);
-		}
+		position(position() + n);
 		
 		return n;
 	}
 	
 	public static void main(String... args) {
-		OffheapDataChannel buff = new OffheapDataChannel(size -> new ImmutableOffheapAllocation(size));
+		OffheapDataChannel buff = new OffheapDataChannel(size -> ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder()));
 		buff.writeInt(56);
 		assert(buff.position() == 4);
 		buff.position(0);
@@ -496,45 +522,18 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		buff.position(0);
 		System.out.println(buff.readUTF() + " " + buff.readInt());
 		
-		buff.reset();
-		
-		buff.addToEnd(new ImmutableOffheapAllocation(3));
+		buff.position(0);
+
 		buff.writeInt(1122334455);
 		System.out.println(buff.position());
 		
 		buff.position(0);
 		System.out.println(buff.readInt());
 		
-		//buff.reset();
+		buff.position(0);
 		buff.writeShort(0x8915);
 		buff.position(buff.position() - Byte.BYTES);
 		System.out.println(Integer.toHexString(buff.readUnsignedByte()));
-		
-		buff.reset();
-		
-		/*int i = 0;
-		while(true) {
-			buff.writeFloat(0);
-			i++;
-			if(i == 15000) {
-				i = 0;
-				buff.position(0);
-				//break;
-			}
-		}
-		
-		/*float f;
-		while(true) {
-			f = buff.readFloat();
-			i++;
-			if(i == 15000) {
-				i = 0;
-				buff.position(0);
-				if(i > 0)
-					break;
-			}
-		}
-		System.out.println(f);*/
 	}
 
 }

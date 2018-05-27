@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.41'
 
     repositories {
         mavenCentral()
@@ -19,6 +19,7 @@ targetCompatibility = 1.10
 repositories {
 	mavenCentral()
 	jcenter()
+    maven { url "https://jitpack.io" }
 }
 
 sourceSets {
@@ -27,7 +28,6 @@ sourceSets {
 
 dependencies {
 	compile 'org.joml:joml:1.9.8'
-	compile project(':objkt-opengl-lwjgl')
 	compile project(':objkt-engine')
 	compile project(':objkt-glfw')
 	compile 'org.lwjgl:lwjgl-glfw:3.1.5'
@@ -35,9 +35,9 @@ dependencies {
 	compile 'org.lwjgl:lwjgl:3.1.5'
 	runtime 'org.lwjgl:lwjgl:3.1.5:natives-windows'
 	runtime 'org.lwjgl:lwjgl-opengl:3.1.5:natives-windows'
-	//compile 'io.netty:netty-all:4.1.21.Final'
 	compile 'org.fusesource.jansi:jansi:1.17'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "com.github.fewizz:GLWrap:b1f88f1780"
 }
 
 compileKotlin {
@@ -52,7 +52,3 @@ compileTestKotlin {
 }
 
 mainClassName = "cubic.Cubic"
-
-task runClient(type: JavaExec) {
-	args ''
-}

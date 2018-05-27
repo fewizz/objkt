@@ -12,7 +12,7 @@ public class PacketClientReady extends PacketInfo<String> {
 	
 	@Override
 	public void write(DataOutput out, String name, Connection c) {
-		out.writeInt(name.length());
+		//out.writeInt(name.length());
 		out.writeUTF(name);
 	}
 	

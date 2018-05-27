@@ -1,7 +1,10 @@
 package cubic.render;
 
-import org.objkt.gl.*;
-import org.objkt.gl.enums.*;
+import fewizz.wrap.gl.GLContext;
+import fewizz.wrap.gl.GLShaderProgram;
+import fewizz.wrap.gl.GLVertexArray;
+import fewizz.wrap.gl.enums.PrimitiveType;
+import fewizz.wrap.gl.enums.ShaderType;
 
 import cubic.world.Chunk;
 
@@ -40,8 +43,7 @@ public class ChunkRenderer {
 	}
 	
 	public void render() {
-		program.use();
-		GLContext.current().drawArrays(vao, PrimitiveType.TRIANGLES, vao.getVertexAttribArrayAt(0).getVertexCount());
+		GLContext.current().drawArrays(program, vao, PrimitiveType.TRIANGLES, vao.getVertexAttribArrayAt(0).getVertexCount());
 	}
 	
 	void compile() {
