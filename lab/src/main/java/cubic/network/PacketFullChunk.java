@@ -17,11 +17,9 @@ public class PacketFullChunk extends PacketInfo<Chunk> {
 		int x = in.readInt();
 		int y = in.readInt();
 		int z = in.readInt();
-		
-		Client.TASKS.add(() -> {
-		
-			Client.world.addChunkFromData(x, y, z, in);
-		});
+
+		System.out.println("Reading chunk: " + x + " " + y + " " + z);
+		Client.world.addChunkFromData(x, y, z, in);
 	}
 
 	@Override

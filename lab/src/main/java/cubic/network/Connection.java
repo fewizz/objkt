@@ -1,19 +1,18 @@
 package cubic.network;
 
-import java.io.IOException;
-import java.nio.*;
+import cubic.Player;
+import cubic.Registries;
+import org.objkt.memory.OffheapDataChannel;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import cubic.Player;
-import org.objkt.memory.*;
-
-import cubic.Registries;
-
 public class Connection {
-	SocketChannel channel;
-	OffheapDataChannel offheapDataToRead = new OffheapDataChannel(i->ByteBuffer.allocateDirect(i).order(ByteOrder.LITTLE_ENDIAN));
+	public SocketChannel channel;
+	OffheapDataChannel offheapDataToRead = new OffheapDataChannel(ByteOrder.LITTLE_ENDIAN);
 	Queue<OffheapDataChannel> toFlush = new ConcurrentLinkedQueue<>();
 	static Queue<OffheapDataChannel> forWrite = new ConcurrentLinkedQueue<>();
 	Player player;
@@ -37,7 +36,7 @@ public class Connection {
 	<T> void sendPacket(PacketInfo<T> packet, T obj) {
 		OffheapDataChannel offheapDataToWrite = forWrite.poll();
 		if(offheapDataToWrite == null) {
-			offheapDataToWrite = new OffheapDataChannel(i -> ByteBuffer.allocateDirect(i).order(ByteOrder.LITTLE_ENDIAN));
+			offheapDataToWrite = new OffheapDataChannel(ByteOrder.LITTLE_ENDIAN);
 		}
 		offheapDataToWrite.position(0);
 		offheapDataToWrite.writeInt(0);

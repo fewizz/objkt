@@ -101,7 +101,7 @@ public class MathUtils {
 	}
 	
 	public static boolean isOutOfRadius(int radius, float dx, float dy, float dz) {
-		return MathUtils.dot(dx, dx, dy, dy, dz, dz) > radius*radius;
+		return MathUtils.dot(dx, dx, dy, dy, dz, dz) > radius*radius*radius;
 	}
 	
 	public static void main(String[] args) {

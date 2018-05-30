@@ -27,17 +27,17 @@ sourceSets {
 }
 
 dependencies {
-	compile 'org.joml:joml:1.9.8'
+	compile 'org.joml:joml:1.9.9'
 	compile project(':objkt-engine')
 	compile project(':objkt-glfw')
-	compile 'org.lwjgl:lwjgl-glfw:3.1.5'
-	runtime 'org.lwjgl:lwjgl-glfw:3.1.5:natives-windows'
-	compile 'org.lwjgl:lwjgl:3.1.5'
-	runtime 'org.lwjgl:lwjgl:3.1.5:natives-windows'
-	runtime 'org.lwjgl:lwjgl-opengl:3.1.5:natives-windows'
+	compile 'org.lwjgl:lwjgl-glfw:3.1.6'
+	runtime 'org.lwjgl:lwjgl-glfw:3.1.6:natives-windows'
+	compile 'org.lwjgl:lwjgl:3.1.6'
+	runtime 'org.lwjgl:lwjgl:3.1.6:natives-windows'
+	runtime 'org.lwjgl:lwjgl-opengl:3.1.6:natives-windows'
 	compile 'org.fusesource.jansi:jansi:1.17'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "com.github.fewizz:GLWrap:b1f88f1780"
+    compile "com.github.fewizz:GLWrap:eb20ef1a6c"
 }
 
 compileKotlin {

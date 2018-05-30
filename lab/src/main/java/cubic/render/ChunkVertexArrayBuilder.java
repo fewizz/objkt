@@ -6,8 +6,8 @@ import fewizz.wrap.gl.enums.BufferUsage;
 
 public class ChunkVertexArrayBuilder extends VertexArrayBuilder {
 
-	public ChunkVertexArrayBuilder(int p_vertexNumber) {
-		super(BufferUsage.STATIC_DRAW, p_vertexNumber, VertexAttribFormat.pos3f(0), VertexAttribFormat.color4ub(1));
+	public ChunkVertexArrayBuilder() {
+		super(BufferUsage.STATIC_DRAW, VertexAttribFormat.pos3f(0), VertexAttribFormat.color4ub(1));
 	}
 	
 	public ChunkVertexArrayBuilder position(float x, float y, float z) {

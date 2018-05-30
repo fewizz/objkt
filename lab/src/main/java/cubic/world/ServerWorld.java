@@ -13,7 +13,8 @@ public class ServerWorld extends World {
 		Server.PLAYERS.values().forEach(player -> chunksWatcher.updateForPlayer(player));
 	}
 	
-	public void generateChunkAt(int x, int y, int z) {
-		chunks.put(Chunk.Position.toLong(x, y, z), gen.generateChunk(x, y, z));
+	public void generateChunkAt(Chunk.Position pos) {
+		Chunk c = gen.generateChunk(pos);
+		chunks.put(c.pos, c);
 	}
 }

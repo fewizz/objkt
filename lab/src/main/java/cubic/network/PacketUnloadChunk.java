@@ -14,17 +14,20 @@ public class PacketUnloadChunk extends PacketInfo<Chunk> {
 
 	@Override
 	public void read(DataInput in, Connection c) {
-		long posLong = in.readLong();
+		int x = in.readInt();
+		int y = in.readInt();
+		int z = in.readInt();
 		
 		Client.TASKS.add(() -> {
-			Chunk.Position pos = new Chunk.Position(posLong);
-			Client.world.removeChunk(pos.x, pos.y, pos.z);
+			Client.world.removeChunk(x, y, z);
 		});
 	}
 
 	@Override
 	public void write(DataOutput out, Chunk t, Connection c) {
-		out.writeLong(t.pos.toLong());
+		out.writeInt(t.pos.x);
+		out.writeInt(t.pos.y);
+		out.writeInt(t.pos.z);
 	}
 
 }

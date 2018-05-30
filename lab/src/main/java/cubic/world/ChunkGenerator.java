@@ -4,6 +4,8 @@ import cubic.OpenSimplexNoise;
 import cubic.block.Blocks;
 import cubic.world.layer.*;
 
+import java.util.Random;
+
 public class ChunkGenerator {
 	/*public static final int SMOOTH = 4;
 	public static final int SMOOTH_EXTENDED = SMOOTH + Chunk.EXTENSION;
@@ -37,8 +39,8 @@ public class ChunkGenerator {
 	//static byte[] biomeIDsNorm;
 	//static float[] heightsOrgnl = new float[TEMP_HEIGHTS_LEN * TEMP_HEIGHTS_LEN];
 
-	public Chunk generateChunk(int cx, int cy, int cz) {
-		Chunk chunk = new Chunk(cx, cy, cz);//Chunk.getFreeChunk(cx, cz);
+	public Chunk generateChunk(Chunk.Position pos) {
+		Chunk chunk = new Chunk(pos.x, pos.y, pos.z);//Chunk.getFreeChunk(cx, cz);
 		
 		//biomeIDs = mainLayer.getValues(cx * 16, cz * 16, 16, 16);
 		
@@ -47,8 +49,9 @@ public class ChunkGenerator {
 		}*/
 		
 		//if(cy == -1) {
+		Random r = new Random();
 			for(int i = 0; i < 16*16*16; i++) {
-				chunk.setBlock(cy == -1 ? Blocks.DIRT : Blocks.AIR, i);
+				chunk.setBlock(r.nextInt(5) == 0 ? Blocks.DIRT: Blocks.AIR, i);
 			}
 		//}
 		

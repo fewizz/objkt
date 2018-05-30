@@ -1,6 +1,7 @@
 package cubic;
 
 import cubic.network.ChannelExtension;
+import cubic.network.Packets;
 import cubic.world.ServerWorld;
 import org.objkt.engine.Tasks;
 
@@ -84,7 +85,8 @@ public class Server {
 	} catch (Exception e) { e.printStackTrace(); }}, "Server Channel Thread").start();}
 	
 	static void onPlayerReadyToPlay(ServerPlayer player) {
+		LOGGER.info(player.name + " connected, sending infos...");
+		player.connection.sendPacketAsynchronously(Packets.HELLO_FROM_SERVER);
 		PLAYERS.put(player.name, player);
-		LOGGER.info(player.name + " connected");
 	}
 }

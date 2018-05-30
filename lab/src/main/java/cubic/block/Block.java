@@ -49,7 +49,7 @@ public class Block {
 		builder.position(x, y + 1, z + 1).endVertex();
 		builder.position(x, y, z + 1).endVertex();
 		
-		builder.color(Color.BLUE);
+		/*builder.color(Color.BLUE);
 		builder.position(x, y, z).endVertex();
 		builder.position(x + 1, y, z).endVertex();
 		builder.position(x + 1, y, z).endVertex();
@@ -63,7 +63,7 @@ public class Block {
 		builder.position(x + 1, y + 1, z).endVertex();
 		builder.position(x + 1, y + 1, z).endVertex();
 		builder.position(x, y + 1, z).endVertex();
-		builder.position(x, y, z).endVertex();
+		builder.position(x, y, z).endVertex();*/
 	}
 	
 	public void write(DataOutput out) {

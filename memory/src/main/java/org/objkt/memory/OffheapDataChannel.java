@@ -58,7 +58,7 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 	public static class Segment {
 		Segment next;
 		final Segment prev;
-		final int globalPosition;
+		public final int globalPosition;
 		ByteBuffer buffer;
 		final int start;
 
@@ -98,6 +98,10 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 		T read(ByteBuffer mem);
 	}
 
+	public OffheapDataChannel(ByteOrder order) {
+		this( i -> ByteBuffer.allocateDirect(i).order(order), 4096);
+	}
+
 	public OffheapDataChannel(IntFunction<ByteBuffer> factory) {
 		this(factory, 4096);
 	}
@@ -133,10 +137,12 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 			try {
 				int prevLimit = current.buffer.limit();
 				int toRead = Math.min(current.buffer.remaining(), left);
-				current.buffer.limit((int)position() + toRead);
+				current.buffer.limit(current.buffer.position() + toRead);
 				int rought = channel.read(current.buffer);
 				current.buffer.limit(prevLimit);
 
+				if(rought == 0)
+		 			break;
 				if(rought == -1) {
 					if(left == bytes)
 						return -1;
@@ -197,9 +203,12 @@ public class OffheapDataChannel implements DataOutput, DataInput, SeekableByteCh
 			addSegment();
 		else {
 			while(current.buffer.remaining() == 0) {
-				if (current.next == null)
-					addSegment();
-				current = current.next;
+				if (current.next == null) {
+					if (create)
+						addSegment();
+				}
+				else
+					current = current.next;
 			}
 		}
 	}

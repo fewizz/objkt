@@ -16,6 +16,7 @@ public class Registry<T extends Registry.RegistryElement> {
 		for(int id = 0; id < Integer.SIZE; id++) {
 			if(intObjMap.get(id) == null) {
 				put(id, obj);
+				return;
 			}
 		}
 	}
@@ -45,9 +46,9 @@ public class Registry<T extends Registry.RegistryElement> {
 		return t;
 	}
 	
-	public static interface RegistryElement {
-		public String getName();
-		default public void setID(int id) {};
+	public interface RegistryElement {
+		String getName();
+		default void setID(int id) {}
 	}
 	
 	public int size() {

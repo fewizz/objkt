@@ -13,8 +13,8 @@ public class Entity {
 		return false;
 	}
 	
-	public long getChunkLong() {
-		return Chunk.Position.toLong(MathUtils.floor(position.x) >> 16, MathUtils.floor(position.y) >> 16, MathUtils.floor(position.z) >> 16);
+	public Chunk.Position getChunkPosition() {
+		return new Chunk.Position(MathUtils.floor(position.x) >> 16, MathUtils.floor(position.y) >> 16, MathUtils.floor(position.z) >> 16);//Chunk.Position.toLong(MathUtils.floor(position.x) >> 16, MathUtils.floor(position.y) >> 16, MathUtils.floor(position.z) >> 16);
 	}
 	
 	public String getName() {

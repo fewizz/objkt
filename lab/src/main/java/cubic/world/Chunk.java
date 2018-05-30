@@ -5,6 +5,8 @@ import org.objkt.memory.*;
 import cubic.*;
 import cubic.block.Block;
 
+import java.util.Objects;
+
 public class Chunk {
 	public final Position pos;
 	
@@ -22,7 +24,7 @@ public class Chunk {
 		return blocks[index];
 	}
 	
-	private final int index(int x, int y, int z) {
+	private int index(int x, int y, int z) {
 		return (x & 0xF) | ((y & 0xF) << 4) | ((z & 0xF) << 8);
 	}
 	
@@ -45,7 +47,14 @@ public class Chunk {
 			b.write(out);
 		}
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Chunk{" +
+				"pos=" + pos +
+				'}';
+	}
+
 	public void readBlockData(DataInput in) {
 		for(int i = 0; i < 16*16*16; i++) {
 			int id = in.readInt();
@@ -69,23 +78,29 @@ public class Chunk {
 			y = (int) ((pos >> 21) & 0b1111111111111111111111);
 			z = (int) (pos & 0b111111111111111111111);
 		}
-		
-		public long toLong() {
-			return toLong(x, y, z);
-		}
-		
-		public static long toLong(int x, int y, int z) {
-			return ((long)x << 43) | (long)(y & 0b1111111111111111111111) << 21 | z & 0b111111111111111111111;
-		}
-		
+
 		@Override
-		public boolean equals(Object obj) {
-			if(obj == this)
-				return true;
-			if(!(obj instanceof Position))
-				return false;
-			Position p = (Position) obj;
-			return p.x == x && p.y == y && p.z == z;
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Position position = (Position) o;
+			return x == position.x &&
+					y == position.y &&
+					z == position.z;
+		}
+
+		@Override
+		public String toString() {
+			return "Position{" +
+					"x=" + x +
+					", y=" + y +
+					", z=" + z +
+					'}';
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(x, y, z);
 		}
 	}
 }
