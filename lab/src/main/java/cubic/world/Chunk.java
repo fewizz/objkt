@@ -11,9 +11,13 @@ public class Chunk {
 	public final Position pos;
 	
 	final Block[] blocks = new Block[16*16*16];
-	
+
+	public Chunk(Chunk.Position pos) {
+		this.pos = pos;
+	}
+
 	public Chunk(int x, int y, int z) {
-		this.pos = new Position(x, y, z);
+		this(new Chunk.Position(x, y, z));
 	}
 	
 	public final Block getBlock(int x, int y, int z) {
@@ -73,11 +77,11 @@ public class Chunk {
 			this.z = z;
 		}
 		
-		public Position(long pos) {
+		/*public Position(long pos) {
 			x = (int) (pos >> 43);
 			y = (int) ((pos >> 21) & 0b1111111111111111111111);
 			z = (int) (pos & 0b111111111111111111111);
-		}
+		}*/
 
 		@Override
 		public boolean equals(Object o) {

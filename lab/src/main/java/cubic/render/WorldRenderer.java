@@ -16,11 +16,7 @@ public class WorldRenderer {
 	public static Matrix4f view = new Matrix4f();
 	public static Matrix4f combined = new Matrix4f();
 	public static FloatBuffer combinedBuffer = BufferUtils.createFloatBuffer(4*4*Float.BYTES);
-	static final ChunksRenderer cr = new ChunksRenderer();
-	
-	public static void onChunkAdded(Chunk ch) {
-		cr.addChunkToRender(ch);
-	}
+	public static final ChunksRenderer cr = new ChunksRenderer();
 	
 	public static void render() {
 		gl.clearColor(0, 0, 1, 1);

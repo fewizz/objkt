@@ -40,7 +40,7 @@ public class ChunkGenerator {
 	//static float[] heightsOrgnl = new float[TEMP_HEIGHTS_LEN * TEMP_HEIGHTS_LEN];
 
 	public Chunk generateChunk(Chunk.Position pos) {
-		Chunk chunk = new Chunk(pos.x, pos.y, pos.z);//Chunk.getFreeChunk(cx, cz);
+		Chunk chunk = new Chunk(pos);//Chunk.getFreeChunk(cx, cz);
 		
 		//biomeIDs = mainLayer.getValues(cx * 16, cz * 16, 16, 16);
 		

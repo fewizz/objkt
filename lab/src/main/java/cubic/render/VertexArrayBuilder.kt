@@ -8,17 +8,10 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 open class VertexArrayBuilder(internal val usage: BufferUsage, vararg attribsArray: GLVertexArray.VertexAttribFormat) {
-    private val indicies: List<Int>
-    private val data: Map<Int, OffheapDataChannel>
-    private val step: Map<Int, ByteBuffer>
-    private val attribFormats: Map<Int, GLVertexArray.VertexAttribFormat>
-
-    init {
-        indicies = attribsArray.map { it.index }
-        data = attribsArray.map { it.index to OffheapDataChannel(ByteOrder.nativeOrder()) }.toMap()
-        step = attribsArray.map { it.index to ByteBuffer.allocateDirect(it.bytes()).order(ByteOrder.nativeOrder()) }.toMap()
-        attribFormats = attribsArray.map { it.index to it }.toMap()
-    }
+    private val indicies = attribsArray.map { it.index }
+    private val data = attribsArray.map { it.index to OffheapDataChannel(ByteOrder.nativeOrder()) }.toMap()
+    private val step = attribsArray.map { it.index to ByteBuffer.allocateDirect(it.bytes()).order(ByteOrder.nativeOrder()) }.toMap()
+    private val attribFormats = attribsArray.map { it.index to it }.toMap()
 
     fun endVertex() {
         indicies.forEach {

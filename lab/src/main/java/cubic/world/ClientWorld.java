@@ -12,7 +12,7 @@ public class ClientWorld extends World {
 		Chunk ch = super.addChunkFromData(x, y, z, in);
 
 		Client.GL_TASKS.add(() -> {
-			WorldRenderer.onChunkAdded(ch);
+			WorldRenderer.cr.addChunkToRender(ch);
 		});
 		
 		return ch;
